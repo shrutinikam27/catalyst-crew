@@ -56,7 +56,7 @@ const PoliceDashboard = () => {
       {/* Main Charts */}
       <div className="grid lg:grid-cols-2 gap-8">
         <ChartCard title="Incident Frequency vs Resolutions" subtitle="Monthly tracking of precinct performance">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <BarChart data={crimeData}>
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
               <Tooltip cursor={{fill: 'rgba(99, 102, 241, 0.05)'}} contentStyle={{ borderRadius: '12px', border: 'none' }} />

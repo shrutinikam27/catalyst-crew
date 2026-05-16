@@ -43,6 +43,7 @@ function SignupPage() {
       else if (user.email.includes('hospital')) navigate('/hospital');
       else navigate('/user');
     } catch (err) {
+      console.error(err);
       setError('Failed to sign up with Google.');
     }
     setLoading(false);

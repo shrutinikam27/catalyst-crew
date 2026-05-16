@@ -37,6 +37,7 @@ function LoginPage() {
       else if (user.email.includes('hospital')) navigate('/hospital');
       else navigate('/user');
     } catch (err) {
+      console.error(err);
       setError('Failed to log in with Google.');
     }
     setLoading(false);

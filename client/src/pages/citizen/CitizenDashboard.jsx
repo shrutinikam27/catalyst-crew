@@ -11,6 +11,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, 
   Tooltip, ResponsiveContainer, BarChart, Bar 
 } from 'recharts';
+import { cn } from '../../utils/cn';
 
 const data = [
   { name: 'Mon', accidents: 4, crime: 2 },
@@ -72,7 +73,7 @@ const CitizenDashboard = () => {
         <div className="space-y-8">
           {/* Chart Section */}
           <ChartCard title="Weekly Safety Trends" subtitle="Crime vs Accident frequency in your city">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <AreaChart data={data}>
                 <defs>
                   <linearGradient id="colorAccidents" x1="0" y1="0" x2="0" y2="1">

@@ -61,7 +61,7 @@ const AdminDashboard = () => {
       {/* Middle Row */}
       <div className="grid lg:grid-cols-3 gap-8">
         <ChartCard title="Resource Allocation" subtitle="Distribution across departments" className="lg:col-span-1">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <PieChart>
               <Pie
                 data={cityData}

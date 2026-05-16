@@ -90,7 +90,7 @@ const PublicNavbar = () => {
         <div className="p-6 space-y-4">
           <Link to="/" className="block text-lg font-bold text-indigo-600">Home</Link>
           <Link to="/features" className="block text-lg font-semibold text-slate-600 dark:text-slate-400">Features</Link>
-          <Link to="/about" className="block text-lg font-semibold text-slate-600 dark:text-slate-400">About</Link>
+          <Link to="/about" className="block text-lg font-semibold text-slate-600 dark:text-slate-400">About Us</Link>
           <Link to={currentUser ? "/user" : "/login"} className="block text-lg font-semibold text-slate-600 dark:text-slate-400">Dashboard</Link>
           <div className="pt-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
             {currentUser ? (

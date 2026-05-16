@@ -77,20 +77,6 @@ function HomePage() {
               alt="City Safety Illustration" 
               className="w-full h-auto drop-shadow-2xl dark:opacity-80"
             />
-            {/* Floating SOS Button - Matching Image Style */}
-            <div className="absolute top-0 -left-16 z-20 flex flex-col items-center">
-              <button onClick={handleSosClick} className="w-24 h-24 bg-red-600 rounded-full flex items-center justify-center text-white font-black text-2xl shadow-[0_0_50px_rgba(220,38,38,0.5)] border-4 border-white dark:border-slate-900 animate-pulse-sos hover:scale-110 transition-transform active:scale-95 group relative overflow-hidden">
-                 <span className="relative z-10">SOS</span>
-                 {sosClicks > 0 && <span className="absolute top-2 right-2 text-xs z-20 bg-white text-red-600 rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-lg">{sosClicks}</span>}
-                 <div className="absolute inset-0 bg-red-400 animate-ping opacity-20"></div>
-              </button>
-              <div className="mt-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-2xl border border-white/50 dark:border-slate-700 shadow-xl">
-                <p className="text-[10px] font-black text-red-600 uppercase tracking-tighter text-center leading-tight">
-                  Click or <br /> Long Press <br /> for SOS
-                </p>
-                <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/90 dark:bg-slate-800/90 border-t border-l border-white/50 dark:border-slate-700 rotate-45"></div>
-              </div>
-            </div>
           </div>
         </div>
       </section>

@@ -29,6 +29,7 @@ import ProfileSettings from './pages/citizen/ProfileSettings';
 // Volunteer Pages
 import VolunteerDashboard from './pages/volunteer/VolunteerDashboard';
 import NearbyEmergencies from './pages/volunteer/NearbyEmergencies';
+import ActiveMissions from './pages/volunteer/ActiveMissions';
 
 // Police Pages
 import PoliceDashboard from './pages/police/PoliceDashboard';
@@ -109,7 +110,7 @@ function App() {
           <Route path="/volunteer" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
             <Route index element={<VolunteerDashboard />} />
             <Route path="alerts" element={<NearbyEmergencies />} />
-            <Route path="missions" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Missions Module Coming Soon</div>} />
+            <Route path="missions" element={<ActiveMissions />} />
             <Route path="profile" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Profile Module Coming Soon</div>} />
           </Route>
 

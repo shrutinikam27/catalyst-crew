@@ -95,6 +95,8 @@ const EMERGENCY_VOLUNTEER_MAP = {
   Crime:    ['crime'],
   Medical:  ['medical', 'crime'],
   Accident: ['firebrigade', 'medical', 'crime'],
+};
+
 // Socket Connection
 io.on('connection', (socket) => {
   console.log('A user connected'.cyan);

@@ -1,13 +1,181 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Camera, MapPin, AlertTriangle, Send, 
-  ChevronDown, Info, Shield, ShieldAlert
+  ChevronDown, Info, Shield, ShieldAlert,
+  CheckCircle, Loader2, X, Image as ImageIcon
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { useAuth } from '../../firebase/AuthContext';
+import { submitComplaint, updateComplaintImageUrl } from '../../services/firestoreService';
+import { uploadComplaintImage } from '../../services/storageService';
+import { useNavigate } from 'react-router-dom';
+
+const CATEGORIES = [
+  { value: 'crime', label: 'Crime / Theft' },
+  { value: 'accident', label: 'Accident / Medical' },
+  { value: 'fire', label: 'Fire Emergency' },
+  { value: 'civic', label: 'Civic / Infrastructure' },
+  { value: 'harassment', label: 'Harassment' },
+];
 
 const ReportIncident = () => {
-  const [severity, setSeverity] = useState('moderate');
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+
+  const [form, setForm] = useState({
+    title: '',
+    category: 'crime',
+    description: '',
+    severity: 'moderate',
+  });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Auto-detect user location
+  const detectLocation = () => {
+    setLocationLoading(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            address: `${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`
+          });
+          setLocationLoading(false);
+        },
+        (err) => {
+          // Fallback to Pune center
+          setLocation({ lat: 18.5204, lng: 73.8567, address: 'Pune, Maharashtra' });
+          setLocationLoading(false);
+        }
+      );
+    } else {
+      setLocation({ lat: 18.5204, lng: 73.8567, address: 'Pune, Maharashtra' });
+      setLocationLoading(false);
+    }
+  };
+
+  // Handle image selection
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setImagePreview(reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Remove selected image
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  // Submit complaint to Firestore
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.title.trim() || !form.description.trim()) {
+      setError('Please fill in title and description.');
+      return;
+    }
+
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      // 1. Prepare data (without image for now)
+      const finalLocation = location || { lat: 18.5204, lng: 73.8567, address: 'Pune, Maharashtra' };
+      
+      const complaintData = {
+        title: form.title,
+        category: form.category,
+        description: form.description,
+        severity: form.severity,
+        priority: form.severity === 'high' ? 'high' : form.severity === 'moderate' ? 'medium' : 'low',
+        imageUrl: null, // We'll update this in background
+        location: finalLocation,
+        userId: currentUser?.uid || 'anonymous',
+        userName: currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Anonymous',
+        userEmail: currentUser?.email || '',
+        status: 'pending',
+        createdAt: new Date(),
+        department: form.category === 'crime' || form.category === 'harassment' ? 'police' :
+                    form.category === 'fire' ? 'fire' :
+                    form.category === 'accident' ? 'hospital' : 'admin',
+      };
+
+      // 2. Save to Database INSTANTLY
+      const complaintId = await submitComplaint(complaintData);
+      console.log("🚀 SUCCESS: Incident saved to database with ID:", complaintId);
+      
+      // 3. Start background image upload (Don't wait for it!)
+      if (imageFile && currentUser?.uid) {
+        uploadComplaintImage(imageFile, currentUser.uid, complaintId)
+          .then(async (url) => {
+            console.log("📸 Image upload complete. Updating record...");
+            const { updateComplaintImageUrl } = await import('../../services/firestoreService');
+            await updateComplaintImageUrl(complaintId, url);
+          })
+          .catch(err => {
+            console.warn("📸 Image upload failed in background. Text record is still safe.", err);
+          });
+      }
+
+      setSubmitted(true);
+
+      // Navigate after success
+      setTimeout(() => {
+        navigate('/user/tracking');
+      }, 2000);
+
+    } catch (err) {
+      console.error('Submit error:', err);
+      setError('Database sync failed. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Success state
+  if (submitted) {
+    return (
+      <div className="max-w-md mx-auto mt-20 text-center space-y-6">
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full flex items-center justify-center mx-auto"
+        >
+          <CheckCircle size={48} />
+        </motion.div>
+        <h2 className="text-2xl font-outfit font-extrabold text-slate-900 dark:text-white">Report Submitted!</h2>
+        <p className="text-slate-500 font-medium">Your complaint has been logged and assigned to the appropriate department. You'll receive real-time updates on the tracking page.</p>
+        <div className="flex gap-3 justify-center">
+          <button 
+            onClick={() => navigate('/user/tracking')}
+            className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl text-sm"
+          >
+            Track Status
+          </button>
+          <button 
+            onClick={() => { setSubmitted(false); setForm({ title: '', category: 'crime', description: '', severity: 'moderate' }); setImageFile(null); setImagePreview(null); }}
+            className="px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-sm"
+          >
+            File Another
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -20,20 +188,45 @@ const ReportIncident = () => {
         <p className="text-slate-500 dark:text-slate-400 font-medium">Your reports help authorities respond faster and keep the city safe.</p>
       </div>
 
-      <div className="grid md:grid-cols-[1fr_300px] gap-8">
+      <form onSubmit={handleSubmit} className="grid md:grid-cols-[1fr_300px] gap-8">
         {/* Form */}
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-100 dark:border-slate-800 shadow-sm space-y-6">
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 bg-rose-50 dark:bg-rose-900/20 text-rose-600 rounded-xl text-sm font-bold flex items-center gap-2"
+            >
+              <AlertTriangle size={16} /> {error}
+            </motion.div>
+          )}
+
           <div className="space-y-4">
+            {/* Title */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Incident Title</label>
+              <input 
+                type="text"
+                value={form.title}
+                onChange={(e) => setForm(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="Brief title of the incident..."
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm font-semibold focus:ring-2 focus:ring-indigo-500 dark:text-white transition-all"
+                required
+              />
+            </div>
+
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Incident Category</label>
                 <div className="relative group">
-                  <select className="w-full pl-4 pr-10 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm font-semibold appearance-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition-all cursor-pointer">
-                    <option>Crime / Theft</option>
-                    <option>Accident / Medical</option>
-                    <option>Fire Emergency</option>
-                    <option>Civic / Infrastructure</option>
-                    <option>Harassment</option>
+                  <select 
+                    value={form.category}
+                    onChange={(e) => setForm(prev => ({ ...prev, category: e.target.value }))}
+                    className="w-full pl-4 pr-10 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm font-semibold appearance-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition-all cursor-pointer"
+                  >
+                    {CATEGORIES.map(c => (
+                      <option key={c.value} value={c.value}>{c.label}</option>
+                    ))}
                   </select>
                   <ChevronDown size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-indigo-600 transition-colors pointer-events-none" />
                 </div>
@@ -45,10 +238,11 @@ const ReportIncident = () => {
                   {['low', 'moderate', 'high'].map((lvl) => (
                     <button 
                       key={lvl}
-                      onClick={() => setSeverity(lvl)}
+                      type="button"
+                      onClick={() => setForm(prev => ({ ...prev, severity: lvl }))}
                       className={cn(
                         "flex-1 py-3 rounded-xl text-[10px] font-extrabold uppercase tracking-widest border-2 transition-all",
-                        severity === lvl 
+                        form.severity === lvl 
                           ? lvl === 'high' ? "bg-rose-500 border-rose-500 text-white shadow-lg shadow-rose-200" :
                             lvl === 'moderate' ? "bg-amber-500 border-amber-500 text-white shadow-lg shadow-amber-200" :
                             "bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-200"
@@ -65,25 +259,70 @@ const ReportIncident = () => {
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Description</label>
               <textarea 
+                value={form.description}
+                onChange={(e) => setForm(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Describe the incident in detail..."
                 className="w-full p-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 dark:text-white min-h-[120px]"
+                required
               />
             </div>
 
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Evidence / Images</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                <button className="aspect-square rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center gap-2 group hover:border-indigo-500 transition-all">
-                  <Camera size={24} className="text-slate-400 group-hover:text-indigo-500 transition-colors" />
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">Upload</span>
-                </button>
+                {imagePreview ? (
+                  <div className="aspect-square rounded-2xl overflow-hidden relative group">
+                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                    <button 
+                      type="button"
+                      onClick={removeImage}
+                      className="absolute top-2 right-2 w-8 h-8 bg-rose-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <button 
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="aspect-square rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center gap-2 group hover:border-indigo-500 transition-all"
+                  >
+                    <Camera size={24} className="text-slate-400 group-hover:text-indigo-500 transition-colors" />
+                    <span className="text-[10px] font-bold text-slate-500 uppercase">Upload</span>
+                  </button>
+                )}
+                <input 
+                  ref={fileInputRef}
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleImageSelect}
+                  className="hidden" 
+                />
               </div>
             </div>
           </div>
 
-          <button className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-xl shadow-indigo-100 dark:shadow-none flex items-center justify-center gap-2 transition-all group active:scale-95">
-            <Send size={18} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
-            Submit Report
+          <button 
+            type="submit"
+            disabled={submitting}
+            className={cn(
+              "w-full py-4 text-white font-bold rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-all group active:scale-95",
+              submitting 
+                ? "bg-slate-400 cursor-not-allowed" 
+                : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-100 dark:shadow-none"
+            )}
+          >
+            {submitting ? (
+              <>
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                Submitting to SafeLink...
+              </>
+            ) : (
+              <>
+                <Send size={18} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
+                Submit Report
+              </>
+            )}
           </button>
         </div>
 
@@ -95,11 +334,26 @@ const ReportIncident = () => {
                 <MapPin size={14} />
                 Live Location
               </div>
-              <div className="h-40 bg-slate-800 rounded-2xl border border-slate-700 flex items-center justify-center">
-                <p className="text-[10px] text-slate-500 font-bold uppercase">Map Placeholder</p>
+              <div className="h-40 bg-slate-800 rounded-2xl border border-slate-700 flex items-center justify-center relative overflow-hidden">
+                {location ? (
+                  <div className="text-center">
+                    <div className="w-4 h-4 bg-indigo-500 rounded-full mx-auto mb-2 animate-ping" />
+                    <p className="text-[10px] text-slate-300 font-bold">{location.address}</p>
+                    <p className="text-[8px] text-slate-500 mt-1">{location.lat.toFixed(4)}, {location.lng.toFixed(4)}</p>
+                  </div>
+                ) : (
+                  <button 
+                    type="button"
+                    onClick={detectLocation}
+                    disabled={locationLoading}
+                    className="px-4 py-2 bg-indigo-600 rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors"
+                  >
+                    {locationLoading ? 'Detecting...' : 'Detect Location'}
+                  </button>
+                )}
               </div>
               <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
-                We've automatically detected your location. You can drag the pin to adjust.
+                {location ? 'Location detected. This will be attached to your report.' : 'Click to auto-detect your location for the report.'}
               </p>
             </div>
             <Shield size={100} className="absolute -right-6 -bottom-6 text-white/5 rotate-12" />
@@ -114,7 +368,8 @@ const ReportIncident = () => {
               {[
                 'Provide clear descriptions',
                 'Upload images if possible',
-                'Report genuine incidents',
+                'Reports are sent to authorities in real-time',
+                'Track status on the Tracking page',
                 'False reporting is illegal'
               ].map((tip, i) => (
                 <li key={i} className="flex gap-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">
@@ -124,7 +379,7 @@ const ReportIncident = () => {
             </ul>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 };

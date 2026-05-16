@@ -10,7 +10,7 @@ import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { cn } from '../../utils/cn';
 import { db } from '../../firebase/config';
 import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore';
-
+import { subscribeToEmergencies, subscribeToCollection, COLLECTIONS } from '../../services/firestoreService';
 import { useSocket } from '../../context/SocketContext';
 
 const fireData = [
@@ -31,13 +31,16 @@ const FireDashboard = () => {
 
   const fireAlerts = notifications.filter(n => n.type === 'FIRE');
 
+  const [complaints, setComplaints] = useState([]);
+
   useEffect(() => {
-    const q = query(
-      collection(db, 'volunteerRequests'),
-      where('expertise', 'array-contains', 'firebrigade')
-    );
-    const unsub = onSnapshot(q, (snap) => {
-      setVolunteers(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    const unsub = subscribeToAllComplaints(setComplaints, 'fire');
+    return () => unsub();
+  }, []);
+
+  useEffect(() => {
+    const unsub = subscribeToCollection(COLLECTIONS.VOLUNTEERS, (data) => {
+      setVolunteers(data);
       setLoadingVols(false);
     });
     return () => unsub();

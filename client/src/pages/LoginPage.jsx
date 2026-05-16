@@ -64,7 +64,16 @@ function LoginPage() {
         user = result.user;
       }
 
-      // Check volunteer status before redirecting
+      // 1. Check for official personnel roles FIRST (based on email/profile)
+      const officialRoles = ['admin', 'police', 'hospital', 'fire'];
+      const userEmail = user.email || '';
+      const isOfficial = officialRoles.some(r => userEmail.includes(r));
+
+      if (isOfficial) {
+        return redirectUser(userEmail);
+      }
+
+      // 2. Check volunteer status for regular citizens
       const q = query(collection(db, 'volunteerRequests'), where('uid', '==', user.uid));
       const snap = await getDocs(q);
       if (!snap.empty) {
@@ -80,7 +89,9 @@ function LoginPage() {
         navigate('/volunteer');
         return;
       }
-      redirectUser(user.email || 'user');
+
+      // 3. Default to citizen dashboard
+      redirectUser(userEmail || 'user');
     } catch (err) {
       setError(loginMethod === 'phone' ? 'Invalid OTP code.' : 'Invalid credentials. Please try again.');
     } finally {

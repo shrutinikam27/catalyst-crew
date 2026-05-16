@@ -304,7 +304,22 @@ function SignupPage() {
                         </>
                       )}
                     </button>
-                    <p className="mt-6 text-[10px] text-center text-slate-400 font-bold uppercase tracking-widest">
+
+                    <div className="relative my-8 text-center">
+                      <span className="bg-white dark:bg-slate-900 px-4 text-xs font-bold text-slate-400 relative z-10 uppercase tracking-widest">Or sign up with</span>
+                      <div className="absolute top-1/2 left-0 w-full h-px bg-slate-100 dark:bg-slate-800"></div>
+                    </div>
+
+                    <button 
+                      type="button"
+                      onClick={handleGoogleLogin}
+                      className="w-full py-4 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 text-slate-700 dark:text-white font-bold rounded-2xl flex items-center justify-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm"
+                    >
+                      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
+                      <span className="text-sm">Continue with Google</span>
+                    </button>
+
+                    <p className="mt-8 text-[10px] text-center text-slate-400 font-bold uppercase tracking-widest">
                       By signing up, you agree to our <a href="#" className="text-indigo-600 underline">Terms of Service</a> & <a href="#" className="text-indigo-600 underline">Privacy Policy</a>
                     </p>
                   </div>

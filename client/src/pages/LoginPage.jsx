@@ -4,7 +4,7 @@ import { useAuth } from '../firebase/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Shield, Mail, Lock, Eye, EyeOff, 
-  ArrowRight, Github, Phone, AlertTriangle,
+  ArrowRight, Phone, AlertTriangle,
   ChevronRight, Activity, Zap, ShieldCheck
 } from 'lucide-react';
 import { cn } from '../utils/cn';
@@ -269,17 +269,13 @@ function LoginPage() {
             <div className="absolute top-1/2 left-0 w-full h-px bg-slate-200 dark:bg-slate-800"></div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="flex justify-center">
             <button 
               onClick={handleGoogleLogin}
-              className="flex items-center justify-center gap-3 py-4 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 text-slate-700 dark:text-white font-bold rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm"
+              className="w-full max-w-sm flex items-center justify-center gap-3 py-4 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 text-slate-700 dark:text-white font-bold rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm"
             >
               <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
-              <span className="text-sm">Google</span>
-            </button>
-            <button className="flex items-center justify-center gap-3 py-4 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 text-slate-700 dark:text-white font-bold rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm">
-              <Github className="w-5 h-5" />
-              <span className="text-sm">GitHub</span>
+              <span className="text-sm">Continue with Google</span>
             </button>
           </div>
 

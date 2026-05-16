@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 @variant dark (&:where(.dark, .dark *));
 
@@ -135,9 +136,19 @@
 }
 
 @keyframes scan {
-  0% { transform: translateY(-100%); opacity: 0; }
-  50% { opacity: 1; }
-  100% { transform: translateY(1000%); opacity: 0; }
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(1000%);
+    opacity: 0;
+  }
 }
 
 .animate-scan {
@@ -145,8 +156,16 @@
 }
 
 @keyframes ping-slow {
-  0% { transform: scale(1); opacity: 0.8; }
-  70%, 100% { transform: scale(2); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  70%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
 }
 
 .animate-ping-slow {
@@ -154,9 +173,17 @@
 }
 
 @keyframes float-delayed {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 .animate-float-delayed {
@@ -164,12 +191,22 @@
 }
 
 @keyframes pulse-sos {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
-  70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(220, 38, 38, 0); }
-  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+  }
+
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 20px rgba(220, 38, 38, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+  }
 }
 
 .animate-pulse-sos {
   animation: pulse-sos 2s infinite;
 }
-

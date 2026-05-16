@@ -19,8 +19,8 @@ if (firebaseConfig.apiKey === 'your_api_key' || !firebaseConfig.apiKey) {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
 
-export { auth, googleProvider, firebaseConfig, db };
+export { auth, db, googleProvider, firebaseConfig };
 export default app;

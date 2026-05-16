@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   BarChart2, Shield, Activity, Users, 
   MapPin, AlertTriangle, CheckCircle, 
-  Settings, Download, Search, Briefcase, Globe
+  Settings, Download, Search, Briefcase, Globe,
+  MessageSquare, Mail, Clock, ChevronRight
 } from 'lucide-react';
+import { db } from '../../firebase/config';
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import StatCard from '../../components/ui/StatCard';
 import ChartCard from '../../components/ui/ChartCard';
 import { 
@@ -23,6 +26,26 @@ const cityData = [
 const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#f43f5e'];
 
 const AdminDashboard = () => {
+  const [supportRequests, setSupportRequests] = useState([]);
+
+  useEffect(() => {
+    const q = query(
+      collection(db, 'support_requests'),
+      orderBy('createdAt', 'desc'),
+      limit(5)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const requests = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setSupportRequests(requests);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <div className="space-y-8">
       {/* City Status Banner */}
@@ -107,6 +130,62 @@ const AdminDashboard = () => {
             ))}
           </div>
         </ChartCard>
+      </div>
+
+      {/* Support Inquiries Section */}
+      <div className="grid lg:grid-cols-3 gap-8">
+        <ChartCard title="Support Inquiries" subtitle="Direct messages from citizens" className="lg:col-span-2">
+          <div className="space-y-4 overflow-y-auto max-h-[400px] pr-2">
+            {supportRequests.length === 0 ? (
+              <div className="py-12 text-center">
+                <Mail className="mx-auto text-slate-300 mb-4" size={40} />
+                <p className="text-slate-400 font-medium uppercase tracking-widest text-xs">No active inquiries</p>
+              </div>
+            ) : (
+              supportRequests.map((req) => (
+                <div key={req.id} className="p-5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-transparent hover:border-indigo-500/20 transition-all group">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white text-xs font-bold uppercase">
+                        {req.name?.charAt(0)}
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white">{req.name}</h4>
+                        <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">{req.email}</span>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                      <Clock size={10} />
+                      {req.createdAt?.toDate ? req.createdAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium leading-relaxed italic">
+                    "{req.message}"
+                  </p>
+                  <div className="mt-4 flex justify-end">
+                    <button className="text-[10px] font-black text-indigo-600 uppercase tracking-widest flex items-center gap-1 hover:gap-2 transition-all">
+                      Reply to Citizen <ChevronRight size={12} />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </ChartCard>
+
+        <div className="lg:col-span-1 space-y-6">
+           <div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 text-indigo-500/10 group-hover:text-indigo-500/20 transition-colors">
+                <MessageSquare size={80} />
+              </div>
+              <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Inquiry Stats</h4>
+              <div className="text-4xl font-outfit font-black text-slate-900 dark:text-white mb-1">{supportRequests.length}</div>
+              <p className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-6">New Messages</p>
+              <button className="w-full py-4 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-black rounded-2xl uppercase tracking-widest text-[10px] hover:bg-indigo-600 hover:text-white transition-all">
+                Manage All Messages
+              </button>
+           </div>
+        </div>
       </div>
 
       {/* Department Performance */}

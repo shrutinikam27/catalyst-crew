@@ -3,6 +3,9 @@ import { useAuth } from '../firebase/AuthContext';
 import { Activity, AlertTriangle, Shield, ArrowRight, Flame, ShieldAlert, Ambulance } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PublicNavbar from '../components/PublicNavbar';
+import Footer from '../components/Footer';
+import heroIllustration from '../assets/hero-illustration.png';
+import safetyMap from '../assets/safety-map.png';
 
 function HomePage() {
   const { currentUser } = useAuth();
@@ -78,11 +81,11 @@ function HomePage() {
             </div>
           </div>
 
-          <div className="relative animate-float hidden lg:block">
+          <div className="relative animate-float lg:block">
             <img 
-              src="/hero-illustration.png" 
+              src={heroIllustration} 
               alt="City Safety Illustration" 
-              className="w-full h-auto drop-shadow-2xl dark:opacity-80 translate-x-12"
+              className="w-full h-auto drop-shadow-2xl dark:opacity-80 lg:translate-x-12 rounded-[2rem]"
             />
             
             {/* Restored: Predictive Safety Score Card */}
@@ -206,7 +209,7 @@ function HomePage() {
           </div>
           <div className="w-full aspect-video bg-slate-50 dark:bg-slate-900 rounded-[2.5rem] relative overflow-hidden border border-slate-200 dark:border-slate-700 shadow-xl group/map">
             <img 
-              src="/pune_safety_map_minimalist_1778919694567.png" 
+              src={safetyMap} 
               alt="City Safety Dashboard" 
               className="w-full h-full object-cover opacity-90 dark:opacity-40 group-hover:scale-105 transition-transform duration-[15s] ease-in-out"
             />
@@ -335,6 +338,7 @@ function HomePage() {
           </div>
         </div>
       )}
+      <Footer />
     </div>
   );
 }
@@ -355,7 +359,7 @@ function EmergencyStatusBar() {
       </div>
 
       <div className="hidden lg:flex flex-1 items-center justify-around px-4">
-        <StatusOption icon="📍" label="Shivajinagar" />
+        <StatusOption icon="📍" label="All Pune Districts" />
         <StatusOption icon="👥" label="2.4k Activity" />
         <StatusOption icon="⚖️" label="92% Response" />
         <StatusOption icon="📡" label="Server Active" />

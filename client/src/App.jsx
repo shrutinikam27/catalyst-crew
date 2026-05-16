@@ -12,6 +12,7 @@ import Features from './pages/Features';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import ReportIssue from './pages/ReportIssue';
+import Contact from './pages/Contact';
 
 // Citizen Pages
 import CitizenDashboard from './pages/citizen/CitizenDashboard';
@@ -63,6 +64,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/features" element={<Features />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/report" element={<ReportIssue />} />

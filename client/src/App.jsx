@@ -23,6 +23,7 @@ import CitizenSOS from './pages/citizen/CitizenSOS';
 import ComplaintTracking from './pages/citizen/ComplaintTracking';
 import SafetyCompanion from './pages/citizen/SafetyCompanion';
 import SafetyTips from './pages/citizen/SafetyTips';
+import ProfileSettings from './pages/citizen/ProfileSettings';
 
 // Volunteer Pages
 import VolunteerDashboard from './pages/volunteer/VolunteerDashboard';
@@ -41,11 +42,15 @@ import FireDispatch from './pages/fire/FireDispatch';
 // Hospital Pages
 import HospitalDashboard from './pages/hospital/HospitalDashboard';
 import HospitalDispatch from './pages/hospital/HospitalDispatch';
+import PatientAlerts from './pages/hospital/PatientAlerts';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminAnalytics from './pages/admin/AdminAnalytics';
-import AdminUserManagement from './pages/admin/AdminUserManagement';
+import CityAnalytics from './pages/admin/CityAnalytics';
+import AdminReports from './pages/admin/AdminReports';
+import UserManagement from './pages/admin/UserManagement';
+import SystemLogs from './pages/admin/SystemLogs';
+import AIForecasts from './pages/admin/AIForecasts';
 
 import './index.css';
 
@@ -90,6 +95,7 @@ function App() {
             <Route path="sos" element={<CitizenSOS />} />
             <Route path="safety" element={<SafetyCompanion />} />
             <Route path="tips" element={<SafetyTips />} />
+            <Route path="profile" element={<ProfileSettings />} />
             <Route path="route" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Smart Safe Route Module Coming Soon</div>} />
           </Route>
 
@@ -107,13 +113,14 @@ function App() {
             <Route path="incidents" element={<IncidentManager />} />
             <Route path="patrol" element={<PatrolOptimizer />} />
             <Route path="map" element={<PoliceHeatmap />} />
+            <Route path="profile" element={<ProfileSettings />} />
           </Route>
 
           {/* Hospital Dashboard Routes */}
           <Route path="/hospital" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
             <Route index element={<HospitalDashboard />} />
             <Route path="dispatch" element={<HospitalDispatch />} />
-            <Route path="alerts" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Patient Alerts Coming Soon</div>} />
+            <Route path="alerts" element={<PatientAlerts />} />
           </Route>
 
           {/* Fire Dashboard Routes */}
@@ -126,10 +133,11 @@ function App() {
           {/* Admin Dashboard Routes */}
           <Route path="/admin" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
             <Route index element={<AdminDashboard />} />
-            <Route path="analytics" element={<AdminAnalytics />} />
-            <Route path="users" element={<AdminUserManagement />} />
-            <Route path="logs" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">System Logs Coming Soon</div>} />
-            <Route path="ai" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">AI Forecasts Coming Soon</div>} />
+            <Route path="analytics" element={<CityAnalytics />} />
+            <Route path="reports" element={<AdminReports />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="logs" element={<SystemLogs />} />
+            <Route path="ai" element={<AIForecasts />} />
           </Route>
 
           {/* Fallback */}

@@ -1,12 +1,16 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Camera, MapPin, AlertTriangle, Send, 
   ChevronDown, Info, Shield, ShieldAlert,
-  CheckCircle, Loader2, X, Image as ImageIcon
+  CheckCircle, CheckCircle2, Loader2, X, Image as ImageIcon
 } from 'lucide-react';
-import { cn } from '../../utils/cn';
+import { db, storage } from '../../firebase/config';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useAuth } from '../../firebase/AuthContext';
+import { useLocationContext } from '../../contexts/LocationContext';
+import { cn } from '../../utils/cn';
 import { submitComplaint, updateComplaintImageUrl } from '../../services/firestoreService';
 import { uploadComplaintImage } from '../../services/storageService';
 import { useNavigate } from 'react-router-dom';
@@ -18,6 +22,25 @@ const CATEGORIES = [
   { value: 'civic', label: 'Civic / Infrastructure' },
   { value: 'harassment', label: 'Harassment' },
 ];
+
+// Leaflet Imports
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix for Leaflet default icon issues in React
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: markerIcon,
+    iconRetinaUrl: markerIconRetina,
+    shadowUrl: markerShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
 const ReportIncident = () => {
   const { currentUser } = useAuth();
@@ -32,11 +55,58 @@ const ReportIncident = () => {
   });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [location, setLocation] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
+
+  // Map State
+  const { location: userLocation } = useLocationContext();
+  const [markerPos, setMarkerPos] = useState([18.5204, 73.8567]); // Default Pune
+  const [address, setAddress] = useState("Shivaji Nagar, Pune");
+
+  // Sync with user location once it's available
+  useEffect(() => {
+    if (userLocation) {
+      setMarkerPos([userLocation.latitude, userLocation.longitude]);
+      fetchAddress(userLocation.latitude, userLocation.longitude);
+    }
+  }, [userLocation]);
+
+  const fetchAddress = async (lat, lon) => {
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+      const data = await response.json();
+      setAddress(data.display_name || `${lat.toFixed(4)}, ${lon.toFixed(4)}`);
+    } catch (err) {
+      setAddress(`${lat.toFixed(4)}, ${lon.toFixed(4)}`);
+    }
+  };
+
+  const LocationMarker = () => {
+    useMapEvents({
+      click(e) {
+        setMarkerPos([e.latlng.lat, e.latlng.lng]);
+        fetchAddress(e.latlng.lat, e.latlng.lng);
+      },
+    });
+    return <Marker position={markerPos} draggable={true} eventHandlers={{
+      dragend: (e) => {
+        const marker = e.target;
+        const position = marker.getLatLng();
+        setMarkerPos([position.lat, position.lng]);
+        fetchAddress(position.lat, position.lng);
+      }
+    }} />;
+  };
+
+  const RecenterMap = ({ pos }) => {
+    const map = useMap();
+    useEffect(() => {
+      map.setView(pos);
+    }, [pos]);
+    return null;
+  };
 
   // Auto-detect user location
   const detectLocation = () => {
@@ -44,21 +114,21 @@ const ReportIncident = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-            address: `${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`
-          });
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          setMarkerPos([lat, lng]);
+          fetchAddress(lat, lng);
           setLocationLoading(false);
         },
         (err) => {
-          // Fallback to Pune center
-          setLocation({ lat: 18.5204, lng: 73.8567, address: 'Pune, Maharashtra' });
+          setMarkerPos([18.5204, 73.8567]);
+          fetchAddress(18.5204, 73.8567);
           setLocationLoading(false);
         }
       );
     } else {
-      setLocation({ lat: 18.5204, lng: 73.8567, address: 'Pune, Maharashtra' });
+      setMarkerPos([18.5204, 73.8567]);
+      fetchAddress(18.5204, 73.8567);
       setLocationLoading(false);
     }
   };
@@ -93,19 +163,20 @@ const ReportIncident = () => {
     setError(null);
 
     try {
-      // 1. Prepare data (without image for now)
-      const finalLocation = location || { lat: 18.5204, lng: 73.8567, address: 'Pune, Maharashtra' };
-      
       const complaintData = {
         title: form.title,
         category: form.category,
         description: form.description,
         severity: form.severity,
         priority: form.severity === 'high' ? 'high' : form.severity === 'moderate' ? 'medium' : 'low',
-        imageUrl: null, // We'll update this in background
-        location: finalLocation,
+        imageUrl: null, 
+        location: {
+          lat: markerPos[0],
+          lng: markerPos[1],
+          address: address
+        },
         userId: currentUser?.uid || 'anonymous',
-        userName: currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Anonymous',
+        userName: currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Anonymous User',
         userEmail: currentUser?.email || '',
         status: 'pending',
         createdAt: new Date(),
@@ -114,33 +185,52 @@ const ReportIncident = () => {
                     form.category === 'accident' ? 'hospital' : 'admin',
       };
 
-      // 2. Save to Database INSTANTLY
+      // Save to Firestore
       const complaintId = await submitComplaint(complaintData);
       console.log("🚀 SUCCESS: Incident saved to database with ID:", complaintId);
-      
-      // 3. Start background image upload (Don't wait for it!)
+
+      // Start background image upload
       if (imageFile && currentUser?.uid) {
         uploadComplaintImage(imageFile, currentUser.uid, complaintId)
           .then(async (url) => {
             console.log("📸 Image upload complete. Updating record...");
-            const { updateComplaintImageUrl } = await import('../../services/firestoreService');
             await updateComplaintImageUrl(complaintId, url);
           })
           .catch(err => {
-            console.warn("📸 Image upload failed in background. Text record is still safe.", err);
+            console.warn("📸 Image upload failed in background.", err);
           });
       }
 
       setSubmitted(true);
-
-      // Navigate after success
       setTimeout(() => {
         navigate('/user/tracking');
       }, 2000);
 
     } catch (err) {
       console.error('Submit error:', err);
-      setError('Database sync failed. Please try again.');
+      setError('Database sync failed. Saving locally...');
+      
+      const incidentData = {
+        id: `#INC-${Math.floor(1000 + Math.random() * 9000)}`,
+        title: form.title,
+        category: form.category,
+        description: form.description,
+        severity: form.severity,
+        status: 'Pending',
+        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        location: {
+          address: address,
+          coords: markerPos
+        }
+      };
+      const localIncidents = JSON.parse(localStorage.getItem('local_incidents') || '[]');
+      localIncidents.unshift(incidentData);
+      localStorage.setItem('local_incidents', JSON.stringify(localIncidents));
+      
+      setSubmitted(true);
+      setTimeout(() => {
+        navigate('/user/tracking');
+      }, 2000);
     } finally {
       setSubmitting(false);
     }
@@ -178,7 +268,35 @@ const ReportIncident = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 pb-12">
+      {/* Notifications */}
+      <AnimatePresence>
+        {status && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={cn(
+              "fixed top-24 left-1/2 -translate-x-1/2 z-[60] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 min-w-[320px]",
+              status === 'success' ? "bg-emerald-600 text-white" : "bg-rose-600 text-white"
+            )}
+          >
+            {status === 'success' ? <CheckCircle2 size={24} /> : <AlertTriangle size={24} />}
+            <div>
+              <p className="font-bold text-sm">
+                {status === 'success' ? "Report Submitted Successfully!" : "Submission Failed"}
+              </p>
+              <p className="text-[10px] opacity-80 font-medium">
+                {status === 'success' ? "Authorities have been notified and will respond shortly." : "There was an error connecting to Firestore."}
+              </p>
+            </div>
+            <button onClick={() => setStatus(null)} className="ml-auto opacity-70 hover:opacity-100">
+              <X size={18} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="w-16 h-16 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
@@ -200,7 +318,6 @@ const ReportIncident = () => {
               <AlertTriangle size={16} /> {error}
             </motion.div>
           )}
-
           <div className="space-y-4">
             {/* Title */}
             <div className="space-y-2">
@@ -237,6 +354,7 @@ const ReportIncident = () => {
                 <div className="flex gap-2">
                   {['low', 'moderate', 'high'].map((lvl) => (
                     <button 
+                      type="button"
                       key={lvl}
                       type="button"
                       onClick={() => setForm(prev => ({ ...prev, severity: lvl }))}
@@ -285,7 +403,7 @@ const ReportIncident = () => {
                   <button 
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="aspect-square rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center gap-2 group hover:border-indigo-500 transition-all"
+                    className="aspect-square rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center gap-2 group hover:border-indigo-500 transition-all cursor-pointer"
                   >
                     <Camera size={24} className="text-slate-400 group-hover:text-indigo-500 transition-colors" />
                     <span className="text-[10px] font-bold text-slate-500 uppercase">Upload</span>
@@ -334,26 +452,29 @@ const ReportIncident = () => {
                 <MapPin size={14} />
                 Live Location
               </div>
-              <div className="h-40 bg-slate-800 rounded-2xl border border-slate-700 flex items-center justify-center relative overflow-hidden">
-                {location ? (
-                  <div className="text-center">
-                    <div className="w-4 h-4 bg-indigo-500 rounded-full mx-auto mb-2 animate-ping" />
-                    <p className="text-[10px] text-slate-300 font-bold">{location.address}</p>
-                    <p className="text-[8px] text-slate-500 mt-1">{location.lat.toFixed(4)}, {location.lng.toFixed(4)}</p>
-                  </div>
-                ) : (
-                  <button 
-                    type="button"
-                    onClick={detectLocation}
-                    disabled={locationLoading}
-                    className="px-4 py-2 bg-indigo-600 rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors"
-                  >
-                    {locationLoading ? 'Detecting...' : 'Detect Location'}
-                  </button>
-                )}
+              <div className="h-64 bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden relative z-0">
+                <MapContainer 
+                  center={markerPos} 
+                  zoom={13} 
+                  scrollWheelZoom={false}
+                  style={{ height: '100%', width: '100%' }}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <LocationMarker />
+                  <RecenterMap pos={markerPos} />
+                </MapContainer>
               </div>
-              <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
-                {location ? 'Location detected. This will be attached to your report.' : 'Click to auto-detect your location for the report.'}
+              <div className="space-y-1">
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Selected Address</p>
+                <p className="text-[11px] text-slate-300 font-medium leading-tight line-clamp-2">
+                  {address}
+                </p>
+              </div>
+              <p className="text-[10px] text-slate-400 font-medium leading-relaxed italic">
+                Drag the pin or click on the map to adjust the incident location.
               </p>
             </div>
             <Shield size={100} className="absolute -right-6 -bottom-6 text-white/5 rotate-12" />

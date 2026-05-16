@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  ShieldCheck, AlertCircle, MessageSquare, 
+import {
+  ShieldCheck, AlertCircle, MessageSquare,
   MapPin, Zap, TrendingUp, Users, Heart
 } from 'lucide-react';
 import StatCard from '../../components/ui/StatCard';
 import AlertCard from '../../components/ui/AlertCard';
 import ChartCard from '../../components/ui/ChartCard';
-import { 
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, 
-  Tooltip, ResponsiveContainer, BarChart, Bar 
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid,
+  Tooltip, ResponsiveContainer, BarChart, Bar
 } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../../utils/cn';
@@ -29,7 +29,7 @@ const data = [
 
 const CitizenDashboard = () => {
   const { currentUser, userProfile } = useAuth();
-  const { notifications } = useSocket();
+  const { notifications, lastPulse } = useSocket();
   const navigate = useNavigate();
 
   // Real-time Firestore data
@@ -50,11 +50,41 @@ const CitizenDashboard = () => {
   const resolvedCount = myComplaints.filter(c => c.status === 'resolved').length;
   const pendingCount = myComplaints.filter(c => c.status === 'pending').length;
 
+  // Local state for live chart data to make it feel alive
+  const [chartData, setChartData] = useState(data);
+
+  // Update chart data when a new pulse arrives
+  useEffect(() => {
+    if (lastPulse) {
+      setChartData(prev => {
+        const day = new Date().toLocaleDateString('en-US', { weekday: 'short' });
+        return prev.map(d => {
+          if (d.name === day) {
+            return {
+              ...d,
+              crime: lastPulse.type === 'CRIME' ? d.crime + 1 : d.crime,
+              accidents: ['FIRE', 'MEDICAL'].includes(lastPulse.type) ? d.accidents + 1 : d.accidents
+            };
+          }
+          return d;
+        });
+      });
+    }
+  }, [lastPulse]);
+
   const crimeNotifications = notifications.filter(n => n.type === 'CRIME');
-  const safetyScore = Math.max(0, (10 - (crimeNotifications.length * 0.5)).toFixed(1));
+  const civicNotifications = notifications.filter(n => n.type === 'CIVIC');
+  const emergencyNotifications = notifications.filter(n => ['FIRE', 'MEDICAL'].includes(n.type));
+
+  const safetyScore = Math.max(0, (10 - (crimeNotifications.length * 0.2 + emergencyNotifications.length * 0.1)).toFixed(1));
   const safetyStatus = safetyScore > 8 ? 'Stable' : safetyScore > 5 ? 'Warning' : 'Critical';
   const safetyColor = safetyScore > 8 ? 'text-emerald-500' : safetyScore > 5 ? 'text-amber-500' : 'text-rose-500';
-  
+
+  // Dynamic Stats
+  const safeRoutesCount = Math.max(0, 15 - crimeNotifications.length);
+  const civicReportsCount = 40 + civicNotifications.length;
+  const sosContactsCount = 5; // Usually static but could be dynamic if we had a contacts API
+
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
@@ -67,7 +97,7 @@ const CitizenDashboard = () => {
             The safety index in your current zone is <span className={cn("font-bold", safetyColor)}>{safetyStatus} ({safetyScore}/10)</span>.
           </p>
           {safetyScore < 7 && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               className="px-2 py-0.5 bg-rose-100 text-rose-600 text-[10px] font-black uppercase rounded border border-rose-200 animate-pulse"
@@ -77,7 +107,8 @@ const CitizenDashboard = () => {
           )}
         </div>
       </div>
-  
+
+
 
       {/* Live Crime Ticker */}
       {crimeNotifications.length > 0 && (
@@ -87,7 +118,7 @@ const CitizenDashboard = () => {
             Live Ticker
           </span>
           <div className="flex-1 overflow-hidden whitespace-nowrap">
-            <motion.div 
+            <motion.div
               animate={{ x: [1000, -2000] }}
               transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
               className="flex gap-12"
@@ -105,20 +136,22 @@ const CitizenDashboard = () => {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard 
-          title="Safe Routes" 
-          value="12 Available" 
-          icon={ShieldCheck} 
-          trend="8%" 
+        <StatCard
+          title="Safe Routes"
+          value={`${safeRoutesCount} Available`}
+          icon={ShieldCheck}
+          trend={`${((safeRoutesCount / 15) * 100).toFixed(0)}%`}
+          trendType={safeRoutesCount > 10 ? "up" : "down"}
           description="Based on real-time crime data"
         />
-        <StatCard 
-          title="Active Alerts" 
-          value={notifications.length.toString().padStart(2, '0')} 
-          icon={AlertCircle} 
-          trend="Live" 
+        <StatCard
+          title="Active Alerts"
+          value={notifications.length.toString().padStart(2, '0')}
+          icon={AlertCircle}
+          trend="Live"
           trendType={notifications.length > 5 ? "up" : "down"}
           description="Detected in real-time"
+          isLive={true}
         />
         <StatCard 
           title="My Reports" 
@@ -127,10 +160,10 @@ const CitizenDashboard = () => {
           trend={myComplaints.length > 0 ? `${resolvedCount} resolved` : 'Syncing...'}
           description={myComplaints.length > 0 ? `${pendingCount} pending review` : 'Waiting for database index'}
         />
-        <StatCard 
-          title="SOS Contacts" 
-          value="05" 
-          icon={Users} 
+        <StatCard
+          title="SOS Contacts"
+          value={sosContactsCount.toString().padStart(2, '0')}
+          icon={Users}
           description="Verified emergency contacts"
         />
       </div>
@@ -141,19 +174,24 @@ const CitizenDashboard = () => {
           {/* Chart Section */}
           <ChartCard title="Weekly Safety Trends" subtitle="Crime vs Accident frequency in your city">
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <AreaChart data={data}>
+              <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorAccidents" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1} />
+                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorCrime" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.1} />
+                    <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
-                <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                <Tooltip
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', background: '#1e293b', color: '#fff' }}
+                  itemStyle={{ color: '#fff' }}
                 />
                 <Area type="monotone" dataKey="accidents" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorAccidents)" />
-                <Area type="monotone" dataKey="crime" stroke="#f43f5e" strokeWidth={3} fillOpacity={0} />
+                <Area type="monotone" dataKey="crime" stroke="#f43f5e" strokeWidth={3} fillOpacity={1} fill="url(#colorCrime)" />
               </AreaChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -166,8 +204,8 @@ const CitizenDashboard = () => {
               { name: 'SOS Help', icon: Zap, color: 'bg-amber-500', path: '/user/sos' },
               { name: 'Safe Path', icon: MapPin, color: 'bg-emerald-500', path: '/user/safety' },
             ].map((action) => (
-              <button 
-                key={action.name} 
+              <button
+                key={action.name}
                 onClick={() => navigate(action.path)}
                 className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:shadow-xl transition-all group text-center"
               >
@@ -180,6 +218,68 @@ const CitizenDashboard = () => {
               </button>
             ))}
           </div>
+
+          {/* Safety Tips Section */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-bold font-outfit text-slate-900 dark:text-white">Personal Safety Guide</h3>
+              <button
+                onClick={() => navigate('/user/tips')}
+                className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:underline transition-all"
+              >
+                View Handbook
+              </button>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {[
+                {
+                  title: "Emergency Readiness",
+                  desc: "Keep a list of local emergency numbers and nearby safe zones saved on your device.",
+                  icon: Zap,
+                  color: "text-amber-500",
+                  bg: "bg-amber-50 dark:bg-amber-900/10"
+                },
+                {
+                  title: "Digital Security",
+                  desc: "Avoid sharing your real-time location on public social media platforms.",
+                  icon: ShieldCheck,
+                  color: "text-emerald-500",
+                  bg: "bg-emerald-50 dark:bg-emerald-900/10"
+                },
+                {
+                  title: "Night Commute",
+                  desc: "Always stick to well-lit main roads and use the 'Safe Path' feature for navigation.",
+                  icon: MapPin,
+                  color: "text-indigo-500",
+                  bg: "bg-indigo-50 dark:bg-indigo-900/10"
+                },
+                {
+                  title: "First Aid Basics",
+                  desc: "Learn basic CPR and how to handle minor injuries until professional help arrives.",
+                  icon: Heart,
+                  color: "text-rose-500",
+                  bg: "bg-rose-50 dark:bg-rose-900/10"
+                }
+              ].map((tip, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                  className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition-all cursor-default"
+                >
+                  <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mb-4", tip.bg)}>
+                    <tip.icon size={20} className={tip.color} />
+                  </div>
+                  <h4 className="font-bold text-slate-900 dark:text-white mb-1">{tip.title}</h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                    {tip.desc}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="space-y-8">
@@ -189,9 +289,9 @@ const CitizenDashboard = () => {
             <div className="space-y-4">
               {notifications.length > 0 ? (
                 notifications.slice(0, 3).map((n) => (
-                  <AlertCard 
+                  <AlertCard
                     key={n.id}
-                    title={n.message} 
+                    title={n.message}
                     type={n.type}
                     location="Pune Sector"
                     time={n.time}
@@ -200,15 +300,15 @@ const CitizenDashboard = () => {
                 ))
               ) : (
                 <>
-                  <AlertCard 
-                    title="Road Construction" 
+                  <AlertCard
+                    title="Road Construction"
                     type="Heavy machinery on Baner Road"
                     location="Baner, Pune"
                     time="10 mins ago"
                     severity="moderate"
                   />
-                  <AlertCard 
-                    title="Fire Outbreak" 
+                  <AlertCard
+                    title="Fire Outbreak"
                     type="Building fire reported"
                     location="Kothrud, Pune"
                     time="25 mins ago"

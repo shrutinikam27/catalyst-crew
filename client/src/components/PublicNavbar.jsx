@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Shield, Menu, X, Sun, Moon } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useAuth } from '../firebase/AuthContext';
 import { cn } from '../utils/cn';
 
@@ -11,6 +12,7 @@ const PublicNavbar = () => {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
+  const location = useLocation();
   const { currentUser, logout } = useAuth();
 
   useEffect(() => {
@@ -24,6 +26,13 @@ const PublicNavbar = () => {
   }, [isDark]);
 
   const toggleTheme = () => setIsDark(!isDark);
+
+  const navLinks = [
+    { name: 'Home', path: '/' },
+    { name: 'Features', path: '/features' },
+    { name: 'About Us', path: '/about' },
+    { name: 'Dashboard', path: currentUser ? '/user' : '/login' },
+  ];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800">
@@ -42,10 +51,28 @@ const PublicNavbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center gap-8">
-            <Link to="/" className="text-sm font-bold text-indigo-600 border-b-2 border-indigo-600 pb-1">Home</Link>
-            <Link to="/features" className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 transition-colors">Features</Link>
-            <Link to="/about" className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 transition-colors">About Us</Link>
-            <Link to={currentUser ? "/user" : "/login"} className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 transition-colors">Dashboard</Link>
+            {navLinks.map((link) => {
+              const isActive = location.pathname === link.path;
+              return (
+                <Link 
+                  key={link.name} 
+                  to={link.path} 
+                  className={cn(
+                    "relative text-sm font-bold transition-colors py-1",
+                    isActive ? "text-indigo-600" : "text-slate-600 dark:text-slate-400 hover:text-indigo-600"
+                  )}
+                >
+                  {link.name}
+                  {isActive && (
+                    <motion.div 
+                      layoutId="nav-underline"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-indigo-600 rounded-full"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
           </div>
 
           <div className="hidden lg:flex items-center gap-4">
@@ -88,10 +115,22 @@ const PublicNavbar = () => {
         isOpen ? "translate-x-0" : "translate-x-full"
       )}>
         <div className="p-6 space-y-4">
-          <Link to="/" className="block text-lg font-bold text-indigo-600">Home</Link>
-          <Link to="/features" className="block text-lg font-semibold text-slate-600 dark:text-slate-400">Features</Link>
-          <Link to="/about" className="block text-lg font-semibold text-slate-600 dark:text-slate-400">About Us</Link>
-          <Link to={currentUser ? "/user" : "/login"} className="block text-lg font-semibold text-slate-600 dark:text-slate-400">Dashboard</Link>
+          {navLinks.map((link) => {
+            const isActive = location.pathname === link.path;
+            return (
+              <Link 
+                key={link.name} 
+                to={link.path} 
+                onClick={() => setIsOpen(false)}
+                className={cn(
+                  "block text-lg font-bold transition-colors",
+                  isActive ? "text-indigo-600" : "text-slate-600 dark:text-slate-400"
+                )}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
           <div className="pt-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
             {currentUser ? (
               <button onClick={logout} className="w-full py-3 bg-rose-50 dark:bg-rose-900/20 text-rose-600 font-bold rounded-xl uppercase tracking-widest text-xs">Logout</button>

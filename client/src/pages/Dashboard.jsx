@@ -151,7 +151,7 @@ const Dashboard = () => {
             <div className="right-sidebar">
               <div className="ai-risk-widget glass-panel">
                 <h3>AI RISK PREDICTION</h3>
-                <div className="risk-location">Shivajinagar, Pune &gt;</div>
+                <div className="risk-location">All Pune Regions &gt;</div>
                 <div className="risk-score">
                   <span className="score-value text-danger">85<span className="text-sm">%</span></span>
                   <span className="score-label text-danger">High Risk</span>
@@ -175,7 +175,7 @@ const Dashboard = () => {
                     <div className="alert-dot bg-danger"></div>
                     <div className="alert-content">
                       <h4>High Crime Activity</h4>
-                      <p>Shivajinagar</p>
+                      <p>Pune Central</p>
                     </div>
                     <span className="alert-time">10 min ago</span>
                   </div>

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './firebase/AuthContext';
 import HomePage from './pages/HomePage';
+import AboutUs from './pages/AboutUs';
+import Features from './pages/Features';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import Dashboard from './pages/Dashboard';
@@ -37,9 +39,9 @@ function Navbar({ toggleTheme, isDark }) {
         </Link>
         
         <div className="hidden lg:flex items-center gap-8">
-          <Link to="/" className="text-indigo-600 font-semibold border-b-2 border-indigo-600 pb-1">Home</Link>
-          <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">About Us</a>
-          <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">Features</a>
+          <Link to="/" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">Home</Link>
+          <Link to="/about" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">About Us</Link>
+          <Link to="/features" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">Features</Link>
           <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">How It Works</a>
           <Link to={currentUser ? "/user" : "/login"} className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">Dashboard</Link>
           <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">Contact</a>
@@ -107,6 +109,18 @@ function App() {
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/user" element={<UserDashboard />} />
             <Route path="/admin" element={<Dashboard />} />
+            <Route path="/about" element={
+              <>
+                <Navbar toggleTheme={toggleTheme} isDark={isDark} />
+                <AboutUs />
+              </>
+            } />
+            <Route path="/features" element={
+              <>
+                <Navbar toggleTheme={toggleTheme} isDark={isDark} />
+                <Features />
+              </>
+            } />
             <Route path="/" element={
               <>
                 <Navbar toggleTheme={toggleTheme} isDark={isDark} />

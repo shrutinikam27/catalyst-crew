@@ -14,6 +14,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../firebase/AuthContext';
+import { useSocket } from '../../context/SocketContext';
 
 const data = [
   { name: 'Mon', accidents: 4, crime: 2 },
@@ -27,6 +28,7 @@ const data = [
 
 const CitizenDashboard = () => {
   const { currentUser } = useAuth();
+  const { notifications } = useSocket();
   const navigate = useNavigate();
   
   return (
@@ -52,11 +54,11 @@ const CitizenDashboard = () => {
         />
         <StatCard 
           title="Active Alerts" 
-          value="03" 
+          value={notifications.length.toString().padStart(2, '0')} 
           icon={AlertCircle} 
-          trend="2%" 
-          trendType="down"
-          description="Within 5km of your location"
+          trend="Live" 
+          trendType={notifications.length > 5 ? "up" : "down"}
+          description="Detected in real-time"
         />
         <StatCard 
           title="Civic Reports" 
@@ -125,27 +127,35 @@ const CitizenDashboard = () => {
           <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm">
             <h3 className="text-lg font-bold font-outfit text-slate-900 dark:text-white mb-6">Nearby Alerts</h3>
             <div className="space-y-4">
-              <AlertCard 
-                title="Road Construction" 
-                type="Heavy machinery on Baner Road"
-                location="Baner, Pune"
-                time="10 mins ago"
-                severity="moderate"
-              />
-              <AlertCard 
-                title="Fire Outbreak" 
-                type="Building fire reported"
-                location="Kothrud, Pune"
-                time="25 mins ago"
-                severity="high"
-              />
-              <AlertCard 
-                title="Rain Alert" 
-                type="Heavy showers expected"
-                location="Central Pune"
-                time="1 hr ago"
-                severity="low"
-              />
+              {notifications.length > 0 ? (
+                notifications.slice(0, 3).map((n) => (
+                  <AlertCard 
+                    key={n.id}
+                    title={n.message} 
+                    type={n.type}
+                    location="Pune Sector"
+                    time={n.time}
+                    severity={n.severity || 'moderate'}
+                  />
+                ))
+              ) : (
+                <>
+                  <AlertCard 
+                    title="Road Construction" 
+                    type="Heavy machinery on Baner Road"
+                    location="Baner, Pune"
+                    time="10 mins ago"
+                    severity="moderate"
+                  />
+                  <AlertCard 
+                    title="Fire Outbreak" 
+                    type="Building fire reported"
+                    location="Kothrud, Pune"
+                    time="25 mins ago"
+                    severity="high"
+                  />
+                </>
+              )}
             </div>
             <button className="w-full mt-6 py-3 text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-xl transition-all">
               View All Alerts

@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './firebase/AuthContext';
+import { SocketProvider } from './context/SocketContext';
 
 // Layouts
 import DashboardLayout from './layouts/DashboardLayout';
@@ -58,9 +59,10 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
+    <SocketProvider>
+      <AuthProvider>
+        <Router>
+          <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutUs />} />
@@ -128,6 +130,7 @@ function App() {
         </Routes>
       </Router>
     </AuthProvider>
+    </SocketProvider>
   );
 }
 

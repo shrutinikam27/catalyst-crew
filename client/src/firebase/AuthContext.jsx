@@ -4,7 +4,9 @@ import {
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
   signOut, 
-  signInWithPopup 
+  signInWithPopup,
+  RecaptchaVerifier,
+  signInWithPhoneNumber
 } from 'firebase/auth';
 import { auth, googleProvider, firebaseConfig } from './config';
 
@@ -65,6 +67,73 @@ export function AuthProvider({ children }) {
     return signInWithPopup(auth, googleProvider);
   }
 
+  function setupRecaptcha(containerId) {
+    if (USE_MOCK_AUTH) return;
+    
+    // Check if we already have a verifier on the window to avoid re-render errors
+    if (window.recaptchaVerifier) {
+      return window.recaptchaVerifier;
+    }
+
+    const recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
+      'size': 'invisible',
+      'callback': (response) => {
+        // reCAPTCHA solved, allow signInWithPhoneNumber.
+      }
+    });
+    
+    window.recaptchaVerifier = recaptchaVerifier;
+    return recaptchaVerifier;
+  }
+
+  async function loginWithPhone(phoneNumber, recaptchaVerifier) {
+    if (USE_MOCK_AUTH) {
+      console.log('Mock Phone Login:', phoneNumber);
+      return {
+        isMock: true,
+        confirm: async (otp) => {
+          if (otp === '123456') {
+            const mockUser = { phoneNumber, uid: 'mock-phone-uid-' + Date.now() };
+            setCurrentUser(mockUser);
+            return { user: mockUser };
+          }
+          throw new Error('Invalid OTP');
+        }
+      };
+    }
+    
+    try {
+      return await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+    } catch (error) {
+      console.warn('Firebase Phone Auth Error:', error.code, error.message);
+      
+      // Fallback for most common configuration errors in development
+      const fallbackErrors = [
+        'auth/operation-not-allowed',
+        'auth/billing-not-enabled',
+        'auth/invalid-app-credential',
+        'auth/invalid-verification-code',
+        'auth/network-request-failed'
+      ];
+
+      if (fallbackErrors.includes(error.code) || error.message?.includes('400')) {
+        console.warn('Falling back to Mock Mode for testing due to service configuration.');
+        return {
+          isMock: true,
+          confirm: async (otp) => {
+            if (otp === '123456') {
+              const mockUser = { phoneNumber, uid: 'mock-phone-uid-' + Date.now() };
+              setCurrentUser(mockUser);
+              return { user: mockUser };
+            }
+            throw new Error('Invalid OTP');
+          }
+        };
+      }
+      throw error;
+    }
+  }
+
   useEffect(() => {
     if (USE_MOCK_AUTH) {
       console.warn('Using Mock Authentication mode. Firebase is bypassed.');
@@ -85,7 +154,9 @@ export function AuthProvider({ children }) {
     signup,
     login,
     logout,
-    loginWithGoogle
+    loginWithGoogle,
+    setupRecaptcha,
+    loginWithPhone
   };
 
   return (

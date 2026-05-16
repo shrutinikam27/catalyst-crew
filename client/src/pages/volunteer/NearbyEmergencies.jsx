@@ -6,9 +6,10 @@ import {
   CheckCircle, ArrowRight, Activity, Filter
 } from 'lucide-react';
 import SmartMap from '../../components/map/SmartMap';
+import { useSocket } from '../../context/SocketContext';
 import { cn } from '../../utils/cn';
 
-const alerts = [
+const staticAlerts = [
   {
     id: 1,
     title: 'Medical Emergency',
@@ -19,32 +20,27 @@ const alerts = [
     severity: 'critical',
     type: 'medical',
     coords: [18.5312, 73.8445]
-  },
-  {
-    id: 2,
-    title: 'Traffic Accident',
-    description: 'Minor collision between two-wheeler and car. Traffic management help needed.',
-    location: 'Hadapsar Flyover',
-    distance: '1.2km',
-    time: '5 mins ago',
-    severity: 'moderate',
-    type: 'accident',
-    coords: [18.5089, 73.9260]
-  },
-  {
-    id: 3,
-    title: 'Woman in Distress',
-    description: 'Reported harassment near metro station. Immediate presence requested.',
-    location: 'Viman Nagar St.',
-    distance: '2.5km',
-    time: 'Just Now',
-    severity: 'high',
-    type: 'safety',
-    coords: [18.5679, 73.9143]
   }
 ];
 
 const NearbyEmergencies = () => {
+  const { notifications } = useSocket();
+
+  const activeAlerts = [
+    ...notifications.map(n => ({
+      id: n.id,
+      title: n.title || n.message,
+      description: n.message,
+      location: n.location || 'Pune Sector',
+      distance: 'Live',
+      time: n.time,
+      severity: n.severity || 'high',
+      type: n.type === 'CRIME' ? 'safety' : 'medical',
+      coords: n.coords || [18.5312, 73.8445]
+    })),
+    ...staticAlerts
+  ];
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -68,7 +64,7 @@ const NearbyEmergencies = () => {
 
       <div className="grid lg:grid-cols-[400px_1fr] gap-8">
         <div className="space-y-4 max-h-[calc(100vh-250px)] overflow-y-auto pr-2 scrollbar-hide">
-          {alerts.map((alert, idx) => (
+          {activeAlerts.map((alert, idx) => (
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -79,8 +75,7 @@ const NearbyEmergencies = () => {
               <div className="flex justify-between items-start mb-4">
                 <div className={cn(
                   "p-3 rounded-2xl shadow-lg text-white",
-                  alert.severity === 'critical' ? "bg-rose-500" :
-                  alert.severity === 'high' ? "bg-amber-500" : "bg-indigo-500"
+                  alert.severity === 'critical' || alert.severity === 'high' ? "bg-rose-500" : "bg-indigo-500"
                 )}>
                   {alert.type === 'medical' ? <Heart size={20} /> : <ShieldAlert size={20} />}
                 </div>
@@ -112,8 +107,8 @@ const NearbyEmergencies = () => {
 
         <div className="relative bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden min-h-[500px]">
           <SmartMap 
-            center={alerts[0].coords}
-            incidents={alerts.map(a => ({ id: a.id, type: a.title, severity: a.severity === 'critical' ? 'high' : 'moderate', coords: a.coords }))}
+            center={activeAlerts[0]?.coords || [18.5204, 73.8567]}
+            incidents={activeAlerts.map(a => ({ id: a.id, type: a.title, severity: a.severity, coords: a.coords }))}
           />
           
           {/* Map Overlay UI */}

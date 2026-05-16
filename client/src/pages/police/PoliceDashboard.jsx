@@ -12,6 +12,8 @@ import { cn } from '../../utils/cn';
 import { db } from '../../firebase/config';
 import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 
+import { useSocket } from '../../context/SocketContext';
+
 const crimeData = [
   { name: 'Jan', reports: 45, resolved: 38 },
   { name: 'Feb', reports: 52, resolved: 40 },
@@ -22,10 +24,13 @@ const crimeData = [
 ];
 
 const PoliceDashboard = () => {
+  const { notifications } = useSocket();
   const [volunteers, setVolunteers] = useState([]);
   const [loadingVols, setLoadingVols] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
   const [tab, setTab] = useState('pending'); // pending | approved | rejected
+
+  const crimeAlerts = notifications.filter(n => n.type === 'CRIME');
 
   useEffect(() => {
     // Real-time listener for crime volunteer requests
@@ -77,7 +82,7 @@ const PoliceDashboard = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="Active Incidents" value="24" icon={AlertTriangle} trend="12%" trendType="up" />
+        <StatCard title="Active Incidents" value={crimeAlerts.length || "0"} icon={AlertTriangle} trend="Live" trendType="up" />
         <StatCard title="Officer Patrols" value="18" icon={Users} trend="4%" trendType="up" />
         <StatCard title="Resolution Rate" value="92%" icon={CheckCircle} trend="2.4%" trendType="up" />
         <StatCard title="Avg. Response" value="6.5m" icon={Clock} trend="8%" trendType="down" />

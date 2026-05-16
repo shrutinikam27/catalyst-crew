@@ -11,6 +11,8 @@ import { cn } from '../../utils/cn';
 import { db } from '../../firebase/config';
 import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 
+import { useSocket } from '../../context/SocketContext';
+
 const fireData = [
   { name: 'Jan', reports: 30, resolved: 28 },
   { name: 'Feb', reports: 25, resolved: 25 },
@@ -21,10 +23,13 @@ const fireData = [
 ];
 
 const FireDashboard = () => {
+  const { notifications } = useSocket();
   const [volunteers, setVolunteers] = useState([]);
   const [loadingVols, setLoadingVols] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
   const [tab, setTab] = useState('pending');
+
+  const fireAlerts = notifications.filter(n => n.type === 'FIRE');
 
   useEffect(() => {
     const q = query(
@@ -60,7 +65,7 @@ const FireDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="Active Emergencies" value="8" icon={Flame} trend="15%" trendType="up" />
+        <StatCard title="Active Emergencies" value={fireAlerts.length || "0"} icon={Flame} trend="Live" trendType="up" />
         <StatCard title="Engines Deployed" value="14" icon={Truck} trend="2" trendType="up" />
         <StatCard title="Resolution Rate" value="96%" icon={CheckCircle} trend="1.2%" trendType="up" />
         <StatCard title="Avg. Response Time" value="4.2m" icon={Clock} trend="12%" trendType="down" />

@@ -17,6 +17,7 @@ import ReportIssue from './pages/ReportIssue';
 import CitizenDashboard from './pages/citizen/CitizenDashboard';
 import ReportIncident from './pages/citizen/ReportIncident';
 import CitizenHeatmap from './pages/citizen/CitizenHeatmap';
+import SafetyCompanion from './pages/citizen/SafetyCompanion';
 
 // Volunteer Pages
 import VolunteerDashboard from './pages/volunteer/VolunteerDashboard';
@@ -65,6 +66,7 @@ function App() {
             <Route index element={<CitizenDashboard />} />
             <Route path="report" element={<ReportIncident />} />
             <Route path="map" element={<CitizenHeatmap />} />
+            <Route path="safety" element={<SafetyCompanion />} />
             <Route path="tracking" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Tracking Module Coming Soon</div>} />
             <Route path="sos" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">SOS Module Coming Soon</div>} />
             <Route path="tips" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Safety Tips Module Coming Soon</div>} />

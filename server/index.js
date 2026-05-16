@@ -18,7 +18,7 @@ app.use(morgan('dev'));
 // Routes
 app.get('/', (req, res) => {
     res.status(200).send({
-        message: 'Catalyst Crew API is running',
+        message: 'SafeLink API is running',
         version: '1.0.0'
     });
 });

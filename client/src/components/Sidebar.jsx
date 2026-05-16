@@ -3,7 +3,7 @@ import {
   Home, Map, AlertTriangle, MessageSquare, FileText, 
   Shield, PieChart, LineChart, Bell, Heart, Users, 
   Settings, User, ChevronRight, LogOut, Briefcase, 
-  Activity, Cpu, Ambulance, Flame, Zap
+  Activity, Cpu, Ambulance, Flame, Zap, Navigation
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../utils/cn';
@@ -12,6 +12,7 @@ const roleMenus = {
   citizen: [
     { name: 'Overview', icon: Home, path: '/user' },
     { name: 'Risk Map', icon: Map, path: '/user/map' },
+    { name: 'Safety Companion', icon: Navigation, path: '/user/safety' },
     { name: 'Report Incident', icon: AlertTriangle, path: '/user/report' },
     { name: 'Track Complaints', icon: FileText, path: '/user/tracking' },
     { name: 'Emergency SOS', icon: Zap, path: '/user/sos' },

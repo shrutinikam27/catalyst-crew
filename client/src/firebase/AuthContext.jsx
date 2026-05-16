@@ -18,19 +18,34 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const isDemo = !import.meta.env.VITE_FIREBASE_API_KEY || import.meta.env.VITE_FIREBASE_API_KEY === 'your_api_key_here';
+
   function signup(email, password) {
+    if (isDemo) return Promise.resolve({ user: { email } });
     return createUserWithEmailAndPassword(auth, email, password);
   }
 
   function login(email, password) {
+    if (isDemo) {
+      setCurrentUser({ email });
+      return Promise.resolve({ user: { email } });
+    }
     return signInWithEmailAndPassword(auth, email, password);
   }
 
   function logout() {
+    if (isDemo) {
+      setCurrentUser(null);
+      return Promise.resolve();
+    }
     return signOut(auth);
   }
 
   function loginWithGoogle() {
+    if (isDemo) {
+      setCurrentUser({ email: 'demo@safelink.com' });
+      return Promise.resolve({ user: { email: 'demo@safelink.com' } });
+    }
     return signInWithPopup(auth, googleProvider);
   }
 

@@ -22,7 +22,7 @@ function SignupPage() {
       setError('');
       setLoading(true);
       await signup(email, password);
-      navigate('/');
+      navigate('/user');
     } catch (err) {
       setError('Failed to create an account. ' + err.message);
     }
@@ -34,7 +34,7 @@ function SignupPage() {
       setError('');
       setLoading(true);
       await loginWithGoogle();
-      navigate('/');
+      navigate('/user');
     } catch (err) {
       setError('Failed to sign up with Google.');
     }

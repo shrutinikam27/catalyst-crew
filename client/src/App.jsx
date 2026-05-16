@@ -4,6 +4,9 @@ import { AuthProvider, useAuth } from './firebase/AuthContext';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import Dashboard from './pages/Dashboard';
+import UserDashboard from './pages/UserDashboard';
+import './index.css';
 
 function Navbar({ toggleTheme, isDark }) {
   const { currentUser, logout } = useAuth();
@@ -38,7 +41,7 @@ function Navbar({ toggleTheme, isDark }) {
           <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">About Us</a>
           <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">Features</a>
           <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">How It Works</a>
-          <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">Dashboard</a>
+          <Link to={currentUser ? "/user" : "/login"} className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">Dashboard</Link>
           <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">Contact</a>
         </div>
 
@@ -102,7 +105,9 @@ function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
-            <Route path="*" element={
+            <Route path="/user" element={<UserDashboard />} />
+            <Route path="/admin" element={<Dashboard />} />
+            <Route path="/" element={
               <>
                 <Navbar toggleTheme={toggleTheme} isDark={isDark} />
                 <HomePage />

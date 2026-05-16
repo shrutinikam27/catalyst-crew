@@ -32,9 +32,9 @@ const VolunteerDashboard = () => {
           </div>
 
           <div className="grid sm:grid-cols-3 gap-6">
-            <StatCard title="Response Score" value="98/100" icon={Star} trend="2%" />
-            <StatCard title="Missions" value="42" icon={CheckCircle} trend="5" />
-            <StatCard title="People Helped" value="128" icon={Heart} trend="12" />
+            <StatCard title="Response Score" value="0/100" icon={Star} trend="0%" />
+            <StatCard title="Missions" value="0" icon={CheckCircle} trend="0" />
+            <StatCard title="People Helped" value="0" icon={Heart} trend="0" />
           </div>
 
           {/* Active Missions */}
@@ -43,37 +43,14 @@ const VolunteerDashboard = () => {
               <Zap size={20} className="text-amber-500" />
               Nearby Emergency Alerts
             </h3>
-            <div className="grid sm:grid-cols-2 gap-4">
-              {[
-                { title: 'First Aid Required', distance: '1.2km', loc: 'Pune Univ Circle', time: '2m ago', severity: 'high' },
-                { title: 'Traffic Assistance', distance: '0.8km', loc: 'Aundh Bridge', time: '5m ago', severity: 'moderate' },
-              ].map((item, i) => (
-                <div key={i} className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-4 hover:shadow-xl transition-all group">
-                  <div className="flex justify-between items-start">
-                    <div className={cn(
-                      "p-3 rounded-xl",
-                      item.severity === 'high' ? "bg-rose-50 text-rose-600" : "bg-amber-50 text-amber-600"
-                    )}>
-                      <Zap size={20} />
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{item.time}</span>
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-slate-900 dark:text-white">{item.title}</h4>
-                    <p className="text-[11px] text-slate-500 flex items-center gap-1 mt-1">
-                      <MapPin size={10} /> {item.loc} • {item.distance}
-                    </p>
-                  </div>
-                  <div className="flex gap-2 pt-2">
-                    <button className="flex-1 py-2.5 bg-indigo-600 text-white text-[10px] font-bold uppercase rounded-xl hover:bg-indigo-700 transition-all">
-                      Accept
-                    </button>
-                    <button className="flex-1 py-2.5 bg-slate-50 dark:bg-slate-800 text-slate-500 text-[10px] font-bold uppercase rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-all">
-                      Ignore
-                    </button>
-                  </div>
+            <div className="grid sm:grid-cols-1 gap-4">
+              <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center">
+                <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Zap size={24} className="text-slate-400" />
                 </div>
-              ))}
+                <h4 className="font-bold text-slate-900 dark:text-white mb-2">No Active Alerts</h4>
+                <p className="text-xs text-slate-500">Live citizen emergency requests will appear here once connected.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -115,14 +92,14 @@ const VolunteerDashboard = () => {
               <div className="space-y-2">
                 <div className="flex justify-between items-end">
                   <span className="text-[10px] font-bold text-slate-400 uppercase">Progress</span>
-                  <span className="text-lg font-outfit font-bold">85%</span>
+                  <span className="text-lg font-outfit font-bold">0%</span>
                 </div>
                 <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full w-[85%] bg-amber-400 rounded-full"></div>
+                  <div className="h-full w-[0%] bg-amber-400 rounded-full"></div>
                 </div>
               </div>
               <p className="text-[10px] text-slate-400 font-medium italic">
-                "Complete 8 more missions to unlock the 'Life Saver' badge."
+                "Complete your first mission to start tracking progress."
               </p>
             </div>
             <Activity size={100} className="absolute -right-4 -bottom-4 text-white/5 rotate-12 group-hover:scale-110 transition-transform" />

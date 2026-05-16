@@ -9,7 +9,7 @@
       "source_file": "client/eslint.config.js",
       "source_location": "L1",
       "id": "client_eslint_config_js",
-      "community": 5,
+      "community": 21,
       "norm_label": "eslint.config.js"
     },
     {
@@ -18,7 +18,7 @@
       "source_file": "client/postcss.config.js",
       "source_location": "L1",
       "id": "client_postcss_config_js",
-      "community": 6,
+      "community": 22,
       "norm_label": "postcss.config.js"
     },
     {
@@ -27,7 +27,7 @@
       "source_file": "client/tailwind.config.js",
       "source_location": "L1",
       "id": "client_tailwind_config_js",
-      "community": 7,
+      "community": 23,
       "norm_label": "tailwind.config.js"
     },
     {
@@ -36,7 +36,7 @@
       "source_file": "client/vite.config.js",
       "source_location": "L1",
       "id": "client_vite_config_js",
-      "community": 8,
+      "community": 24,
       "norm_label": "vite.config.js"
     },
     {
@@ -49,19 +49,19 @@
       "norm_label": "app.jsx"
     },
     {
-      "label": "Navbar()",
+      "label": "ProtectedRoute()",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L11",
-      "id": "src_app_navbar",
+      "source_location": "L45",
+      "id": "src_app_protectedroute",
       "community": 0,
-      "norm_label": "navbar()"
+      "norm_label": "protectedroute()"
     },
     {
       "label": "App()",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L82",
+      "source_location": "L59",
       "id": "src_app_app",
       "community": 0,
       "norm_label": "app()"
@@ -72,8 +72,260 @@
       "source_file": "client/src/main.jsx",
       "source_location": "L1",
       "id": "client_src_main_jsx",
-      "community": 9,
+      "community": 6,
       "norm_label": "main.jsx"
+    },
+    {
+      "label": "Footer.jsx",
+      "file_type": "code",
+      "source_file": "client/src/components/Footer.jsx",
+      "source_location": "L1",
+      "id": "client_src_components_footer_jsx",
+      "community": 4,
+      "norm_label": "footer.jsx"
+    },
+    {
+      "label": "Footer()",
+      "file_type": "code",
+      "source_file": "client/src/components/Footer.jsx",
+      "source_location": "L5",
+      "id": "components_footer_footer",
+      "community": 4,
+      "norm_label": "footer()"
+    },
+    {
+      "label": "FooterLink()",
+      "file_type": "code",
+      "source_file": "client/src/components/Footer.jsx",
+      "source_location": "L88",
+      "id": "components_footer_footerlink",
+      "community": 4,
+      "norm_label": "footerlink()"
+    },
+    {
+      "label": "SocialIcon()",
+      "file_type": "code",
+      "source_file": "client/src/components/Footer.jsx",
+      "source_location": "L96",
+      "id": "components_footer_socialicon",
+      "community": 4,
+      "norm_label": "socialicon()"
+    },
+    {
+      "label": "ContactItem()",
+      "file_type": "code",
+      "source_file": "client/src/components/Footer.jsx",
+      "source_location": "L102",
+      "id": "components_footer_contactitem",
+      "community": 4,
+      "norm_label": "contactitem()"
+    },
+    {
+      "label": "PublicNavbar.jsx",
+      "file_type": "code",
+      "source_file": "client/src/components/PublicNavbar.jsx",
+      "source_location": "L1",
+      "id": "client_src_components_publicnavbar_jsx",
+      "community": 0,
+      "norm_label": "publicnavbar.jsx"
+    },
+    {
+      "label": "PublicNavbar()",
+      "file_type": "code",
+      "source_file": "client/src/components/PublicNavbar.jsx",
+      "source_location": "L8",
+      "id": "components_publicnavbar_publicnavbar",
+      "community": 0,
+      "norm_label": "publicnavbar()"
+    },
+    {
+      "label": "Sidebar.jsx",
+      "file_type": "code",
+      "source_file": "client/src/components/Sidebar.jsx",
+      "source_location": "L1",
+      "id": "client_src_components_sidebar_jsx",
+      "community": 2,
+      "norm_label": "sidebar.jsx"
+    },
+    {
+      "label": "Sidebar()",
+      "file_type": "code",
+      "source_file": "client/src/components/Sidebar.jsx",
+      "source_location": "L53",
+      "id": "components_sidebar_sidebar",
+      "community": 2,
+      "norm_label": "sidebar()"
+    },
+    {
+      "label": "Topbar.jsx",
+      "file_type": "code",
+      "source_file": "client/src/components/Topbar.jsx",
+      "source_location": "L1",
+      "id": "client_src_components_topbar_jsx",
+      "community": 1,
+      "norm_label": "topbar.jsx"
+    },
+    {
+      "label": "Topbar()",
+      "file_type": "code",
+      "source_file": "client/src/components/Topbar.jsx",
+      "source_location": "L6",
+      "id": "components_topbar_topbar",
+      "community": 1,
+      "norm_label": "topbar()"
+    },
+    {
+      "label": "TopContactDrawer.jsx",
+      "file_type": "code",
+      "source_file": "client/src/components/TopContactDrawer.jsx",
+      "source_location": "L1",
+      "id": "client_src_components_topcontactdrawer_jsx",
+      "community": 10,
+      "norm_label": "topcontactdrawer.jsx"
+    },
+    {
+      "label": "TopContactDrawer()",
+      "file_type": "code",
+      "source_file": "client/src/components/TopContactDrawer.jsx",
+      "source_location": "L7",
+      "id": "components_topcontactdrawer_topcontactdrawer",
+      "community": 10,
+      "norm_label": "topcontactdrawer()"
+    },
+    {
+      "label": "SmartMap.jsx",
+      "file_type": "code",
+      "source_file": "client/src/components/map/SmartMap.jsx",
+      "source_location": "L1",
+      "id": "client_src_components_map_smartmap_jsx",
+      "community": 7,
+      "norm_label": "smartmap.jsx"
+    },
+    {
+      "label": "createPulsingIcon()",
+      "file_type": "code",
+      "source_file": "client/src/components/map/SmartMap.jsx",
+      "source_location": "L20",
+      "id": "map_smartmap_createpulsingicon",
+      "community": 7,
+      "norm_label": "createpulsingicon()"
+    },
+    {
+      "label": "SmartMap()",
+      "file_type": "code",
+      "source_file": "client/src/components/map/SmartMap.jsx",
+      "source_location": "L27",
+      "id": "map_smartmap_smartmap",
+      "community": 7,
+      "norm_label": "smartmap()"
+    },
+    {
+      "label": "AlertCard.jsx",
+      "file_type": "code",
+      "source_file": "client/src/components/ui/AlertCard.jsx",
+      "source_location": "L1",
+      "id": "client_src_components_ui_alertcard_jsx",
+      "community": 2,
+      "norm_label": "alertcard.jsx"
+    },
+    {
+      "label": "AlertCard()",
+      "file_type": "code",
+      "source_file": "client/src/components/ui/AlertCard.jsx",
+      "source_location": "L6",
+      "id": "ui_alertcard_alertcard",
+      "community": 2,
+      "norm_label": "alertcard()"
+    },
+    {
+      "label": "ChartCard.jsx",
+      "file_type": "code",
+      "source_file": "client/src/components/ui/ChartCard.jsx",
+      "source_location": "L1",
+      "id": "client_src_components_ui_chartcard_jsx",
+      "community": 2,
+      "norm_label": "chartcard.jsx"
+    },
+    {
+      "label": "ChartCard()",
+      "file_type": "code",
+      "source_file": "client/src/components/ui/ChartCard.jsx",
+      "source_location": "L5",
+      "id": "ui_chartcard_chartcard",
+      "community": 2,
+      "norm_label": "chartcard()"
+    },
+    {
+      "label": "StatCard.jsx",
+      "file_type": "code",
+      "source_file": "client/src/components/ui/StatCard.jsx",
+      "source_location": "L1",
+      "id": "client_src_components_ui_statcard_jsx",
+      "community": 12,
+      "norm_label": "statcard.jsx"
+    },
+    {
+      "label": "StatCard()",
+      "file_type": "code",
+      "source_file": "client/src/components/ui/StatCard.jsx",
+      "source_location": "L5",
+      "id": "ui_statcard_statcard",
+      "community": 12,
+      "norm_label": "statcard()"
+    },
+    {
+      "label": "SocketContext.jsx",
+      "file_type": "code",
+      "source_file": "client/src/context/SocketContext.jsx",
+      "source_location": "L1",
+      "id": "client_src_context_socketcontext_jsx",
+      "community": 1,
+      "norm_label": "socketcontext.jsx"
+    },
+    {
+      "label": "useSocket()",
+      "file_type": "code",
+      "source_file": "client/src/context/SocketContext.jsx",
+      "source_location": "L6",
+      "id": "context_socketcontext_usesocket",
+      "community": 1,
+      "norm_label": "usesocket()"
+    },
+    {
+      "label": "SocketProvider()",
+      "file_type": "code",
+      "source_file": "client/src/context/SocketContext.jsx",
+      "source_location": "L8",
+      "id": "context_socketcontext_socketprovider",
+      "community": 1,
+      "norm_label": "socketprovider()"
+    },
+    {
+      "label": "LocationContext.jsx",
+      "file_type": "code",
+      "source_file": "client/src/contexts/LocationContext.jsx",
+      "source_location": "L1",
+      "id": "client_src_contexts_locationcontext_jsx",
+      "community": 6,
+      "norm_label": "locationcontext.jsx"
+    },
+    {
+      "label": "useLocationContext()",
+      "file_type": "code",
+      "source_file": "client/src/contexts/LocationContext.jsx",
+      "source_location": "L5",
+      "id": "contexts_locationcontext_uselocationcontext",
+      "community": 6,
+      "norm_label": "uselocationcontext()"
+    },
+    {
+      "label": "LocationProvider()",
+      "file_type": "code",
+      "source_file": "client/src/contexts/LocationContext.jsx",
+      "source_location": "L7",
+      "id": "contexts_locationcontext_locationprovider",
+      "community": 6,
+      "norm_label": "locationprovider()"
     },
     {
       "label": "AuthContext.jsx",
@@ -88,16 +340,16 @@
       "label": "useAuth()",
       "file_type": "code",
       "source_file": "client/src/firebase/AuthContext.jsx",
-      "source_location": "L13",
+      "source_location": "L20",
       "id": "firebase_authcontext_useauth",
-      "community": 1,
+      "community": 0,
       "norm_label": "useauth()"
     },
     {
       "label": "AuthProvider()",
       "file_type": "code",
       "source_file": "client/src/firebase/AuthContext.jsx",
-      "source_location": "L17",
+      "source_location": "L24",
       "id": "firebase_authcontext_authprovider",
       "community": 0,
       "norm_label": "authprovider()"
@@ -108,8 +360,80 @@
       "source_file": "client/src/firebase/config.js",
       "source_location": "L1",
       "id": "client_src_firebase_config_js",
-      "community": 10,
+      "community": 25,
       "norm_label": "config.js"
+    },
+    {
+      "label": "DashboardLayout.jsx",
+      "file_type": "code",
+      "source_file": "client/src/layouts/DashboardLayout.jsx",
+      "source_location": "L1",
+      "id": "client_src_layouts_dashboardlayout_jsx",
+      "community": 0,
+      "norm_label": "dashboardlayout.jsx"
+    },
+    {
+      "label": "DashboardLayout()",
+      "file_type": "code",
+      "source_file": "client/src/layouts/DashboardLayout.jsx",
+      "source_location": "L9",
+      "id": "layouts_dashboardlayout_dashboardlayout",
+      "community": 0,
+      "norm_label": "dashboardlayout()"
+    },
+    {
+      "label": "AboutUs.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/AboutUs.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_aboutus_jsx",
+      "community": 8,
+      "norm_label": "aboutus.jsx"
+    },
+    {
+      "label": "AboutUs()",
+      "file_type": "code",
+      "source_file": "client/src/pages/AboutUs.jsx",
+      "source_location": "L16",
+      "id": "pages_aboutus_aboutus",
+      "community": 8,
+      "norm_label": "aboutus()"
+    },
+    {
+      "label": "CapabilityCard()",
+      "file_type": "code",
+      "source_file": "client/src/pages/AboutUs.jsx",
+      "source_location": "L273",
+      "id": "pages_aboutus_capabilitycard",
+      "community": 8,
+      "norm_label": "capabilitycard()"
+    },
+    {
+      "label": "Contact.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/Contact.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_contact_jsx",
+      "community": 9,
+      "norm_label": "contact.jsx"
+    },
+    {
+      "label": "Contact()",
+      "file_type": "code",
+      "source_file": "client/src/pages/Contact.jsx",
+      "source_location": "L10",
+      "id": "pages_contact_contact",
+      "community": 9,
+      "norm_label": "contact()"
+    },
+    {
+      "label": "ContactInfoCard()",
+      "file_type": "code",
+      "source_file": "client/src/pages/Contact.jsx",
+      "source_location": "L133",
+      "id": "pages_contact_contactinfocard",
+      "community": 9,
+      "norm_label": "contactinfocard()"
     },
     {
       "label": "Dashboard.jsx",
@@ -117,7 +441,7 @@
       "source_file": "client/src/pages/Dashboard.jsx",
       "source_location": "L1",
       "id": "client_src_pages_dashboard_jsx",
-      "community": 3,
+      "community": 16,
       "norm_label": "dashboard.jsx"
     },
     {
@@ -126,8 +450,62 @@
       "source_file": "client/src/pages/Dashboard.jsx",
       "source_location": "L10",
       "id": "pages_dashboard_dashboard",
-      "community": 3,
+      "community": 16,
       "norm_label": "dashboard()"
+    },
+    {
+      "label": "Features.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/Features.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_features_jsx",
+      "community": 3,
+      "norm_label": "features.jsx"
+    },
+    {
+      "label": "Features()",
+      "file_type": "code",
+      "source_file": "client/src/pages/Features.jsx",
+      "source_location": "L16",
+      "id": "pages_features_features",
+      "community": 3,
+      "norm_label": "features()"
+    },
+    {
+      "label": "FeatureCard()",
+      "file_type": "code",
+      "source_file": "client/src/pages/Features.jsx",
+      "source_location": "L306",
+      "id": "pages_features_featurecard",
+      "community": 3,
+      "norm_label": "featurecard()"
+    },
+    {
+      "label": "LogicItem()",
+      "file_type": "code",
+      "source_file": "client/src/pages/Features.jsx",
+      "source_location": "L336",
+      "id": "pages_features_logicitem",
+      "community": 3,
+      "norm_label": "logicitem()"
+    },
+    {
+      "label": "DeepDiveItem()",
+      "file_type": "code",
+      "source_file": "client/src/pages/Features.jsx",
+      "source_location": "L346",
+      "id": "pages_features_deepdiveitem",
+      "community": 3,
+      "norm_label": "deepdiveitem()"
+    },
+    {
+      "label": "ResponseCard()",
+      "file_type": "code",
+      "source_file": "client/src/pages/Features.jsx",
+      "source_location": "L355",
+      "id": "pages_features_responsecard",
+      "community": 3,
+      "norm_label": "responsecard()"
     },
     {
       "label": "HomePage.jsx",
@@ -135,35 +513,35 @@
       "source_file": "client/src/pages/HomePage.jsx",
       "source_location": "L1",
       "id": "client_src_pages_homepage_jsx",
-      "community": 2,
+      "community": 0,
       "norm_label": "homepage.jsx"
     },
     {
       "label": "HomePage()",
       "file_type": "code",
       "source_file": "client/src/pages/HomePage.jsx",
-      "source_location": "L4",
+      "source_location": "L10",
       "id": "pages_homepage_homepage",
-      "community": 2,
+      "community": 0,
       "norm_label": "homepage()"
     },
     {
-      "label": "FeatureCard()",
+      "label": "EmergencyStatusBar()",
       "file_type": "code",
       "source_file": "client/src/pages/HomePage.jsx",
-      "source_location": "L231",
-      "id": "pages_homepage_featurecard",
-      "community": 2,
-      "norm_label": "featurecard()"
+      "source_location": "L346",
+      "id": "pages_homepage_emergencystatusbar",
+      "community": 0,
+      "norm_label": "emergencystatusbar()"
     },
     {
-      "label": "PredictiveItem()",
+      "label": "StatusOption()",
       "file_type": "code",
       "source_file": "client/src/pages/HomePage.jsx",
-      "source_location": "L243",
-      "id": "pages_homepage_predictiveitem",
-      "community": 2,
-      "norm_label": "predictiveitem()"
+      "source_location": "L379",
+      "id": "pages_homepage_statusoption",
+      "community": 0,
+      "norm_label": "statusoption()"
     },
     {
       "label": "LoginPage.jsx",
@@ -171,17 +549,35 @@
       "source_file": "client/src/pages/LoginPage.jsx",
       "source_location": "L1",
       "id": "client_src_pages_loginpage_jsx",
-      "community": 1,
+      "community": 0,
       "norm_label": "loginpage.jsx"
     },
     {
       "label": "LoginPage()",
       "file_type": "code",
       "source_file": "client/src/pages/LoginPage.jsx",
-      "source_location": "L5",
+      "source_location": "L14",
       "id": "pages_loginpage_loginpage",
-      "community": 1,
+      "community": 0,
       "norm_label": "loginpage()"
+    },
+    {
+      "label": "ReportIssue.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/ReportIssue.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_reportissue_jsx",
+      "community": 17,
+      "norm_label": "reportissue.jsx"
+    },
+    {
+      "label": "ReportIssue()",
+      "file_type": "code",
+      "source_file": "client/src/pages/ReportIssue.jsx",
+      "source_location": "L8",
+      "id": "pages_reportissue_reportissue",
+      "community": 17,
+      "norm_label": "reportissue()"
     },
     {
       "label": "SignupPage.jsx",
@@ -189,16 +585,16 @@
       "source_file": "client/src/pages/SignupPage.jsx",
       "source_location": "L1",
       "id": "client_src_pages_signuppage_jsx",
-      "community": 1,
+      "community": 0,
       "norm_label": "signuppage.jsx"
     },
     {
       "label": "SignupPage()",
       "file_type": "code",
       "source_file": "client/src/pages/SignupPage.jsx",
-      "source_location": "L5",
+      "source_location": "L16",
       "id": "pages_signuppage_signuppage",
-      "community": 1,
+      "community": 0,
       "norm_label": "signuppage()"
     },
     {
@@ -207,7 +603,7 @@
       "source_file": "client/src/pages/UserDashboard.jsx",
       "source_location": "L1",
       "id": "client_src_pages_userdashboard_jsx",
-      "community": 4,
+      "community": 18,
       "norm_label": "userdashboard.jsx"
     },
     {
@@ -216,8 +612,242 @@
       "source_file": "client/src/pages/UserDashboard.jsx",
       "source_location": "L10",
       "id": "pages_userdashboard_userdashboard",
-      "community": 4,
+      "community": 18,
       "norm_label": "userdashboard()"
+    },
+    {
+      "label": "AdminDashboard.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/admin/AdminDashboard.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_admin_admindashboard_jsx",
+      "community": 11,
+      "norm_label": "admindashboard.jsx"
+    },
+    {
+      "label": "AdminDashboard()",
+      "file_type": "code",
+      "source_file": "client/src/pages/admin/AdminDashboard.jsx",
+      "source_location": "L28",
+      "id": "admin_admindashboard_admindashboard",
+      "community": 11,
+      "norm_label": "admindashboard()"
+    },
+    {
+      "label": "CitizenDashboard.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/citizen/CitizenDashboard.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_citizen_citizendashboard_jsx",
+      "community": 1,
+      "norm_label": "citizendashboard.jsx"
+    },
+    {
+      "label": "CitizenDashboard()",
+      "file_type": "code",
+      "source_file": "client/src/pages/citizen/CitizenDashboard.jsx",
+      "source_location": "L29",
+      "id": "citizen_citizendashboard_citizendashboard",
+      "community": 1,
+      "norm_label": "citizendashboard()"
+    },
+    {
+      "label": "CitizenHeatmap.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/citizen/CitizenHeatmap.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_citizen_citizenheatmap_jsx",
+      "community": 1,
+      "norm_label": "citizenheatmap.jsx"
+    },
+    {
+      "label": "CitizenHeatmap()",
+      "file_type": "code",
+      "source_file": "client/src/pages/citizen/CitizenHeatmap.jsx",
+      "source_location": "L39",
+      "id": "citizen_citizenheatmap_citizenheatmap",
+      "community": 1,
+      "norm_label": "citizenheatmap()"
+    },
+    {
+      "label": "CitizenSOS.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/citizen/CitizenSOS.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_citizen_citizensos_jsx",
+      "community": 14,
+      "norm_label": "citizensos.jsx"
+    },
+    {
+      "label": "CitizenSOS()",
+      "file_type": "code",
+      "source_file": "client/src/pages/citizen/CitizenSOS.jsx",
+      "source_location": "L11",
+      "id": "citizen_citizensos_citizensos",
+      "community": 14,
+      "norm_label": "citizensos()"
+    },
+    {
+      "label": "ComplaintTracking.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/citizen/ComplaintTracking.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_citizen_complainttracking_jsx",
+      "community": 15,
+      "norm_label": "complainttracking.jsx"
+    },
+    {
+      "label": "ComplaintTracking()",
+      "file_type": "code",
+      "source_file": "client/src/pages/citizen/ComplaintTracking.jsx",
+      "source_location": "L50",
+      "id": "citizen_complainttracking_complainttracking",
+      "community": 15,
+      "norm_label": "complainttracking()"
+    },
+    {
+      "label": "ReportIncident.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/citizen/ReportIncident.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_citizen_reportincident_jsx",
+      "community": 13,
+      "norm_label": "reportincident.jsx"
+    },
+    {
+      "label": "ReportIncident()",
+      "file_type": "code",
+      "source_file": "client/src/pages/citizen/ReportIncident.jsx",
+      "source_location": "L9",
+      "id": "citizen_reportincident_reportincident",
+      "community": 13,
+      "norm_label": "reportincident()"
+    },
+    {
+      "label": "SafetyCompanion.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/citizen/SafetyCompanion.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_citizen_safetycompanion_jsx",
+      "community": 2,
+      "norm_label": "safetycompanion.jsx"
+    },
+    {
+      "label": "SafetyCompanion()",
+      "file_type": "code",
+      "source_file": "client/src/pages/citizen/SafetyCompanion.jsx",
+      "source_location": "L12",
+      "id": "citizen_safetycompanion_safetycompanion",
+      "community": 2,
+      "norm_label": "safetycompanion()"
+    },
+    {
+      "label": "FireDashboard.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/fire/FireDashboard.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_fire_firedashboard_jsx",
+      "community": 1,
+      "norm_label": "firedashboard.jsx"
+    },
+    {
+      "label": "FireDashboard()",
+      "file_type": "code",
+      "source_file": "client/src/pages/fire/FireDashboard.jsx",
+      "source_location": "L25",
+      "id": "fire_firedashboard_firedashboard",
+      "community": 1,
+      "norm_label": "firedashboard()"
+    },
+    {
+      "label": "HospitalDashboard.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/hospital/HospitalDashboard.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_hospital_hospitaldashboard_jsx",
+      "community": 1,
+      "norm_label": "hospitaldashboard.jsx"
+    },
+    {
+      "label": "HospitalDashboard()",
+      "file_type": "code",
+      "source_file": "client/src/pages/hospital/HospitalDashboard.jsx",
+      "source_location": "L15",
+      "id": "hospital_hospitaldashboard_hospitaldashboard",
+      "community": 1,
+      "norm_label": "hospitaldashboard()"
+    },
+    {
+      "label": "PoliceDashboard.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/police/PoliceDashboard.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_police_policedashboard_jsx",
+      "community": 1,
+      "norm_label": "policedashboard.jsx"
+    },
+    {
+      "label": "PoliceDashboard()",
+      "file_type": "code",
+      "source_file": "client/src/pages/police/PoliceDashboard.jsx",
+      "source_location": "L26",
+      "id": "police_policedashboard_policedashboard",
+      "community": 1,
+      "norm_label": "policedashboard()"
+    },
+    {
+      "label": "NearbyEmergencies.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/volunteer/NearbyEmergencies.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_volunteer_nearbyemergencies_jsx",
+      "community": 1,
+      "norm_label": "nearbyemergencies.jsx"
+    },
+    {
+      "label": "NearbyEmergencies()",
+      "file_type": "code",
+      "source_file": "client/src/pages/volunteer/NearbyEmergencies.jsx",
+      "source_location": "L26",
+      "id": "volunteer_nearbyemergencies_nearbyemergencies",
+      "community": 1,
+      "norm_label": "nearbyemergencies()"
+    },
+    {
+      "label": "VolunteerDashboard.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/volunteer/VolunteerDashboard.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_volunteer_volunteerdashboard_jsx",
+      "community": 0,
+      "norm_label": "volunteerdashboard.jsx"
+    },
+    {
+      "label": "VolunteerDashboard()",
+      "file_type": "code",
+      "source_file": "client/src/pages/volunteer/VolunteerDashboard.jsx",
+      "source_location": "L14",
+      "id": "volunteer_volunteerdashboard_volunteerdashboard",
+      "community": 0,
+      "norm_label": "volunteerdashboard()"
+    },
+    {
+      "label": "cn.js",
+      "file_type": "code",
+      "source_file": "client/src/utils/cn.js",
+      "source_location": "L1",
+      "id": "client_src_utils_cn_js",
+      "community": 2,
+      "norm_label": "cn.js"
+    },
+    {
+      "label": "cn()",
+      "file_type": "code",
+      "source_file": "client/src/utils/cn.js",
+      "source_location": "L4",
+      "id": "utils_cn_cn",
+      "community": 2,
+      "norm_label": "cn()"
     },
     {
       "label": "index.js",
@@ -225,8 +855,107 @@
       "source_file": "server/index.js",
       "source_location": "L1",
       "id": "server_index_js",
-      "community": 11,
+      "community": 19,
       "norm_label": "index.js"
+    },
+    {
+      "label": "generateMockPulse()",
+      "file_type": "code",
+      "source_file": "server/index.js",
+      "source_location": "L57",
+      "id": "server_index_generatemockpulse",
+      "community": 19,
+      "norm_label": "generatemockpulse()"
+    },
+    {
+      "label": "test_scrape.js",
+      "file_type": "code",
+      "source_file": "server/test_scrape.js",
+      "source_location": "L1",
+      "id": "server_test_scrape_js",
+      "community": 20,
+      "norm_label": "test_scrape.js"
+    },
+    {
+      "label": "testScrape()",
+      "file_type": "code",
+      "source_file": "server/test_scrape.js",
+      "source_location": "L6",
+      "id": "server_test_scrape_testscrape",
+      "community": 20,
+      "norm_label": "testscrape()"
+    },
+    {
+      "label": "dataFetcher.js",
+      "file_type": "code",
+      "source_file": "server/services/dataFetcher.js",
+      "source_location": "L1",
+      "id": "server_services_datafetcher_js",
+      "community": 5,
+      "norm_label": "datafetcher.js"
+    },
+    {
+      "label": "DataFetcher",
+      "file_type": "code",
+      "source_file": "server/services/dataFetcher.js",
+      "source_location": "L9",
+      "id": "services_datafetcher_datafetcher",
+      "community": 5,
+      "norm_label": "datafetcher"
+    },
+    {
+      "label": ".constructor()",
+      "file_type": "code",
+      "source_file": "server/services/dataFetcher.js",
+      "source_location": "L10",
+      "id": "services_datafetcher_datafetcher_constructor",
+      "community": 5,
+      "norm_label": ".constructor()"
+    },
+    {
+      "label": ".fetchCivicData()",
+      "file_type": "code",
+      "source_file": "server/services/dataFetcher.js",
+      "source_location": "L19",
+      "id": "services_datafetcher_datafetcher_fetchcivicdata",
+      "community": 5,
+      "norm_label": ".fetchcivicdata()"
+    },
+    {
+      "label": ".fetchCrimeData()",
+      "file_type": "code",
+      "source_file": "server/services/dataFetcher.js",
+      "source_location": "L37",
+      "id": "services_datafetcher_datafetcher_fetchcrimedata",
+      "community": 5,
+      "norm_label": ".fetchcrimedata()"
+    },
+    {
+      "label": "Navbar()",
+      "file_type": "code",
+      "source_file": "client/src/App.jsx",
+      "source_location": "L11",
+      "community": 0,
+      "norm_label": "navbar()",
+      "id": "src_app_navbar"
+    },
+    {
+      "label": "FeatureCard()",
+      "file_type": "code",
+      "source_file": "client/src/pages/HomePage.jsx",
+      "source_location": "L231",
+      "community": 0,
+      "norm_label": "featurecard()",
+      "id": "pages_homepage_featurecard"
+    },
+    {
+      "label": "PredictiveItem()",
+      "file_type": "code",
+      "source_file": "client/src/pages/HomePage.jsx",
+      "source_location": "L243",
+      "community": 0,
+      "norm_label": "predictiveitem()",
+      "id": "pages_homepage_predictiveitem"
     }
   ],
   "links": [
@@ -237,9 +966,9 @@
       "source_file": "client/src/App.jsx",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "client_src_app_jsx",
-      "target": "firebase_authcontext_authprovider",
-      "confidence_score": 1.0
+      "target": "firebase_authcontext_authprovider"
     },
     {
       "relation": "imports",
@@ -248,19 +977,30 @@
       "source_file": "client/src/App.jsx",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "client_src_app_jsx",
-      "target": "firebase_authcontext_useauth",
-      "confidence_score": 1.0
+      "target": "firebase_authcontext_useauth"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/App.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_app_jsx",
+      "target": "context_socketcontext_socketprovider"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L11",
+      "source_location": "L45",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "client_src_app_jsx",
-      "target": "src_app_navbar",
-      "confidence_score": 1.0
+      "target": "src_app_protectedroute"
     },
     {
       "relation": "contains",
@@ -273,15 +1013,525 @@
       "target": "src_app_app"
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/App.jsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_app_jsx",
+      "target": "src_app_navbar"
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "client/src/App.jsx",
-      "source_location": "L12",
+      "source_location": "L46",
       "weight": 1.0,
-      "source": "src_app_navbar",
+      "source": "src_app_protectedroute",
       "target": "firebase_authcontext_useauth"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/main.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_main_jsx",
+      "target": "contexts_locationcontext_locationprovider"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/Footer.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_footer_jsx",
+      "target": "components_footer_footer"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/Footer.jsx",
+      "source_location": "L88",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_footer_jsx",
+      "target": "components_footer_footerlink"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/Footer.jsx",
+      "source_location": "L96",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_footer_jsx",
+      "target": "components_footer_socialicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/Footer.jsx",
+      "source_location": "L102",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_footer_jsx",
+      "target": "components_footer_contactitem"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/PublicNavbar.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_publicnavbar_jsx",
+      "target": "firebase_authcontext_useauth"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/PublicNavbar.jsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_publicnavbar_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/PublicNavbar.jsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_publicnavbar_jsx",
+      "target": "components_publicnavbar_publicnavbar"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/components/PublicNavbar.jsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "components_publicnavbar_publicnavbar",
+      "target": "firebase_authcontext_useauth"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/components/PublicNavbar.jsx",
+      "source_location": "L113",
+      "weight": 1.0,
+      "source": "components_publicnavbar_publicnavbar",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/Sidebar.jsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_sidebar_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/Sidebar.jsx",
+      "source_location": "L53",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_sidebar_jsx",
+      "target": "components_sidebar_sidebar"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/components/Sidebar.jsx",
+      "source_location": "L62",
+      "weight": 1.0,
+      "source": "components_sidebar_sidebar",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/Topbar.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_topbar_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/Topbar.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_topbar_jsx",
+      "target": "context_socketcontext_usesocket"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/Topbar.jsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_topbar_jsx",
+      "target": "components_topbar_topbar"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/components/Topbar.jsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "components_topbar_topbar",
+      "target": "context_socketcontext_usesocket"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/components/Topbar.jsx",
+      "source_location": "L117",
+      "weight": 1.0,
+      "source": "components_topbar_topbar",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/TopContactDrawer.jsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_topcontactdrawer_jsx",
+      "target": "components_topcontactdrawer_topcontactdrawer"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/map/SmartMap.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_map_smartmap_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/map/SmartMap.jsx",
+      "source_location": "L20",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_map_smartmap_jsx",
+      "target": "map_smartmap_createpulsingicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/map/SmartMap.jsx",
+      "source_location": "L27",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_map_smartmap_jsx",
+      "target": "map_smartmap_smartmap"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/ui/AlertCard.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_ui_alertcard_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/ui/AlertCard.jsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_ui_alertcard_jsx",
+      "target": "ui_alertcard_alertcard"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/components/ui/AlertCard.jsx",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "ui_alertcard_alertcard",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/ui/ChartCard.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_ui_chartcard_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/ui/ChartCard.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_ui_chartcard_jsx",
+      "target": "ui_chartcard_chartcard"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/components/ui/ChartCard.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "ui_chartcard_chartcard",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/ui/StatCard.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_ui_statcard_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/components/ui/StatCard.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_components_ui_statcard_jsx",
+      "target": "ui_statcard_statcard"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/components/ui/StatCard.jsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "ui_statcard_statcard",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/context/SocketContext.jsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_context_socketcontext_jsx",
+      "target": "context_socketcontext_usesocket"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/context/SocketContext.jsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_context_socketcontext_jsx",
+      "target": "context_socketcontext_socketprovider"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/citizen/CitizenDashboard.jsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_citizen_citizendashboard_jsx",
+      "target": "context_socketcontext_usesocket"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/citizen/CitizenHeatmap.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_citizen_citizenheatmap_jsx",
+      "target": "context_socketcontext_usesocket"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/fire/FireDashboard.jsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_fire_firedashboard_jsx",
+      "target": "context_socketcontext_usesocket"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/hospital/HospitalDashboard.jsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_hospital_hospitaldashboard_jsx",
+      "target": "context_socketcontext_usesocket"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/police/PoliceDashboard.jsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_police_policedashboard_jsx",
+      "target": "context_socketcontext_usesocket"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/volunteer/NearbyEmergencies.jsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_volunteer_nearbyemergencies_jsx",
+      "target": "context_socketcontext_usesocket"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/pages/citizen/CitizenDashboard.jsx",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "citizen_citizendashboard_citizendashboard",
+      "target": "context_socketcontext_usesocket"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/pages/citizen/CitizenHeatmap.jsx",
+      "source_location": "L40",
+      "weight": 1.0,
+      "source": "citizen_citizenheatmap_citizenheatmap",
+      "target": "context_socketcontext_usesocket"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/pages/fire/FireDashboard.jsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "fire_firedashboard_firedashboard",
+      "target": "context_socketcontext_usesocket"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/pages/hospital/HospitalDashboard.jsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "hospital_hospitaldashboard_hospitaldashboard",
+      "target": "context_socketcontext_usesocket"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/pages/police/PoliceDashboard.jsx",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "police_policedashboard_policedashboard",
+      "target": "context_socketcontext_usesocket"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/pages/volunteer/NearbyEmergencies.jsx",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "volunteer_nearbyemergencies_nearbyemergencies",
+      "target": "context_socketcontext_usesocket"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/contexts/LocationContext.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_contexts_locationcontext_jsx",
+      "target": "contexts_locationcontext_uselocationcontext"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/contexts/LocationContext.jsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_contexts_locationcontext_jsx",
+      "target": "contexts_locationcontext_locationprovider"
     },
     {
       "relation": "contains",
@@ -289,9 +1539,9 @@
       "source_file": "client/src/firebase/AuthContext.jsx",
       "source_location": "L13",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "client_src_firebase_authcontext_jsx",
-      "target": "firebase_authcontext_useauth",
-      "confidence_score": 1.0
+      "target": "firebase_authcontext_useauth"
     },
     {
       "relation": "contains",
@@ -299,9 +1549,20 @@
       "source_file": "client/src/firebase/AuthContext.jsx",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "client_src_firebase_authcontext_jsx",
-      "target": "firebase_authcontext_authprovider",
-      "confidence_score": 1.0
+      "target": "firebase_authcontext_authprovider"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/layouts/DashboardLayout.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_layouts_dashboardlayout_jsx",
+      "target": "firebase_authcontext_useauth"
     },
     {
       "relation": "imports",
@@ -310,9 +1571,9 @@
       "source_file": "client/src/pages/HomePage.jsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "client_src_pages_homepage_jsx",
-      "target": "firebase_authcontext_useauth",
-      "confidence_score": 1.0
+      "target": "firebase_authcontext_useauth"
     },
     {
       "relation": "imports",
@@ -321,9 +1582,9 @@
       "source_file": "client/src/pages/LoginPage.jsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "client_src_pages_loginpage_jsx",
-      "target": "firebase_authcontext_useauth",
-      "confidence_score": 1.0
+      "target": "firebase_authcontext_useauth"
     },
     {
       "relation": "imports",
@@ -332,9 +1593,42 @@
       "source_file": "client/src/pages/SignupPage.jsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "client_src_pages_signuppage_jsx",
-      "target": "firebase_authcontext_useauth",
-      "confidence_score": 1.0
+      "target": "firebase_authcontext_useauth"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/citizen/CitizenDashboard.jsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_citizen_citizendashboard_jsx",
+      "target": "firebase_authcontext_useauth"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/volunteer/VolunteerDashboard.jsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_volunteer_volunteerdashboard_jsx",
+      "target": "firebase_authcontext_useauth"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/layouts/DashboardLayout.jsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "layouts_dashboardlayout_dashboardlayout",
+      "target": "firebase_authcontext_useauth"
     },
     {
       "relation": "calls",
@@ -370,14 +1664,202 @@
       "target": "firebase_authcontext_useauth"
     },
     {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/pages/citizen/CitizenDashboard.jsx",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "citizen_citizendashboard_citizendashboard",
+      "target": "firebase_authcontext_useauth"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/pages/volunteer/VolunteerDashboard.jsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "volunteer_volunteerdashboard_volunteerdashboard",
+      "target": "firebase_authcontext_useauth"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/App.jsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "src_app_navbar",
+      "target": "firebase_authcontext_useauth"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/layouts/DashboardLayout.jsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_layouts_dashboardlayout_jsx",
+      "target": "layouts_dashboardlayout_dashboardlayout"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/AboutUs.jsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_aboutus_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/AboutUs.jsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_aboutus_jsx",
+      "target": "pages_aboutus_aboutus"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/AboutUs.jsx",
+      "source_location": "L273",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_aboutus_jsx",
+      "target": "pages_aboutus_capabilitycard"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/pages/AboutUs.jsx",
+      "source_location": "L279",
+      "weight": 1.0,
+      "source": "pages_aboutus_capabilitycard",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/Contact.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_contact_jsx",
+      "target": "pages_contact_contact"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/Contact.jsx",
+      "source_location": "L133",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_contact_jsx",
+      "target": "pages_contact_contactinfocard"
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/Dashboard.jsx",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "client_src_pages_dashboard_jsx",
-      "target": "pages_dashboard_dashboard",
-      "confidence_score": 1.0
+      "target": "pages_dashboard_dashboard"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/Features.jsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_features_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/Features.jsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_features_jsx",
+      "target": "pages_features_features"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/Features.jsx",
+      "source_location": "L306",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_features_jsx",
+      "target": "pages_features_featurecard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/Features.jsx",
+      "source_location": "L336",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_features_jsx",
+      "target": "pages_features_logicitem"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/Features.jsx",
+      "source_location": "L346",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_features_jsx",
+      "target": "pages_features_deepdiveitem"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/Features.jsx",
+      "source_location": "L355",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_features_jsx",
+      "target": "pages_features_responsecard"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/pages/Features.jsx",
+      "source_location": "L322",
+      "weight": 1.0,
+      "source": "pages_features_featurecard",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/pages/Features.jsx",
+      "source_location": "L364",
+      "weight": 1.0,
+      "source": "pages_features_responsecard",
+      "target": "utils_cn_cn"
     },
     {
       "relation": "contains",
@@ -385,9 +1867,29 @@
       "source_file": "client/src/pages/HomePage.jsx",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "client_src_pages_homepage_jsx",
-      "target": "pages_homepage_homepage",
-      "confidence_score": 1.0
+      "target": "pages_homepage_homepage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/HomePage.jsx",
+      "source_location": "L346",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_homepage_jsx",
+      "target": "pages_homepage_emergencystatusbar"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/HomePage.jsx",
+      "source_location": "L379",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_homepage_jsx",
+      "target": "pages_homepage_statusoption"
     },
     {
       "relation": "contains",
@@ -395,9 +1897,9 @@
       "source_file": "client/src/pages/HomePage.jsx",
       "source_location": "L231",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "client_src_pages_homepage_jsx",
-      "target": "pages_homepage_featurecard",
-      "confidence_score": 1.0
+      "target": "pages_homepage_featurecard"
     },
     {
       "relation": "contains",
@@ -405,9 +1907,20 @@
       "source_file": "client/src/pages/HomePage.jsx",
       "source_location": "L243",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "client_src_pages_homepage_jsx",
-      "target": "pages_homepage_predictiveitem",
-      "confidence_score": 1.0
+      "target": "pages_homepage_predictiveitem"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/LoginPage.jsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_loginpage_jsx",
+      "target": "utils_cn_cn"
     },
     {
       "relation": "contains",
@@ -415,9 +1928,30 @@
       "source_file": "client/src/pages/LoginPage.jsx",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "client_src_pages_loginpage_jsx",
-      "target": "pages_loginpage_loginpage",
-      "confidence_score": 1.0
+      "target": "pages_loginpage_loginpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/ReportIssue.jsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_reportissue_jsx",
+      "target": "pages_reportissue_reportissue"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/SignupPage.jsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_signuppage_jsx",
+      "target": "utils_cn_cn"
     },
     {
       "relation": "contains",
@@ -425,9 +1959,9 @@
       "source_file": "client/src/pages/SignupPage.jsx",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "client_src_pages_signuppage_jsx",
-      "target": "pages_signuppage_signuppage",
-      "confidence_score": 1.0
+      "target": "pages_signuppage_signuppage"
     },
     {
       "relation": "contains",
@@ -435,11 +1969,344 @@
       "source_file": "client/src/pages/UserDashboard.jsx",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "client_src_pages_userdashboard_jsx",
-      "target": "pages_userdashboard_userdashboard",
-      "confidence_score": 1.0
+      "target": "pages_userdashboard_userdashboard"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/admin/AdminDashboard.jsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_admin_admindashboard_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/admin/AdminDashboard.jsx",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_admin_admindashboard_jsx",
+      "target": "admin_admindashboard_admindashboard"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/citizen/CitizenDashboard.jsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_citizen_citizendashboard_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/citizen/CitizenDashboard.jsx",
+      "source_location": "L29",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_citizen_citizendashboard_jsx",
+      "target": "citizen_citizendashboard_citizendashboard"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/citizen/CitizenHeatmap.jsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_citizen_citizenheatmap_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/citizen/CitizenHeatmap.jsx",
+      "source_location": "L39",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_citizen_citizenheatmap_jsx",
+      "target": "citizen_citizenheatmap_citizenheatmap"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/citizen/CitizenSOS.jsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_citizen_citizensos_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/citizen/CitizenSOS.jsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_citizen_citizensos_jsx",
+      "target": "citizen_citizensos_citizensos"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/citizen/ComplaintTracking.jsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_citizen_complainttracking_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/citizen/ComplaintTracking.jsx",
+      "source_location": "L50",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_citizen_complainttracking_jsx",
+      "target": "citizen_complainttracking_complainttracking"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/citizen/ReportIncident.jsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_citizen_reportincident_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/citizen/ReportIncident.jsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_citizen_reportincident_jsx",
+      "target": "citizen_reportincident_reportincident"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/citizen/SafetyCompanion.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_citizen_safetycompanion_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/citizen/SafetyCompanion.jsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_citizen_safetycompanion_jsx",
+      "target": "citizen_safetycompanion_safetycompanion"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/pages/citizen/SafetyCompanion.jsx",
+      "source_location": "L49",
+      "weight": 1.0,
+      "source": "citizen_safetycompanion_safetycompanion",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/fire/FireDashboard.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_fire_firedashboard_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/fire/FireDashboard.jsx",
+      "source_location": "L25",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_fire_firedashboard_jsx",
+      "target": "fire_firedashboard_firedashboard"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/hospital/HospitalDashboard.jsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_hospital_hospitaldashboard_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/hospital/HospitalDashboard.jsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_hospital_hospitaldashboard_jsx",
+      "target": "hospital_hospitaldashboard_hospitaldashboard"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/police/PoliceDashboard.jsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_police_policedashboard_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/police/PoliceDashboard.jsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_police_policedashboard_jsx",
+      "target": "police_policedashboard_policedashboard"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/volunteer/NearbyEmergencies.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_volunteer_nearbyemergencies_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/volunteer/NearbyEmergencies.jsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_volunteer_nearbyemergencies_jsx",
+      "target": "volunteer_nearbyemergencies_nearbyemergencies"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/volunteer/VolunteerDashboard.jsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_volunteer_volunteerdashboard_jsx",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/volunteer/VolunteerDashboard.jsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_pages_volunteer_volunteerdashboard_jsx",
+      "target": "volunteer_volunteerdashboard_volunteerdashboard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/utils/cn.js",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "client_src_utils_cn_js",
+      "target": "utils_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "server/index.js",
+      "source_location": "L57",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "server_index_js",
+      "target": "server_index_generatemockpulse"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "server/test_scrape.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "server_test_scrape_js",
+      "target": "server_test_scrape_testscrape"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "server/services/dataFetcher.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "server_services_datafetcher_js",
+      "target": "services_datafetcher_datafetcher"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "server/services/dataFetcher.js",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "services_datafetcher_datafetcher",
+      "target": "services_datafetcher_datafetcher_constructor"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "server/services/dataFetcher.js",
+      "source_location": "L19",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "services_datafetcher_datafetcher",
+      "target": "services_datafetcher_datafetcher_fetchcivicdata"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "server/services/dataFetcher.js",
+      "source_location": "L37",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "services_datafetcher_datafetcher",
+      "target": "services_datafetcher_datafetcher_fetchcrimedata"
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b40c0b08096048887d5e9bb280232268783174ac"
+  "built_at_commit": "60dd2c40cbcbcacde341f36306ee572d7fdd6561"
 }

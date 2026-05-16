@@ -34,6 +34,7 @@ import PoliceDashboard from './pages/police/PoliceDashboard';
 import PoliceHeatmap from './pages/police/PoliceHeatmap';
 import IncidentManager from './pages/police/IncidentManager';
 import PatrolOptimizer from './pages/police/PatrolOptimizer';
+import PoliceProfileSettings from './pages/police/PoliceProfileSettings';
 
 // Fire Pages
 import FireDashboard from './pages/fire/FireDashboard';
@@ -43,6 +44,7 @@ import FireDispatch from './pages/fire/FireDispatch';
 import HospitalDashboard from './pages/hospital/HospitalDashboard';
 import HospitalDispatch from './pages/hospital/HospitalDispatch';
 import PatientAlerts from './pages/hospital/PatientAlerts';
+import HospitalProfileSettings from './pages/hospital/HospitalProfileSettings';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -113,7 +115,7 @@ function App() {
             <Route path="incidents" element={<IncidentManager />} />
             <Route path="patrol" element={<PatrolOptimizer />} />
             <Route path="map" element={<PoliceHeatmap />} />
-            <Route path="profile" element={<ProfileSettings />} />
+            <Route path="profile" element={<PoliceProfileSettings />} />
           </Route>
 
           {/* Hospital Dashboard Routes */}
@@ -121,6 +123,7 @@ function App() {
             <Route index element={<HospitalDashboard />} />
             <Route path="dispatch" element={<HospitalDispatch />} />
             <Route path="alerts" element={<PatientAlerts />} />
+            <Route path="profile" element={<HospitalProfileSettings />} />
           </Route>
 
           {/* Fire Dashboard Routes */}
@@ -134,7 +137,6 @@ function App() {
           <Route path="/admin" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
             <Route index element={<AdminDashboard />} />
             <Route path="analytics" element={<CityAnalytics />} />
-            <Route path="reports" element={<AdminReports />} />
             <Route path="users" element={<UserManagement />} />
             <Route path="logs" element={<SystemLogs />} />
             <Route path="ai" element={<AIForecasts />} />

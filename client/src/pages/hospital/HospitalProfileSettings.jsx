@@ -2,14 +2,14 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   User, Mail, Phone, MapPin, Camera,
-  Shield, Bell, Lock, Globe, Save,
+  Shield, Bell, Lock, Save,
   ChevronRight, AlertCircle, CheckCircle,
-  X
+  FileText, Activity
 } from 'lucide-react';
 import { useAuth } from '../../firebase/AuthContext';
 import { cn } from '../../utils/cn';
 
-const ProfileSettings = () => {
+const HospitalProfileSettings = () => {
   const { currentUser } = useAuth();
   const fileInputRef = useRef(null);
 
@@ -20,9 +20,11 @@ const ProfileSettings = () => {
 
   // Form State
   const [formData, setFormData] = useState({
-    displayName: currentUser?.displayName || 'Citizen Pune',
-    phone: '+91 98765 43210',
-    location: 'Kothrud, Sector 4'
+    displayName: currentUser?.displayName || 'Dr. Priya Deshmukh',
+    phone: '+91 97654 32109',
+    hospitalName: 'Ruby Hall Clinic, Pune',
+    dispatchCode: 'ER-RUBY-99',
+    address: '40, Sassoon Road, near Pune Station, Sangamvadi, Pune'
   });
 
   const handleInputChange = (e) => {
@@ -61,9 +63,9 @@ const ProfileSettings = () => {
   };
 
   const tabs = [
-    { id: 'personal', name: 'Personal Info', icon: User },
+    { id: 'personal', name: 'Clinical Profile', icon: Activity },
     { id: 'security', name: 'Security', icon: Lock },
-    { id: 'notifications', name: 'Notifications', icon: Bell },
+    { id: 'notifications', name: 'ER Dispatch Alerts', icon: Bell },
   ];
 
   return (
@@ -94,8 +96,8 @@ const ProfileSettings = () => {
 
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-outfit font-black text-slate-900 dark:text-white">Profile Settings</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-medium">Manage your personal information and security preferences.</p>
+        <h1 className="text-3xl font-outfit font-black text-slate-900 dark:text-white">Hospital Profile Settings</h1>
+        <p className="text-slate-500 dark:text-slate-400 font-medium">Manage clinical dispatcher identity, facility coordinates, emergency dispatch codes, and real-time bed metrics.</p>
       </div>
 
       <div className="grid lg:grid-cols-4 gap-8">
@@ -148,8 +150,13 @@ const ProfileSettings = () => {
                     </button>
                   </div>
                   <div className="text-center sm:text-left">
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">Profile Photo</h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mb-3">Upload a new photo to change your avatar.</p>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center justify-center sm:justify-start gap-2">
+                      Clinical Dispatcher
+                      <span className="text-[10px] font-black uppercase bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md flex items-center gap-1 border border-emerald-100 dark:border-emerald-900">
+                        <Activity size={10} className="fill-emerald-600 dark:fill-emerald-400" /> Active Facility
+                      </span>
+                    </h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mb-3">Upload your official medical avatar or corporate credentials badge.</p>
                     <div className="flex gap-3 justify-center sm:justify-start">
                       <button
                         onClick={triggerFileInput}
@@ -170,7 +177,7 @@ const ProfileSettings = () => {
                 {/* Form Fields */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Display Name</label>
+                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">ER Coordinator Name</label>
                     <div className="relative group">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
                       <input
@@ -179,24 +186,24 @@ const ProfileSettings = () => {
                         value={formData.displayName}
                         onChange={handleInputChange}
                         className="w-full pl-12 pr-5 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent focus:border-indigo-600 outline-none transition-all dark:text-white font-medium"
-                        placeholder="Your Name"
+                        placeholder="Coordinator Name"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Email Address</label>
+                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Official Facility Email</label>
                     <div className="relative group">
                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                       <input
                         type="email"
                         disabled
-                        defaultValue={currentUser?.email || 'pune.citizen@safelink.in'}
+                        defaultValue={currentUser?.email || 'er.hq@safelink.in'}
                         className="w-full pl-12 pr-5 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-not-allowed border border-transparent outline-none font-medium"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Phone Number</label>
+                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Direct ER Helpline / Phone</label>
                     <div className="relative group">
                       <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
                       <input
@@ -210,16 +217,44 @@ const ProfileSettings = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Location / Ward</label>
+                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Emergency Dispatch Code</label>
+                    <div className="relative group">
+                      <FileText className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
+                      <input
+                        type="text"
+                        name="dispatchCode"
+                        value={formData.dispatchCode}
+                        onChange={handleInputChange}
+                        className="w-full pl-12 pr-5 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent focus:border-indigo-600 outline-none transition-all dark:text-white font-medium"
+                        placeholder="e.g. ER-HOSPITAL-CODE"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Hospital / Facility Name</label>
+                    <div className="relative group">
+                      <Activity className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
+                      <input
+                        type="text"
+                        name="hospitalName"
+                        value={formData.hospitalName}
+                        onChange={handleInputChange}
+                        className="w-full pl-12 pr-5 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent focus:border-indigo-600 outline-none transition-all dark:text-white font-medium"
+                        placeholder="Hospital Name"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Physical Facility Address</label>
                     <div className="relative group">
                       <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
                       <input
                         type="text"
-                        name="location"
-                        value={formData.location}
+                        name="address"
+                        value={formData.address}
                         onChange={handleInputChange}
                         className="w-full pl-12 pr-5 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent focus:border-indigo-600 outline-none transition-all dark:text-white font-medium"
-                        placeholder="e.g. Pune Sector 4"
+                        placeholder="Facility Address"
                       />
                     </div>
                   </div>
@@ -228,7 +263,7 @@ const ProfileSettings = () => {
                 <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="flex items-center gap-2 text-[10px] sm:text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 rounded-full">
                     <Shield size={14} />
-                    Your profile is public for emergency responders
+                    GPS Dispatch tracking and ambulance telemetry keys verified
                   </div>
                   <button
                     onClick={handleSave}
@@ -257,8 +292,8 @@ const ProfileSettings = () => {
                   <div className="flex items-start gap-4 p-5 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800">
                     <AlertCircle className="text-amber-600 mt-1" size={20} />
                     <div>
-                      <h4 className="font-bold text-amber-900 dark:text-amber-200">Security Recommendation</h4>
-                      <p className="text-sm text-amber-700 dark:text-amber-400 font-medium">Enable Two-Factor Authentication to add an extra layer of security to your account.</p>
+                      <h4 className="font-bold text-amber-900 dark:text-amber-200">HIPAA & Responder Security Policy</h4>
+                      <p className="text-sm text-amber-700 dark:text-amber-400 font-medium">To protect patient confidentiality and emergency logs, all external data sync requires SafeLink Secure Key verification.</p>
                     </div>
                   </div>
 
@@ -269,8 +304,8 @@ const ProfileSettings = () => {
                           <Lock size={20} />
                         </div>
                         <div>
-                          <h4 className="font-bold text-slate-900 dark:text-white">Change Password</h4>
-                          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Update your account password regularly.</p>
+                          <h4 className="font-bold text-slate-900 dark:text-white">Change Security Passcode</h4>
+                          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Update emergency dispatcher passcode regular intervals.</p>
                         </div>
                       </div>
                       <button className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Update</button>
@@ -282,12 +317,12 @@ const ProfileSettings = () => {
                           <Shield size={20} />
                         </div>
                         <div>
-                          <h4 className="font-bold text-slate-900 dark:text-white">Two-Factor Authentication</h4>
-                          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium text-left">Secure your account with 2FA codes.</p>
+                          <h4 className="font-bold text-slate-900 dark:text-white">Two-Factor Ambulance Verification</h4>
+                          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium text-left">Secure authentication for ER telemetry streams.</p>
                         </div>
                       </div>
-                      <div className="w-12 h-6 bg-slate-200 dark:bg-slate-800 rounded-full relative cursor-pointer">
-                        <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+                      <div className="w-12 h-6 bg-indigo-600 rounded-full relative cursor-pointer">
+                        <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
                       </div>
                     </div>
                   </div>
@@ -298,13 +333,13 @@ const ProfileSettings = () => {
             {activeTab === 'notifications' && (
               <div className="p-8 md:p-10 space-y-6">
                 {[
-                  { title: 'Emergency Alerts', desc: 'Receive real-time notifications for nearby incidents.', active: true },
-                  { title: 'Community Updates', desc: 'Stay updated with local ward news and events.', active: true },
-                  { title: 'Safety Tips', desc: 'Get weekly tips to improve your urban safety knowledge.', active: false },
-                  { title: 'Marketing', desc: 'Receive newsletters and platform updates.', active: false },
+                  { title: 'Critical Accident Dispatch Alerts', desc: 'Receive high-priority alert tones for live medical and traffic accident events in nearby wards.', active: true },
+                  { title: 'ER Trauma Unit Telemetry Sync', desc: 'Allow automated patient vitals sync from onboard ambulance telemetry systems.', active: true },
+                  { title: 'Dynamic Bed Availability Updates', desc: 'Auto-broadcast available ER and ICU bed capacity metrics to city ambulance hubs.', active: true },
+                  { title: 'Volunteer Medical Team Dispatch', desc: 'Trigger volunteer expert coordinator routing protocols during major incidents.', active: false },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center justify-between p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
-                    <div className="text-left">
+                    <div className="text-left pr-4">
                       <h4 className="font-bold text-slate-900 dark:text-white">{item.title}</h4>
                       <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">{item.desc}</p>
                     </div>
@@ -328,4 +363,4 @@ const ProfileSettings = () => {
   );
 };
 
-export default ProfileSettings;
+export default HospitalProfileSettings;

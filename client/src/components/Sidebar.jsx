@@ -23,6 +23,7 @@ const roleMenus = {
     { name: 'Nearby Alerts', icon: Bell, path: '/volunteer/alerts' },
     { name: 'Active Missions', icon: Activity, path: '/volunteer/missions' },
     { name: 'My Profile', icon: User, path: '/volunteer/profile' },
+    { name: 'Citizen Dashboard', icon: User, path: '/user' },
   ],
   police: [
     { name: 'Precinct Overview', icon: Home, path: '/police' },
@@ -49,9 +50,13 @@ const roleMenus = {
   ]
 };
 
-const Sidebar = ({ role = 'citizen', isOpen, onClose }) => {
+const Sidebar = ({ role = 'citizen', isOpen, onClose, onLogout, isVolunteer }) => {
   const location = useLocation();
-  const menuItems = roleMenus[role] || roleMenus.citizen;
+  let menuItems = [...(roleMenus[role] || roleMenus.citizen)];
+
+  if (role === 'citizen' && isVolunteer) {
+    menuItems.push({ name: 'Volunteer Panel', icon: Shield, path: '/volunteer' });
+  }
 
   return (
     <aside className={cn(
@@ -104,7 +109,10 @@ const Sidebar = ({ role = 'citizen', isOpen, onClose }) => {
             <Mail size={18} className="group-hover:scale-110 transition-transform" />
             <span>Contact Support</span>
           </Link>
-          <button className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all group">
+          <button 
+            onClick={onLogout}
+            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all group"
+          >
             <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
             <span>Logout</span>
           </button>

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
 import { useAuth } from '../firebase/AuthContext';
+import { db } from '../firebase/config';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 const DashboardLayout = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -11,7 +13,28 @@ const DashboardLayout = () => {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
+  const [isVolunteer, setIsVolunteer] = useState(false);
+  
+  useEffect(() => {
+    if (!currentUser) return;
+    const checkVolunteerStatus = async () => {
+      try {
+        const q = query(collection(db, 'volunteerRequests'), where('uid', '==', currentUser.uid));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          const volData = snap.docs[0].data();
+          if (volData.status === 'approved') {
+            setIsVolunteer(true);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching volunteer status:", err);
+      }
+    };
+    checkVolunteerStatus();
+  }, [currentUser]);
   
   // Mock role determination - in real app would come from user profile/claims
   const role = currentUser?.email?.includes('admin') ? 'admin' : 
@@ -23,6 +46,15 @@ const DashboardLayout = () => {
   const user = {
     name: currentUser?.email?.split('@')[0] || 'Guest User',
     role: role.charAt(0).toUpperCase() + role.slice(1)
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error("Failed to log out", error);
+    }
   };
 
   useEffect(() => {
@@ -41,8 +73,10 @@ const DashboardLayout = () => {
     <div className="min-h-screen bg-slate-50 dark:bg-[#0f172a] transition-colors duration-300">
       <Sidebar 
         role={role} 
+        isVolunteer={isVolunteer}
         isOpen={isSidebarOpen} 
         onClose={() => setSidebarOpen(false)} 
+        onLogout={handleLogout}
       />
       
       {/* Mobile Backdrop */}
@@ -59,6 +93,7 @@ const DashboardLayout = () => {
           isDark={isDark} 
           toggleTheme={toggleTheme}
           user={user}
+          onLogout={handleLogout}
         />
         
         <main className="flex-1 p-4 lg:p-8 overflow-x-hidden">

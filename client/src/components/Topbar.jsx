@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Search, Bell, Menu, Sun, Moon, User, ChevronDown, LogOut } from 'lucide-react';
+import { Search, Bell, Menu, Sun, Moon, User, ChevronDown, LogOut, ShieldAlert, Heart } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { useSocket } from '../context/SocketContext';
 
 const Topbar = ({ onMenuClick, isDark, toggleTheme, user, onLogout }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const { notifications } = useSocket();
 
   return (
     <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800">
@@ -39,10 +42,58 @@ const Topbar = ({ onMenuClick, isDark, toggleTheme, user, onLogout }) => {
           </button>
 
           {/* Notifications */}
-          <button className="relative p-2 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors">
-            <Bell size={20} />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white dark:border-slate-900"></span>
-          </button>
+          <div className="relative">
+            <button 
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative p-2 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
+            >
+              <Bell size={20} />
+              {notifications.length > 0 && (
+                <span className="absolute top-2 right-2 w-4 h-4 bg-rose-500 text-white text-[8px] font-bold flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900">
+                  {notifications.length}
+                </span>
+              )}
+            </button>
+
+            {showNotifications && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setShowNotifications(false)}></div>
+                <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden z-20 animate-in fade-in slide-in-from-top-2">
+                  <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Real-time City Alerts</h4>
+                    <span className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-bold">Live</span>
+                  </div>
+                  <div className="max-h-[300px] overflow-y-auto scrollbar-hide">
+                    {notifications.length > 0 ? (
+                      notifications.map((n) => (
+                        <div key={n.id} className="p-4 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+                          <div className="flex gap-3">
+                            <div className={cn(
+                              "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
+                              n.type === 'CRIME' ? "bg-rose-100 text-rose-500" : "bg-amber-100 text-amber-500"
+                            )}>
+                              {n.type === 'CRIME' ? <ShieldAlert size={14} /> : <Heart size={14} />}
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight mb-1">{n.message}</p>
+                              <p className="text-[10px] text-slate-400 font-medium">{n.time}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-8 text-center text-slate-400 text-xs font-medium">
+                        No new notifications
+                      </div>
+                    )}
+                  </div>
+                  <button className="w-full py-3 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border-t border-slate-100 dark:border-slate-800 uppercase tracking-widest">
+                    View All Alerts
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
 
           <div className="h-6 w-px bg-slate-100 dark:bg-slate-800 mx-2 hidden sm:block"></div>
 

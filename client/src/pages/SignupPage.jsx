@@ -396,9 +396,10 @@ function SignupPage() {
           SOS
         </motion.button>
       </div>
-      )} {/* end !submitted */}
+      )}
     </div>
-  );
+  </div>
+);
 }
 
 export default SignupPage;

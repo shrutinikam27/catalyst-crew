@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import Dashboard from './pages/Dashboard';
 import UserDashboard from './pages/UserDashboard';
+import ReportIssue from './pages/ReportIssue';
 import './index.css';
 
 function Navbar({ toggleTheme, isDark }) {
@@ -107,6 +108,12 @@ function App() {
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/user" element={<UserDashboard />} />
             <Route path="/admin" element={<Dashboard />} />
+            <Route path="/report" element={
+              <>
+                <Navbar toggleTheme={toggleTheme} isDark={isDark} />
+                <ReportIssue />
+              </>
+            } />
             <Route path="/" element={
               <>
                 <Navbar toggleTheme={toggleTheme} isDark={isDark} />
@@ -119,5 +126,6 @@ function App() {
     </Router>
   );
 }
+
 
 export default App;

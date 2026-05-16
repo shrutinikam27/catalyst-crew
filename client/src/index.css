@@ -29,6 +29,28 @@
   
   --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
+/* SafeLink Custom Variables */
+:root {
+  --bg-dark: #0A0D14;
+  --panel-bg: #151A23;
+  --panel-border: #262D3D;
+  --text-main: #FFFFFF;
+  --text-muted: #94A3B8;
+  
+  --color-primary-sl: #3B82F6;
+  --color-primary-hover: #2563EB;
+  --color-danger: #EF4444;
+  --color-warning: #F59E0B;
+  --color-success: #10B981;
+  --color-info: #3B82F6;
+  --color-purple: #8B5CF6;
+
+  --shadow-neon: 0 0 15px rgba(59, 130, 246, 0.5);
+  --shadow-neon-danger: 0 0 20px rgba(239, 68, 68, 0.6);
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
 @layer base {
   body {
     @apply font-inter bg-bg-main text-text-main antialiased transition-colors duration-300;
@@ -74,6 +96,14 @@
   .text-gradient {
     @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
   }
+
+  /* SafeLink Legacy Utilities (used in Dashboard components) */
+  .glass-panel {
+    background-color: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  }
 }
 
 @keyframes float {
@@ -84,4 +114,10 @@
 
 .animate-float {
   animation: float 5s ease-in-out infinite;
+}
+
+/* Global Transitions */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
 }

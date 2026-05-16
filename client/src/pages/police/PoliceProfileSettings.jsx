@@ -6,6 +6,7 @@ import {
   ChevronRight, AlertCircle, CheckCircle,
   FileText, Star
 } from 'lucide-react';
+
 import { useAuth } from '../../firebase/AuthContext';
 import { cn } from '../../utils/cn';
 

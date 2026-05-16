@@ -24,6 +24,17 @@ const createPulsingIcon = (color) => L.divIcon({
   iconAnchor: [10, 10]
 });
 
+// Component to dynamically update map view when center changes
+const MapUpdater = ({ center }) => {
+  const map = useMap();
+  React.useEffect(() => {
+    if (center) {
+      map.flyTo(center, map.getZoom(), { duration: 1.5 });
+    }
+  }, [center, map]);
+  return null;
+};
+
 const SmartMap = ({ 
   center = [18.5204, 73.8567], // Pune Coordinates
   zoom = 12, 
@@ -42,6 +53,7 @@ const SmartMap = ({
         scrollWheelZoom={true} 
         className="h-full w-full"
       >
+        <MapUpdater center={center} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"

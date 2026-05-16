@@ -8,8 +8,11 @@ import heroIllustration from '../assets/hero-illustration.png';
 import safetyMap from '../assets/safety-map.png';
 import { createSosAlert } from '../firebase/sosService';
 
+import { useLocationContext } from '../contexts/LocationContext';
+
 function HomePage() {
   const { currentUser, loginAnonymously } = useAuth();
+  const { location: contextLocation } = useLocationContext();
   const navigate = useNavigate();
   const [sosClicks, setSosClicks] = useState(0);
   const [showSosOptions, setShowSosOptions] = useState(false);
@@ -38,22 +41,11 @@ function HomePage() {
     setSosSubmitting(true);
     setSosError('');
 
-    // Try to get live geolocation
-    const getLocation = () =>
-      new Promise((resolve) => {
-        if (!navigator.geolocation) {
-          resolve({ latitude: 18.5204, longitude: 73.8567 });
-          return;
-        }
-        navigator.geolocation.getCurrentPosition(
-          (pos) => resolve({ latitude: pos.coords.latitude, longitude: pos.coords.longitude }),
-          (err) => {
-            console.warn('[SOS] Geolocation error:', err.message);
-            resolve({ latitude: 18.5204, longitude: 73.8567 });
-          },
-          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-        );
-      });
+    // Use the highly-accurate background location stream from context if available,
+    // otherwise fallback to default coordinates.
+    const location = contextLocation 
+      ? { latitude: contextLocation.latitude, longitude: contextLocation.longitude }
+      : { latitude: 18.5204, longitude: 73.8567 };
 
     try {
       // Attempt anonymous sign-in so the Firestore write has an auth token.
@@ -74,7 +66,7 @@ function HomePage() {
         }
       }
 
-      const location = await getLocation();
+      // location is already defined from context earlier in this function
       const alertId = await createSosAlert({
         emergencyType: type,
         location,

@@ -81,7 +81,9 @@ const PublicNavbar = () => {
             </button>
             {currentUser ? (
               <div className="flex items-center gap-4">
-                <span className="text-sm font-bold text-slate-600 dark:text-slate-400">Hi, {currentUser.email.split('@')[0]}</span>
+                <span className="text-sm font-bold text-slate-600 dark:text-slate-400">
+                  Hi, {currentUser.isAnonymous ? 'Anonymous' : (currentUser.displayName || currentUser.email?.split('@')[0] || 'User')}
+                </span>
                 <button 
                   onClick={logout}
                   className="px-6 py-2.5 border-2 border-rose-100 dark:border-rose-900/30 text-rose-600 dark:text-rose-400 font-bold rounded-xl hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all text-sm"

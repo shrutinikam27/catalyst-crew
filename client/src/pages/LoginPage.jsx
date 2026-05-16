@@ -14,19 +14,56 @@ import { cn } from '../utils/cn';
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [confirmationResult, setConfirmationResult] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [loginMethod, setLoginMethod] = useState('email'); // email, phone
-  const { login, loginWithGoogle, logout } = useAuth();
+  const { login, loginWithGoogle, logout, setupRecaptcha, loginWithPhone } = useAuth();
   const navigate = useNavigate();
+
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    if (!phone) return setError('Please enter a phone number.');
+    setError('');
+    setLoading(true);
+    try {
+      const verifier = setupRecaptcha('recaptcha-container');
+      const result = await loginWithPhone(phone, verifier);
+      setConfirmationResult(result);
+      setShowOtpInput(true);
+      
+      if (result.isMock) {
+        alert('DEVELOPMENT MODE: Please use the test code "123456" to verify your number.');
+      } else {
+        alert('OTP sent to ' + phone);
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Failed to send OTP. Ensure the number is correct (e.g. +91...)');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      const { user } = await login(email, password);
+      let user;
+      if (loginMethod === 'phone') {
+        if (!confirmationResult) return setError('Please send OTP first.');
+        const result = await confirmationResult.confirm(otp);
+        user = result.user;
+      } else {
+        const result = await login(email, password);
+        user = result.user;
+      }
+
       // Check volunteer status before redirecting
       const q = query(collection(db, 'volunteerRequests'), where('uid', '==', user.uid));
       const snap = await getDocs(q);
@@ -43,9 +80,9 @@ function LoginPage() {
         navigate('/volunteer');
         return;
       }
-      redirectUser(email);
+      redirectUser(user.email || 'user');
     } catch (err) {
-      setError('Invalid credentials. Please try again.');
+      setError(loginMethod === 'phone' ? 'Invalid OTP code.' : 'Invalid credentials. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -167,120 +204,71 @@ function LoginPage() {
             </p>
           </div>
 
-          {/* Login Method Tabs */}
-          <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl mb-8">
-            <button 
-              onClick={() => setLoginMethod('email')}
-              className={cn(
-                "flex-1 py-2.5 text-sm font-bold rounded-xl transition-all",
-                loginMethod === 'email' ? "bg-white dark:bg-slate-800 text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
-              )}
-            >
-              Email Access
-            </button>
-            <button 
-              onClick={() => setLoginMethod('phone')}
-              className={cn(
-                "flex-1 py-2.5 text-sm font-bold rounded-xl transition-all",
-                loginMethod === 'phone' ? "bg-white dark:bg-slate-800 text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
-              )}
-            >
-              Mobile OTP
-            </button>
-          </div>
+          {error && (
+            <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-2xl text-xs font-bold ring-1 ring-rose-100 dark:ring-rose-800 flex items-center gap-3">
+              <AlertTriangle size={16} />
+              {error}
+            </div>
+          )}
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={loginMethod}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-            >
-              {error && (
-                <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-2xl text-xs font-bold ring-1 ring-rose-100 dark:ring-rose-800 flex items-center gap-3">
-                  <AlertTriangle size={16} />
-                  {error}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {loginMethod === 'email' ? (
-                  <>
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Email Address</label>
-                      <div className="relative group">
-                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={20} />
-                        <input 
-                          type="email" 
-                          required 
-                          className="w-full pl-12 pr-5 py-4 rounded-2xl bg-white dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-500 transition-all dark:text-white outline-none"
-                          placeholder="name@example.com"
-                          onChange={(e) => setEmail(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between px-1">
-                        <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Password</label>
-                        <a href="#" className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Forgot?</a>
-                      </div>
-                      <div className="relative group">
-                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={20} />
-                        <input 
-                          type={showPassword ? "text" : "password"}
-                          required 
-                          className="w-full pl-12 pr-12 py-4 rounded-2xl bg-white dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-500 transition-all dark:text-white outline-none"
-                          placeholder="••••••••"
-                          onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <button 
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                        >
-                          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                        </button>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Phone Number</label>
-                    <div className="relative group">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={20} />
-                      <input 
-                        type="tel" 
-                        required 
-                        className="w-full pl-12 pr-5 py-4 rounded-2xl bg-white dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-500 transition-all dark:text-white outline-none"
-                        placeholder="+91 00000 00000"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex items-center gap-3 px-1">
-                  <input type="checkbox" id="remember" className="w-5 h-5 rounded-lg border-slate-200 text-indigo-600 focus:ring-indigo-500" />
-                  <label htmlFor="remember" className="text-sm font-bold text-slate-500 dark:text-slate-400 cursor-pointer">Remember me</label>
-                </div>
-
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Email Address</label>
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={20} />
+                <input 
+                  type="email" 
+                  required 
+                  className="w-full pl-12 pr-5 py-4 rounded-2xl bg-white dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-500 transition-all dark:text-white outline-none"
+                  placeholder="name@example.com"
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between px-1">
+                <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Password</label>
+                <a href="#" className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Forgot?</a>
+              </div>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={20} />
+                <input 
+                  type={showPassword ? "text" : "password"}
+                  required 
+                  className="w-full pl-12 pr-12 py-4 rounded-2xl bg-white dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-500 transition-all dark:text-white outline-none"
+                  placeholder="••••••••"
+                  onChange={(e) => setPassword(e.target.value)}
+                />
                 <button 
-                  disabled={loading}
-                  type="submit" 
-                  className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl transition-all shadow-xl shadow-indigo-100 dark:shadow-none flex items-center justify-center gap-3 disabled:opacity-50"
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
-                  {loading ? (
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  ) : (
-                    <>
-                      <span>{loginMethod === 'email' ? 'Sign In' : 'Send OTP'}</span>
-                      <ArrowRight size={20} />
-                    </>
-                  )}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
-              </form>
-            </motion.div>
-          </AnimatePresence>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 px-1">
+              <input type="checkbox" id="remember" className="w-5 h-5 rounded-lg border-slate-200 text-indigo-600 focus:ring-indigo-500" />
+              <label htmlFor="remember" className="text-sm font-bold text-slate-500 dark:text-slate-400 cursor-pointer">Remember me</label>
+            </div>
+
+            <button 
+              disabled={loading}
+              type="submit"
+              className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl transition-all shadow-xl shadow-indigo-100 dark:shadow-none flex items-center justify-center gap-3 disabled:opacity-50"
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <>
+                  <span>Sign In</span>
+                  <ArrowRight size={20} />
+                </>
+              )}
+            </button>
+          </form>
 
           <div className="relative my-10 text-center">
             <span className="bg-slate-50 dark:bg-slate-950 px-4 text-xs font-bold text-slate-400 relative z-10 uppercase tracking-widest">Or social access</span>

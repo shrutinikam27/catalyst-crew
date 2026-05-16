@@ -14,6 +14,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import ReportIssue from './pages/ReportIssue';
 import Contact from './pages/Contact';
+import SosDirectPage from './pages/SosDirectPage';
 
 // Citizen Pages
 import CitizenDashboard from './pages/citizen/CitizenDashboard';
@@ -74,6 +75,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/report" element={<ReportIssue />} />
+          <Route path="/sos" element={<SosDirectPage />} />
           <Route path="/about" element={<div className="p-20 text-center font-outfit font-black text-4xl dark:text-white uppercase">About SafeLink Platform</div>} />
           <Route path="/help" element={<div className="p-20 text-center font-outfit font-black text-4xl dark:text-white uppercase">SafeLink Help Center</div>} />
 

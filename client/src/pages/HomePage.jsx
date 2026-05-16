@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { useAuth } from '../firebase/AuthContext';
-import { Activity, AlertTriangle, Shield, ArrowRight, Flame, ShieldAlert, Ambulance, CheckCircle2, Loader2 } from 'lucide-react';
+import { Activity, AlertTriangle, Shield, ArrowRight, Flame, ShieldAlert, Ambulance, CheckCircle2, Loader2, Smartphone, X, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { usePwaInstall } from '../hooks/usePwaInstall';
 import PublicNavbar from '../components/PublicNavbar';
 import Footer from '../components/Footer';
 import heroIllustration from '../assets/hero-illustration.png';
@@ -13,6 +14,8 @@ import { useLocationContext } from '../contexts/LocationContext';
 function HomePage() {
   const { currentUser, loginAnonymously } = useAuth();
   const { location: contextLocation } = useLocationContext();
+  const { isInstallable, isInstalled, promptInstall } = usePwaInstall();
+  const [installBannerDismissed, setInstallBannerDismissed] = useState(false);
   const navigate = useNavigate();
   const [sosClicks, setSosClicks] = useState(0);
   const [showSosOptions, setShowSosOptions] = useState(false);
@@ -102,6 +105,14 @@ function HomePage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0f172a] font-inter transition-colors duration-300">
       <PublicNavbar />
+
+      {/* PWA Install Banner */}
+      {isInstallable && !isInstalled && !installBannerDismissed && (
+        <PwaInstallBanner
+          onInstall={() => { promptInstall(); setInstallBannerDismissed(true); }}
+          onDismiss={() => setInstallBannerDismissed(true)}
+        />
+      )}
       {/* Hero Section */}
       <section className="pt-40 pb-16 px-6 max-w-[1400px] mx-auto">
         <div className="grid lg:grid-cols-[1fr_1.2fr] gap-12 items-center">
@@ -501,6 +512,39 @@ function EmergencyStatusBar() {
         REPORT NOW
         <ArrowRight size={16} />
       </button>
+    </div>
+  );
+}
+
+// ── PWA Install Banner ────────────────────────────────────────────────────────
+function PwaInstallBanner({ onInstall, onDismiss }) {
+  return (
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-sm animate-bounce-once">
+      <div className="bg-slate-900 border border-indigo-500/30 rounded-3xl shadow-2xl shadow-indigo-900/40 p-4 flex items-center gap-4">
+        <div className="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-red-900/50">
+          <span className="text-2xl">🚨</span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-white font-black text-sm">Add SOS to Home Screen</p>
+          <p className="text-slate-400 text-[11px] leading-tight mt-0.5">
+            Install SafeLink for instant 1-tap emergency access
+          </p>
+        </div>
+        <div className="flex flex-col gap-1.5 shrink-0">
+          <button
+            onClick={onInstall}
+            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black rounded-xl flex items-center gap-1 transition-all"
+          >
+            <Download size={10} /> Install
+          </button>
+          <button
+            onClick={onDismiss}
+            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 text-[11px] font-bold rounded-xl transition-all"
+          >
+            Not now
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -397,6 +397,7 @@ function SignupPage() {
         </motion.button>
       </div>
       )} {/* end !submitted */}
+      </div>
     </div>
   );
 }

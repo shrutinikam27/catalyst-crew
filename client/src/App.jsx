@@ -1,84 +1,49 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './firebase/AuthContext';
+
+// Layouts
+import DashboardLayout from './layouts/DashboardLayout';
+
+// Public Pages
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
-import Dashboard from './pages/Dashboard';
-import UserDashboard from './pages/UserDashboard';
 import ReportIssue from './pages/ReportIssue';
+
+// Citizen Pages
+import CitizenDashboard from './pages/citizen/CitizenDashboard';
+import ReportIncident from './pages/citizen/ReportIncident';
+import CitizenHeatmap from './pages/citizen/CitizenHeatmap';
+
+// Volunteer Pages
+import VolunteerDashboard from './pages/volunteer/VolunteerDashboard';
+
+// Police Pages
+import PoliceDashboard from './pages/police/PoliceDashboard';
+
+// Hospital Pages
+import HospitalDashboard from './pages/hospital/HospitalDashboard';
+
+// Admin Pages
+import AdminDashboard from './pages/admin/AdminDashboard';
+
 import './index.css';
 
-function Navbar({ toggleTheme, isDark }) {
-  const { currentUser, logout } = useAuth();
-  const navigate = useNavigate();
-
-  async function handleLogout() {
-    try {
-      await logout();
-      navigate('/login');
-    } catch (err) {
-      console.error("Failed to log out", err);
-    }
-  }
-
-  return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 transition-colors">
-      <div className="max-w-[1400px] mx-auto px-6 py-4 flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-          </div>
-          <div>
-            <span className="text-2xl font-bold font-outfit text-[#1E293B] dark:text-white">SafeLinks</span>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Smart City. Safe City.</p>
-          </div>
-        </Link>
-        
-        <div className="hidden lg:flex items-center gap-8">
-          <Link to="/" className="text-indigo-600 font-semibold border-b-2 border-indigo-600 pb-1">Home</Link>
-          <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">About Us</a>
-          <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">Features</a>
-          <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">How It Works</a>
-          <Link to={currentUser ? "/user" : "/login"} className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">Dashboard</Link>
-          <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">Contact</a>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={toggleTheme}
-            className="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-          >
-            {isDark ? (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-            ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-            )}
-          </button>
-          
-          {currentUser ? (
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-bold text-slate-600 dark:text-slate-300 hidden md:inline">Hi, {currentUser.email.split('@')[0]}</span>
-              <button 
-                onClick={handleLogout}
-                className="px-6 py-2 border-2 border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 font-bold rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
-              >
-                Logout
-              </button>
-            </div>
-          ) : (
-            <>
-              <Link to="/login" className="px-6 py-2 text-indigo-600 dark:text-indigo-400 font-semibold hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors">Login</Link>
-              <Link to="/signup" className="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200 dark:shadow-none">Sign Up</Link>
-            </>
-          )}
-        </div>
-      </div>
-    </nav>
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { currentUser, loading } = useAuth();
+  
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 text-indigo-600">
+      <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+    </div>
   );
-}
+
+  if (!currentUser) return <Navigate to="/login" />;
+  
+  return children;
+};
 
 function App() {
   const [isDark, setIsDark] = useState(() => {
@@ -100,32 +65,63 @@ function App() {
   const toggleTheme = () => setIsDark(!isDark);
 
   return (
-    <Router>
-      <AuthProvider>
-        <div className="min-h-screen bg-bg-main dark:bg-dark-bg-main transition-colors duration-300">
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/user" element={<UserDashboard />} />
-            <Route path="/admin" element={<Dashboard />} />
-            <Route path="/report" element={
-              <>
-                <Navbar toggleTheme={toggleTheme} isDark={isDark} />
-                <ReportIssue />
-              </>
-            } />
-            <Route path="/" element={
-              <>
-                <Navbar toggleTheme={toggleTheme} isDark={isDark} />
-                <HomePage />
-              </>
-            } />
-          </Routes>
-        </div>
-      </AuthProvider>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<HomePage toggleTheme={toggleTheme} isDark={isDark} />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/report" element={<ReportIssue />} />
+
+          {/* Citizen Dashboard Routes */}
+          <Route path="/user" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+            <Route index element={<CitizenDashboard />} />
+            <Route path="report" element={<ReportIncident />} />
+            <Route path="map" element={<CitizenHeatmap />} />
+            <Route path="tracking" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Tracking Module Coming Soon</div>} />
+            <Route path="sos" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">SOS Module Coming Soon</div>} />
+            <Route path="tips" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Safety Tips Module Coming Soon</div>} />
+          </Route>
+
+          {/* Volunteer Dashboard Routes */}
+          <Route path="/volunteer" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+            <Route index element={<VolunteerDashboard />} />
+            <Route path="alerts" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Emergency Alerts Module Coming Soon</div>} />
+            <Route path="missions" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Missions Module Coming Soon</div>} />
+            <Route path="profile" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Profile Module Coming Soon</div>} />
+          </Route>
+
+          {/* Police Dashboard Routes */}
+          <Route path="/police" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+            <Route index element={<PoliceDashboard />} />
+            <Route path="incidents" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Incident Management Coming Soon</div>} />
+            <Route path="patrol" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Patrol Optimizer Coming Soon</div>} />
+            <Route path="map" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Crime Map Coming Soon</div>} />
+          </Route>
+
+          {/* Hospital Dashboard Routes */}
+          <Route path="/hospital" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+            <Route index element={<HospitalDashboard />} />
+            <Route path="dispatch" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Dispatch Board Coming Soon</div>} />
+            <Route path="alerts" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Patient Alerts Coming Soon</div>} />
+          </Route>
+
+          {/* Admin Dashboard Routes */}
+          <Route path="/admin" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="analytics" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">City Analytics Coming Soon</div>} />
+            <Route path="users" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">User Management Coming Soon</div>} />
+            <Route path="logs" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">System Logs Coming Soon</div>} />
+            <Route path="ai" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">AI Forecasts Coming Soon</div>} />
+          </Route>
+
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
-
 
 export default App;

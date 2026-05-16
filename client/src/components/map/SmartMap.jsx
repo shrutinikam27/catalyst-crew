@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
-import L from 'leaflet';
+import * as L from 'leaflet';
 import { io } from 'socket.io-client';
 import { cn } from '../../utils/cn';
-import 'leaflet/dist/leaflet.css';
 
 // Fix for default marker icons in Leaflet + React
 import icon from 'leaflet/dist/images/marker-icon.png';

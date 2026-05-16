@@ -132,10 +132,16 @@ const AdminDashboard = () => {
   };
 
   const handleUpdateStatus = async (id, newStatus) => {
-    if (String(id).startsWith('PUNE-')) {
-      // Simulate resolving a synthetic dataset item
-      const item = puneDataset.find(i => i.id === id);
-      if (item) item.status = newStatus;
+    if (String(id).startsWith('PUNE-') || String(id).startsWith('#SL-LOCAL-')) {
+      // Simulate resolving a synthetic or local dataset item
+      if (String(id).startsWith('PUNE-')) {
+        const item = puneDataset.find(i => i.id === id);
+        if (item) item.status = newStatus;
+      } else {
+        const localFallback = JSON.parse(localStorage.getItem('local_incidents') || '[]');
+        const updatedLocal = localFallback.map(item => item.id === id ? { ...item, status: newStatus } : item);
+        localStorage.setItem('local_incidents', JSON.stringify(updatedLocal));
+      }
       
       setIncidents(prev => prev.map(inc => inc.id === id ? { ...inc, status: newStatus } : inc));
       setStats(prev => ({ ...prev, resolved: prev.resolved + 1, active: prev.active - 1 }));
@@ -175,7 +181,14 @@ const AdminDashboard = () => {
         }
       }));
 
-      const mergedIncidents = [...syntheticDocs, ...docs];
+      // Pull locally cached emergency reports (offline fallback)
+      const localFallback = JSON.parse(localStorage.getItem('local_incidents') || '[]');
+      const localDocs = localFallback.map(item => ({
+        ...item,
+        timestamp: { toDate: () => new Date(item.timestamp) }
+      }));
+
+      const mergedIncidents = [...localDocs, ...syntheticDocs, ...docs];
       setIncidents(mergedIncidents);
       
       // Calculate Stats
@@ -696,7 +709,12 @@ const AdminDashboard = () => {
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Reported Time</label>
                   <p className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <Clock size={14} className="text-indigo-500" />
-                    {selectedReport.timestamp?.toDate ? selectedReport.timestamp.toDate().toLocaleString() : 'Just Now'}
+                    {selectedReport.timestamp?.toDate 
+                      ? (() => {
+                          const date = selectedReport.timestamp.toDate();
+                          return isNaN(date) ? new Date().toLocaleString() : date.toLocaleString();
+                        })()
+                      : 'Just Now'}
                   </p>
                 </div>
                 <div>
@@ -713,9 +731,27 @@ const AdminDashboard = () => {
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Location Details</label>
                   <p className="text-sm font-bold text-slate-900 dark:text-white flex items-start gap-2">
                     <MapPin size={14} className="text-rose-500 mt-0.5 shrink-0" />
-                    {typeof selectedReport.location === 'object' ? selectedReport.location.address : selectedReport.location}
+                    {selectedReport.location?.address || selectedReport.location || "Location not provided (Offline Submission)"}
                   </p>
                 </div>
+
+                {/* Evidence Photos Gallery */}
+                {selectedReport.images && selectedReport.images.length > 0 && (
+                  <div className="col-span-2 mt-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Evidence Photos</label>
+                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                      {selectedReport.images.map((imgUrl, idx) => (
+                        <a href={imgUrl} target="_blank" rel="noopener noreferrer" key={idx}>
+                          <img 
+                            src={imgUrl} 
+                            alt={`evidence-${idx}`} 
+                            className="h-24 w-24 object-cover rounded-xl border border-slate-200 dark:border-slate-700 hover:scale-105 transition-transform cursor-pointer" 
+                          />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex gap-3">

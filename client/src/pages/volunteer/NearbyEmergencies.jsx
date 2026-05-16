@@ -51,21 +51,11 @@ const NearbyEmergencies = () => {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [volunteerExpertise, setVolunteerExpertise] = useState(null); // will be loaded from Firestore
-  const [myLocation, setMyLocation] = useState(null);
+  const { location: contextLocation } = useLocationContext();
+  const myLocation = contextLocation ? { latitude: contextLocation.latitude, longitude: contextLocation.longitude } : null;
   const [acceptingId, setAcceptingId] = useState(null);
   const [acceptedAlerts, setAcceptedAlerts] = useState({}); // alertId → volunteerLocation snapshot
   const [selectedAlert, setSelectedAlert] = useState(null);
-
-  // ─── 1. Get volunteer's live location ───────────────────────────────────────
-  useEffect(() => {
-    if (!navigator.geolocation) return;
-    const watcher = navigator.geolocation.watchPosition(
-      (pos) => setMyLocation({ latitude: pos.coords.latitude, longitude: pos.coords.longitude }),
-      () => {},
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
-    return () => navigator.geolocation.clearWatch(watcher);
-  }, []);
 
   // ─── 2. Fetch volunteer's expertise from Firestore volunteerRequests ─────────
   useEffect(() => {
@@ -138,7 +128,8 @@ const NearbyEmergencies = () => {
 
   // ─── 5. Open Google Maps ──────────────────────────────────────────────────
   const openGoogleMaps = (alert) => {
-    const from = acceptedAlerts[alert.id] || myLocation || { latitude: 18.5204, longitude: 73.8567 };
+    // Prioritize myLocation (live stream) so navigation uses the latest coordinates.
+    const from = myLocation || acceptedAlerts[alert.id] || { latitude: 18.5204, longitude: 73.8567 };
     const to   = { latitude: alert.location?.latitude, longitude: alert.location?.longitude };
     window.open(buildGoogleMapsUrl(from, to), '_blank');
   };

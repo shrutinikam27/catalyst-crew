@@ -8,8 +8,11 @@ import heroIllustration from '../assets/hero-illustration.png';
 import safetyMap from '../assets/safety-map.png';
 import { createSosAlert } from '../firebase/sosService';
 
+import { useLocationContext } from '../contexts/LocationContext';
+
 function HomePage() {
   const { currentUser, loginAnonymously } = useAuth();
+  const { location: contextLocation } = useLocationContext();
   const navigate = useNavigate();
   const [sosClicks, setSosClicks] = useState(0);
   const [showSosOptions, setShowSosOptions] = useState(false);
@@ -38,22 +41,11 @@ function HomePage() {
     setSosSubmitting(true);
     setSosError('');
 
-    // Try to get live geolocation
-    const getLocation = () =>
-      new Promise((resolve) => {
-        if (!navigator.geolocation) {
-          resolve({ latitude: 18.5204, longitude: 73.8567 });
-          return;
-        }
-        navigator.geolocation.getCurrentPosition(
-          (pos) => resolve({ latitude: pos.coords.latitude, longitude: pos.coords.longitude }),
-          (err) => {
-            console.warn('[SOS] Geolocation error:', err.message);
-            resolve({ latitude: 18.5204, longitude: 73.8567 });
-          },
-          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-        );
-      });
+    // Use the highly-accurate background location stream from context if available,
+    // otherwise fallback to default coordinates.
+    const location = contextLocation 
+      ? { latitude: contextLocation.latitude, longitude: contextLocation.longitude }
+      : { latitude: 18.5204, longitude: 73.8567 };
 
     try {
       // Attempt anonymous sign-in so the Firestore write has an auth token.
@@ -74,7 +66,7 @@ function HomePage() {
         }
       }
 
-      const location = await getLocation();
+      // location is already defined from context earlier in this function
       const alertId = await createSosAlert({
         emergencyType: type,
         location,
@@ -125,39 +117,42 @@ function HomePage() {
               SafeLinks empowers the citizens and authorities of Pune with real-time risk mapping, civic grievance tracking, and AI-driven emergency response prioritization.
             </p>
             <div className="flex items-center gap-4">
-              <button 
+              <button
                 onClick={() => navigate('/report', { state: { category: 'civic' } })}
                 className="px-8 py-4 bg-indigo-600 text-white font-bold rounded-xl flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 dark:shadow-none group"
               >
                 <svg className="w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                 Report Civic Issue
               </button>
-              <button className="px-8 py-4 bg-white dark:bg-slate-800 border-2 border-indigo-100 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 font-bold rounded-xl flex items-center gap-2 hover:bg-indigo-50 dark:hover:bg-slate-700 transition-all">
+              <button
+                onClick={() => navigate('/user/map')}
+                className="px-8 py-4 bg-white dark:bg-slate-800 border-2 border-indigo-100 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 font-bold rounded-xl flex items-center gap-2 hover:bg-indigo-50 dark:hover:bg-slate-700 transition-all"
+              >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
                 Explore Live Map
               </button>
             </div>
             <div className="flex items-center gap-4 py-4 border-t border-slate-100 dark:border-slate-800">
-               <div className="flex -space-x-3">
-                 {[1,2,3,4].map(i => (
-                   <div key={i} className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 overflow-hidden">
-                     <img src={`https://i.pravatar.cc/100?u=${i}`} alt="User" />
-                   </div>
-                 ))}
-               </div>
-               <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-                 <span className="text-slate-800 dark:text-white font-bold">12k+ Citizens</span> actively reporting in Pune
-               </p>
+              <div className="flex -space-x-3">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 overflow-hidden">
+                    <img src={`https://i.pravatar.cc/100?u=${i}`} alt="User" />
+                  </div>
+                ))}
+              </div>
+              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+                <span className="text-slate-800 dark:text-white font-bold">12k+ Citizens</span> actively reporting in Pune
+              </p>
             </div>
           </div>
 
           <div className="relative animate-float lg:block">
-            <img 
-              src={heroIllustration} 
-              alt="City Safety Illustration" 
+            <img
+              src={heroIllustration}
+              alt="City Safety Illustration"
               className="w-full h-auto drop-shadow-2xl dark:opacity-80 lg:translate-x-12 rounded-[2rem]"
             />
-            
+
             {/* Restored: Predictive Safety Score Card */}
             <div className="absolute -top-40 -right-16 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-6 rounded-[2rem] shadow-2xl border border-white dark:border-slate-700 animate-float-delayed z-30">
               <div className="flex items-center gap-4 mb-4">
@@ -182,13 +177,13 @@ function HomePage() {
 
             {/* Floating SOS Button - Triple Click Trigger */}
             <div className="absolute top-0 -left-16 z-20 flex flex-col items-center">
-              <button 
+              <button
                 onClick={handleSosClick}
                 className="w-24 h-24 bg-red-600 rounded-full flex items-center justify-center text-white font-black text-2xl shadow-[0_0_50px_rgba(220,38,38,0.5)] border-4 border-white dark:border-slate-900 animate-pulse-sos hover:scale-110 transition-transform active:scale-95 group relative overflow-hidden"
               >
-                 <span className="relative z-10">SOS</span>
-                 {sosClicks > 0 && <span className="absolute top-2 right-2 text-xs z-20 bg-white text-red-600 rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-lg">{sosClicks}</span>}
-                 <div className="absolute inset-0 bg-red-400 animate-ping opacity-20"></div>
+                <span className="relative z-10">SOS</span>
+                {sosClicks > 0 && <span className="absolute top-2 right-2 text-xs z-20 bg-white text-red-600 rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-lg">{sosClicks}</span>}
+                <div className="absolute inset-0 bg-red-400 animate-ping opacity-20"></div>
               </button>
               <div className="mt-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-2xl border border-white/50 dark:border-slate-700 shadow-xl">
                 <p className="text-[10px] font-black text-red-600 uppercase tracking-tighter text-center leading-tight">
@@ -200,7 +195,7 @@ function HomePage() {
           </div>
         </div>
       </section>
-      
+
       {/* Emergency Status Bar */}
       <div className="px-6 max-w-[1400px] mx-auto mb-16">
         <EmergencyStatusBar />
@@ -267,49 +262,61 @@ function HomePage() {
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Live data integration from PMC & Pune Police</p>
             </div>
             <div className="flex items-center gap-3">
-               <select className="bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-100 dark:ring-slate-700 px-4 py-2 rounded-xl text-xs font-bold dark:text-white outline-none">
-                 <option>All Hazards</option>
-                 <option>Crime Hotspots</option>
-                 <option>Civic Issues</option>
-               </select>
-               <button className="p-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 rounded-xl">
-                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
-               </button>
+              <select className="bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-100 dark:ring-slate-700 px-4 py-2 rounded-xl text-xs font-bold dark:text-white outline-none">
+                <option>All Hazards</option>
+                <option>Crime Hotspots</option>
+                <option>Civic Issues</option>
+              </select>
+              <button
+                onClick={() => navigate('/user/map')}
+                className="p-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 rounded-xl hover:bg-indigo-100 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+              </button>
             </div>
           </div>
           <div className="w-full aspect-video bg-slate-50 dark:bg-slate-900 rounded-[2.5rem] relative overflow-hidden border border-slate-200 dark:border-slate-700 shadow-xl group/map">
-            <img 
-              src={safetyMap} 
-              alt="City Safety Dashboard" 
+            <img
+              src={safetyMap}
+              alt="City Safety Dashboard"
               className="w-full h-full object-cover opacity-90 dark:opacity-40 group-hover:scale-105 transition-transform duration-[15s] ease-in-out"
             />
-            
+
+            {/* Live Markers */}
+            <div className="absolute top-1/4 left-1/3 w-3 h-3 bg-red-500 rounded-full animate-ping opacity-75"></div>
+            <div className="absolute top-1/4 left-1/3 w-3 h-3 bg-red-600 rounded-full shadow-lg"></div>
+
+            <div className="absolute top-2/3 right-1/4 w-3 h-3 bg-blue-500 rounded-full animate-ping opacity-75"></div>
+            <div className="absolute top-2/3 right-1/4 w-3 h-3 bg-blue-600 rounded-full shadow-lg"></div>
+
+            <div className="absolute top-1/2 right-1/2 w-2 h-2 bg-amber-500 rounded-full animate-pulse shadow-lg"></div>
+
             <div className="absolute bottom-6 right-6 flex items-center gap-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20 dark:border-white/5 shadow-xl z-20">
-               <div className="flex items-center gap-2">
-                 <div className="w-2 h-2 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.5)]"></div>
-                 <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tighter">High Risk</span>
-               </div>
-               <div className="flex items-center gap-2">
-                 <div className="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
-                 <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tighter">Civic</span>
-               </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.5)]"></div>
+                <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tighter">High Risk</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tighter">Civic</span>
+              </div>
             </div>
           </div>
           <div className="mt-6 flex items-center gap-8 border-t border-slate-50 dark:border-slate-700 pt-6">
-             <div 
-               onClick={() => navigate('/report', { state: { category: 'crime' } })}
-               className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
-             >
-               <div className="w-3 h-3 bg-red-600 rounded-full"></div>
-               <span className="text-xs font-bold text-slate-600 dark:text-slate-400">High Risk (Crime)</span>
-             </div>
-             <div 
-               onClick={() => navigate('/report', { state: { category: 'civic' } })}
-               className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
-             >
-               <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
-               <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Civic Issues (PMC)</span>
-             </div>
+            <div
+              onClick={() => navigate('/report', { state: { category: 'crime' } })}
+              className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+            >
+              <div className="w-3 h-3 bg-red-600 rounded-full"></div>
+              <span className="text-xs font-bold text-slate-600 dark:text-slate-400">High Risk (Crime)</span>
+            </div>
+            <div
+              onClick={() => navigate('/report', { state: { category: 'civic' } })}
+              className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+            >
+              <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
+              <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Civic Issues (PMC)</span>
+            </div>
           </div>
         </div>
 
@@ -317,47 +324,47 @@ function HomePage() {
         <div className="space-y-8">
           {/* Quick Reporting Card */}
           <div className="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-700">
-             <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-6">Citizen Action Center</h3>
-             <div className="grid gap-4">
-               <button 
+            <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-6">Citizen Action Center</h3>
+            <div className="grid gap-4">
+              <button
                 onClick={() => navigate('/report', { state: { category: 'crime' } })}
                 className="w-full bg-red-600 hover:bg-red-700 text-white p-5 rounded-3xl font-black text-sm flex items-center justify-between transition-all group shadow-lg shadow-red-100 dark:shadow-none"
-               >
-                 <div className="flex items-center gap-4">
-                   <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                     <Shield size={20} />
-                   </div>
-                   <span className="uppercase tracking-widest">Report Crime</span>
-                 </div>
-                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-               </button>
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                    <Shield size={20} />
+                  </div>
+                  <span className="uppercase tracking-widest">Report Crime</span>
+                </div>
+                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              </button>
 
-               <button 
+              <button
                 onClick={() => navigate('/report', { state: { category: 'civic' } })}
                 className="w-full bg-amber-500 hover:bg-amber-600 text-white p-5 rounded-3xl font-black text-sm flex items-center justify-between transition-all group shadow-lg shadow-amber-100 dark:shadow-none"
-               >
-                 <div className="flex items-center gap-4">
-                   <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                     <AlertTriangle size={20} />
-                   </div>
-                   <span className="uppercase tracking-widest">Report Civic Issue</span>
-                 </div>
-                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-               </button>
-             </div>
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                    <AlertTriangle size={20} />
+                  </div>
+                  <span className="uppercase tracking-widest">Report Civic Issue</span>
+                </div>
+                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
           </div>
 
-          {/* Triple-Click SOS Status */}
-          <div 
-            onClick={handleSosClick}
-            className="bg-indigo-600 dark:bg-indigo-700 p-8 rounded-[2.5rem] shadow-2xl shadow-indigo-200 dark:shadow-none relative overflow-hidden group cursor-pointer"
+          {/* Quick SOS Card - Single Click for immediate options */}
+          <div
+            onClick={() => setShowSosOptions(true)}
+            className="bg-indigo-600 dark:bg-indigo-700 p-8 rounded-[2.5rem] shadow-2xl shadow-indigo-200 dark:shadow-none relative overflow-hidden group cursor-pointer active:scale-95 transition-transform"
           >
             <div className="relative z-10 flex items-center justify-between">
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2">Instant Emergency Trigger</h3>
-                <p className="text-indigo-100 text-sm max-w-[200px]">Triple click the SOS button or here to trigger automated dispatch.</p>
+                <p className="text-indigo-100 text-sm max-w-[200px]">Click here to trigger automated dispatch and notify nearby volunteers.</p>
               </div>
-              <div className="w-24 h-24 bg-red-600 rounded-full border-8 border-indigo-500/30 dark:border-indigo-400/30 flex items-center justify-center text-white font-black text-xl shadow-2xl active:scale-90 transition-transform">
+              <div className="w-24 h-24 bg-red-600 rounded-full border-8 border-indigo-500/30 dark:border-indigo-400/30 flex items-center justify-center text-white font-black text-xl shadow-2xl transition-transform group-hover:scale-110">
                 SOS
                 {sosClicks > 0 && <span className="absolute -top-2 -right-2 bg-white text-red-600 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shadow-xl border-2 border-red-600">{sosClicks}</span>}
               </div>
@@ -403,7 +410,7 @@ function HomePage() {
                 <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed text-sm">
                   Select the emergency type. Nearby certified volunteers and official emergency services will be notified instantly.
                 </p>
-                
+
                 {sosError && (
                   <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-xl text-xs font-bold border border-red-100 dark:border-red-800">
                     {sosError}
@@ -432,26 +439,26 @@ function HomePage() {
                     <Flame className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
                     <span className="font-bold text-[10px] sm:text-xs">FIRE</span>
                   </button>
-                  
+
                   {/* Crime (Right) */}
                   <button disabled={sosSubmitting} onClick={() => handleEmergencySelect('Crime')} className="absolute top-1/2 right-0 -translate-y-1/2 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px] flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-full border-2 border-blue-200 bg-blue-50 hover:bg-blue-600 hover:border-blue-700 hover:text-white text-blue-700 transition-all active:scale-95 group shadow-sm z-20 disabled:opacity-50 disabled:cursor-not-allowed">
                     <Shield className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
                     <span className="font-bold text-[10px] sm:text-xs">CRIME</span>
                   </button>
-                  
+
                   {/* Medical (Bottom) */}
                   <button disabled={sosSubmitting} onClick={() => handleEmergencySelect('Medical')} className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px] flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-full border-2 border-green-200 bg-green-50 hover:bg-green-600 hover:border-green-700 hover:text-white text-green-700 transition-all active:scale-95 group shadow-sm z-20 disabled:opacity-50 disabled:cursor-not-allowed">
                     <Ambulance className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
                     <span className="font-bold text-[10px] sm:text-xs">MEDICAL</span>
                   </button>
-                  
+
                   {/* Accident (Left) */}
                   <button disabled={sosSubmitting} onClick={() => handleEmergencySelect('Accident')} className="absolute top-1/2 left-0 -translate-y-1/2 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px] flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-full border-2 border-purple-200 bg-purple-50 hover:bg-purple-600 hover:border-purple-700 hover:text-white text-purple-700 transition-all active:scale-95 group shadow-sm z-20 disabled:opacity-50 disabled:cursor-not-allowed">
                     <AlertTriangle className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
                     <span className="font-bold text-[10px] sm:text-xs">ACCIDENT</span>
                   </button>
                 </div>
-                
+
                 <button disabled={sosSubmitting} onClick={closeSosModal} className="px-6 py-2 rounded-full border border-slate-300 text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:border-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-300 font-semibold transition-colors disabled:opacity-50">
                   Cancel Request
                 </button>
@@ -482,12 +489,12 @@ function EmergencyStatusBar() {
 
       <div className="hidden lg:flex flex-1 items-center justify-around px-4">
         <StatusOption icon="📍" label="All Pune Districts" />
-        <StatusOption icon="👥" label="2.4k Activity" />
+        <StatusOption icon="👥" label="2.4k Activity" isLive />
         <StatusOption icon="⚖️" label="92% Response" />
-        <StatusOption icon="📡" label="Server Active" />
+        <StatusOption icon="📡" label="Server Active" isLive />
       </div>
 
-      <button 
+      <button
         onClick={() => navigate('/report', { state: { category: 'other' } })}
         className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-2xl font-black text-sm flex items-center gap-2 transition-all group shrink-0 shadow-lg shadow-red-200 dark:shadow-none"
       >
@@ -498,11 +505,14 @@ function EmergencyStatusBar() {
   );
 }
 
-function StatusOption({ icon, label }) {
+function StatusOption({ icon, label, isLive }) {
   return (
-    <div className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-2 rounded-xl transition-colors">
+    <div className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-2 rounded-xl transition-colors relative">
       <span className="text-lg">{icon}</span>
       <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{label}</span>
+      {isLive && (
+        <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+      )}
     </div>
   );
 }

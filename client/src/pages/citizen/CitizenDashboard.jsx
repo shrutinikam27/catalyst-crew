@@ -28,13 +28,43 @@ const data = [
 
 const CitizenDashboard = () => {
   const { currentUser } = useAuth();
-  const { notifications } = useSocket();
+  const { notifications, lastPulse } = useSocket();
   const navigate = useNavigate();
 
+  // Local state for live chart data to make it feel alive
+  const [chartData, setChartData] = React.useState(data);
+
+  // Update chart data when a new pulse arrives
+  React.useEffect(() => {
+    if (lastPulse) {
+      setChartData(prev => {
+        const day = new Date().toLocaleDateString('en-US', { weekday: 'short' });
+        return prev.map(d => {
+          if (d.name === day) {
+            return {
+              ...d,
+              crime: lastPulse.type === 'CRIME' ? d.crime + 1 : d.crime,
+              accidents: ['FIRE', 'MEDICAL'].includes(lastPulse.type) ? d.accidents + 1 : d.accidents
+            };
+          }
+          return d;
+        });
+      });
+    }
+  }, [lastPulse]);
+
   const crimeNotifications = notifications.filter(n => n.type === 'CRIME');
-  const safetyScore = Math.max(0, (10 - (crimeNotifications.length * 0.5)).toFixed(1));
+  const civicNotifications = notifications.filter(n => n.type === 'CIVIC');
+  const emergencyNotifications = notifications.filter(n => ['FIRE', 'MEDICAL'].includes(n.type));
+
+  const safetyScore = Math.max(0, (10 - (crimeNotifications.length * 0.2 + emergencyNotifications.length * 0.1)).toFixed(1));
   const safetyStatus = safetyScore > 8 ? 'Stable' : safetyScore > 5 ? 'Warning' : 'Critical';
   const safetyColor = safetyScore > 8 ? 'text-emerald-500' : safetyScore > 5 ? 'text-amber-500' : 'text-rose-500';
+
+  // Dynamic Stats
+  const safeRoutesCount = Math.max(0, 15 - crimeNotifications.length);
+  const civicReportsCount = 40 + civicNotifications.length;
+  const sosContactsCount = 5; // Usually static but could be dynamic if we had a contacts API
 
   return (
     <div className="space-y-8">
@@ -88,9 +118,10 @@ const CitizenDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Safe Routes"
-          value="12 Available"
+          value={`${safeRoutesCount} Available`}
           icon={ShieldCheck}
-          trend="8%"
+          trend={`${((safeRoutesCount / 15) * 100).toFixed(0)}%`}
+          trendType={safeRoutesCount > 10 ? "up" : "down"}
           description="Based on real-time crime data"
         />
         <StatCard
@@ -100,17 +131,18 @@ const CitizenDashboard = () => {
           trend="Live"
           trendType={notifications.length > 5 ? "up" : "down"}
           description="Detected in real-time"
+          isLive={true}
         />
         <StatCard
           title="Civic Reports"
-          value="48"
+          value={civicReportsCount.toString()}
           icon={MessageSquare}
-          trend="15%"
+          trend={`${((civicNotifications.length / 5) * 100).toFixed(0)}%`}
           description="Issues resolved in your ward"
         />
         <StatCard
           title="SOS Contacts"
-          value="05"
+          value={sosContactsCount.toString().padStart(2, '0')}
           icon={Users}
           description="Verified emergency contacts"
         />
@@ -122,19 +154,24 @@ const CitizenDashboard = () => {
           {/* Chart Section */}
           <ChartCard title="Weekly Safety Trends" subtitle="Crime vs Accident frequency in your city">
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <AreaChart data={data}>
+              <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorAccidents" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1} />
                     <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                   </linearGradient>
+                  <linearGradient id="colorCrime" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.1} />
+                    <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
+                  </linearGradient>
                 </defs>
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
                 <Tooltip
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', background: '#1e293b', color: '#fff' }}
+                  itemStyle={{ color: '#fff' }}
                 />
                 <Area type="monotone" dataKey="accidents" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorAccidents)" />
-                <Area type="monotone" dataKey="crime" stroke="#f43f5e" strokeWidth={3} fillOpacity={0} />
+                <Area type="monotone" dataKey="crime" stroke="#f43f5e" strokeWidth={3} fillOpacity={1} fill="url(#colorCrime)" />
               </AreaChart>
             </ResponsiveContainer>
           </ChartCard>

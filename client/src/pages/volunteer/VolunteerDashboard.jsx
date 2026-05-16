@@ -32,28 +32,21 @@ function formatTime(ts) {
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
+import { useLocationContext } from '../../contexts/LocationContext';
+
 const VolunteerDashboard = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const [alerts, setAlerts] = useState([]);
   const [expertise, setExpertise] = useState(null);
-  const [myLocation, setMyLocation] = useState(null);
+  
+  const { location: contextLocation } = useLocationContext();
+  const myLocation = contextLocation ? { latitude: contextLocation.latitude, longitude: contextLocation.longitude } : null;
   const [acceptingId, setAcceptingId] = useState(null);
 
   const initials = currentUser?.displayName
     ? currentUser.displayName.split(' ').map(n => n[0]).join('').toUpperCase()
     : (currentUser?.email ? currentUser.email[0].toUpperCase() : 'V');
-
-  // Live location
-  useEffect(() => {
-    if (!navigator.geolocation) return;
-    const id = navigator.geolocation.watchPosition(
-      (p) => setMyLocation({ latitude: p.coords.latitude, longitude: p.coords.longitude }),
-      () => {},
-      { enableHighAccuracy: true }
-    );
-    return () => navigator.geolocation.clearWatch(id);
-  }, []);
 
   // Fetch expertise
   useEffect(() => {

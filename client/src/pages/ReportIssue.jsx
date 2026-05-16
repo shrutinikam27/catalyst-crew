@@ -54,9 +54,24 @@ const ReportIssue = () => {
   const [address, setAddress] = useState("Pune Metropolitan Area");
 
   useEffect(() => {
+    // Set category from state if navigation passed it
     if (location.state && location.state.category) {
       setFormData(prev => ({ ...prev, category: location.state.category }));
       setStep(2);
+    }
+
+    // Real-time location detection fallback
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          setMarkerPos([latitude, longitude]);
+          fetchAddress(latitude, longitude);
+        },
+        () => {
+          setAddress('Pune Metropolitan Area');
+        }
+      );
     }
   }, [location.state]);
 
@@ -128,6 +143,7 @@ const ReportIssue = () => {
         const url = await getDownloadURL(snapshot.ref);
         imageUrls.push(url);
       } catch (err) {
+        // Fallback for mock/local mode if storage fails
         const base64 = await new Promise((resolve) => {
           const reader = new FileReader();
           reader.onloadend = () => resolve(reader.result);
@@ -194,7 +210,7 @@ const ReportIssue = () => {
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0f172a] pt-32 pb-16 px-6 font-inter transition-colors duration-300">
       <div className="max-w-[800px] mx-auto">
-        
+
         {/* Progress Header */}
         <div className="flex items-center justify-center gap-4 mb-12">
           <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${step >= 1 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-500'}`}>1</div>
@@ -215,7 +231,7 @@ const ReportIssue = () => {
 
             <div className="grid md:grid-cols-2 gap-6">
               {categories.map((cat) => (
-                <div 
+                <div
                   key={cat.id}
                   onClick={() => handleCategorySelect(cat.id)}
                   className="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group"
@@ -233,7 +249,7 @@ const ReportIssue = () => {
 
         {step === 2 && (
           <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-            <button 
+            <button
               onClick={() => setStep(1)}
               className="mb-8 text-indigo-600 font-bold text-sm flex items-center gap-2 hover:gap-3 transition-all"
             >
@@ -242,26 +258,26 @@ const ReportIssue = () => {
 
             <div className="bg-white dark:bg-slate-800 p-10 rounded-[3rem] shadow-2xl shadow-indigo-100 dark:shadow-none border border-slate-100 dark:border-slate-700">
               <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-8">Provide Issue Details</h2>
-              
+
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="space-y-2">
                     <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Issue Title</label>
-                    <input 
+                    <input
                       required
-                      type="text" 
+                      type="text"
                       placeholder="e.g. Streetlight out on Baner Road"
                       className="w-full bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-100 dark:ring-slate-700 p-4 rounded-2xl focus:ring-2 focus:ring-indigo-600 transition-all dark:text-white"
                       value={formData.title}
-                      onChange={(e) => setFormData({...formData, title: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Priority Level</label>
-                    <select 
+                    <select
                       className="w-full bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-100 dark:ring-slate-700 p-4 rounded-2xl focus:ring-2 focus:ring-indigo-600 transition-all dark:text-white"
                       value={formData.priority}
-                      onChange={(e) => setFormData({...formData, priority: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
                     >
                       <option>Low</option>
                       <option>Medium</option>
@@ -273,12 +289,12 @@ const ReportIssue = () => {
 
                 <div className="space-y-2">
                   <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Description</label>
-                  <textarea 
+                  <textarea
                     required
                     placeholder="Describe the issue in detail..."
                     className="w-full bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-100 dark:ring-slate-700 p-4 rounded-2xl focus:ring-2 focus:ring-indigo-600 transition-all min-h-[120px] dark:text-white"
                     value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   />
                 </div>
 
@@ -300,7 +316,7 @@ const ReportIssue = () => {
                         <RecenterMap pos={markerPos} />
                       </MapContainer>
                     </div>
-                    <p className="text-[10px] text-slate-400 font-medium ml-1 leading-tight">📍 {address}</p>
+                    <p className="text-[10px] text-slate-400 font-medium ml-1 leading-tight mt-1">📍 {address}</p>
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Evidence Photos</label>
@@ -326,13 +342,13 @@ const ReportIssue = () => {
                 </div>
 
                 <div className="pt-4">
-                   <button 
+                  <button 
                     disabled={loading}
                     type="submit"
                     className="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-5 rounded-[2rem] font-black text-lg shadow-2xl shadow-indigo-200 dark:shadow-none flex items-center justify-center gap-3 transition-all disabled:opacity-50"
-                   >
-                     {loading ? "Submitting..." : <>Submit Official Report <ArrowRight size={20} /></>}
-                   </button>
+                  >
+                    {loading ? "Submitting..." : <>Submit Official Report <ArrowRight size={20} /></>}
+                  </button>
                 </div>
               </form>
             </div>
@@ -349,15 +365,15 @@ const ReportIssue = () => {
               <p className="text-slate-500 dark:text-slate-400 max-w-[400px] mx-auto mb-10 text-lg">
                 Your report <span className="font-bold text-indigo-600">#SL-9842</span> has been recorded. Authorities have been notified.
               </p>
-              
+
               <div className="flex flex-col md:flex-row gap-4 justify-center">
-                <button 
+                <button
                   onClick={() => navigate('/user')}
                   className="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-lg"
                 >
                   Track My Report
                 </button>
-                <button 
+                <button
                   onClick={() => setStep(1)}
                   className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 px-8 py-4 rounded-2xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
                 >

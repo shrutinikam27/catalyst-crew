@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   ShieldCheck, AlertCircle, MessageSquare,
@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../firebase/AuthContext';
 import { useSocket } from '../../context/SocketContext';
+import { subscribeToUserComplaints, subscribeToAlerts } from '../../services/firestoreService';
 
 const data = [
   { name: 'Mon', accidents: 4, crime: 2 },
@@ -27,15 +28,33 @@ const data = [
 ];
 
 const CitizenDashboard = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, userProfile } = useAuth();
   const { notifications, lastPulse } = useSocket();
   const navigate = useNavigate();
 
+  // Real-time Firestore data
+  const [myComplaints, setMyComplaints] = useState([]);
+  const [firestoreAlerts, setFirestoreAlerts] = useState([]);
+
+  useEffect(() => {
+    if (!currentUser?.uid) return;
+    const unsub = subscribeToUserComplaints(currentUser.uid, setMyComplaints);
+    return () => unsub();
+  }, [currentUser?.uid]);
+
+  useEffect(() => {
+    const unsub = subscribeToAlerts(setFirestoreAlerts, 'citizen');
+    return () => unsub();
+  }, []);
+
+  const resolvedCount = myComplaints.filter(c => c.status === 'resolved').length;
+  const pendingCount = myComplaints.filter(c => c.status === 'pending').length;
+
   // Local state for live chart data to make it feel alive
-  const [chartData, setChartData] = React.useState(data);
+  const [chartData, setChartData] = useState(data);
 
   // Update chart data when a new pulse arrives
-  React.useEffect(() => {
+  useEffect(() => {
     if (lastPulse) {
       setChartData(prev => {
         const day = new Date().toLocaleDateString('en-US', { weekday: 'short' });
@@ -71,7 +90,7 @@ const CitizenDashboard = () => {
       {/* Welcome Header */}
       <div>
         <h1 className="text-3xl font-outfit font-extrabold text-slate-900 dark:text-white">
-          Good Morning, {currentUser?.displayName || (currentUser?.email ? currentUser.email.split('@')[0] : 'Citizen')}
+          Good Morning, {userProfile?.displayName || currentUser?.displayName || (currentUser?.email ? currentUser.email.split('@')[0] : 'Citizen')}
         </h1>
         <div className="flex items-center gap-2 mt-1">
           <p className="text-slate-500 dark:text-slate-400 font-medium">
@@ -88,6 +107,7 @@ const CitizenDashboard = () => {
           )}
         </div>
       </div>
+
 
 
       {/* Live Crime Ticker */}
@@ -133,12 +153,12 @@ const CitizenDashboard = () => {
           description="Detected in real-time"
           isLive={true}
         />
-        <StatCard
-          title="Civic Reports"
-          value={civicReportsCount.toString()}
-          icon={MessageSquare}
-          trend={`${((civicNotifications.length / 5) * 100).toFixed(0)}%`}
-          description="Issues resolved in your ward"
+        <StatCard 
+          title="My Reports" 
+          value={myComplaints.length.toString().padStart(2, '0')} 
+          icon={MessageSquare} 
+          trend={myComplaints.length > 0 ? `${resolvedCount} resolved` : 'Syncing...'}
+          description={myComplaints.length > 0 ? `${pendingCount} pending review` : 'Waiting for database index'}
         />
         <StatCard
           title="SOS Contacts"

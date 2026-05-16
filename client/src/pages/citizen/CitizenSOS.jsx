@@ -7,11 +7,16 @@ import {
 } from 'lucide-react';
 import SmartMap from '../../components/map/SmartMap';
 import { cn } from '../../utils/cn';
+import { useAuth } from '../../firebase/AuthContext';
+import { createEmergencyRequest, sendNotification } from '../../services/firestoreService';
 
 const CitizenSOS = () => {
+  const { currentUser } = useAuth();
   const [sosActive, setSosActive] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const [status, setStatus] = useState('idle'); // idle, counting, active, responding, resolved
+  const [userLocation, setUserLocation] = useState(null);
+  const [emergencyId, setEmergencyId] = useState(null);
 
   useEffect(() => {
     let timer;
@@ -19,9 +24,39 @@ const CitizenSOS = () => {
       timer = setInterval(() => setCountdown(prev => prev - 1), 1000);
     } else if (status === 'counting' && countdown === 0) {
       setStatus('active');
+      // Create emergency request in Firestore
+      triggerSOS();
     }
     return () => clearInterval(timer);
   }, [status, countdown]);
+
+  // Detect location on mount
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => setUserLocation({ lat: 18.5204, lng: 73.8567 })
+      );
+    }
+  }, []);
+
+  const triggerSOS = async () => {
+    try {
+      const loc = userLocation || { lat: 18.5204, lng: 73.8567 };
+      const id = await createEmergencyRequest({
+        type: 'crime',
+        description: 'SOS Emergency triggered by citizen',
+        location: { ...loc, address: `${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}` },
+        userId: currentUser?.uid || 'anonymous',
+        userName: currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Anonymous',
+        priority: 'critical'
+      });
+      setEmergencyId(id);
+      console.log('🚨 SOS Emergency created:', id);
+    } catch (err) {
+      console.error('SOS submission error:', err);
+    }
+  };
 
   const handleSosTrigger = () => {
     setStatus('counting');

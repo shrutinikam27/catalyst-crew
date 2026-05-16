@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { 
   BarChart2, Shield, Activity, Users, 
   MapPin, AlertTriangle, CheckCircle, 
   Settings, Download, Search, Briefcase, Globe,
-  MessageSquare, Mail, Clock, ChevronRight, BarChart, X, Zap
+  MessageSquare, Mail, Clock, ChevronRight,
+  ExternalLink, BadgeCheck, BarChart, X, Zap
 } from 'lucide-react';
 import { db } from '../../firebase/config';
 import { collection, query, orderBy, limit, onSnapshot, updateDoc, doc } from 'firebase/firestore';
@@ -16,6 +17,15 @@ import {
   Tooltip, Legend
 } from 'recharts';
 import { cn } from '../../utils/cn';
+import { useSocket } from '../../context/SocketContext';
+import { 
+  subscribeToAllComplaints,
+  subscribeToEmergencies,
+  subscribeToAnalytics,
+  subscribeToCollection,
+  COLLECTIONS
+} from '../../services/firestoreService';
+import { seedDatabase } from '../../services/seedDatabase';
 
 // Leaflet Imports
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
@@ -68,8 +78,18 @@ const riskZones = [
 ];
 
 const AdminDashboard = () => {
-  const navigate = useNavigate();
+  const { notifications } = useSocket();
+  const [complaints, setComplaints] = useState([]);
+  const [emergencies, setEmergencies] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
   const [supportRequests, setSupportRequests] = useState([]);
+  const [seeding, setSeeding] = useState(false);
+  const [seedDone, setSeedDone] = useState(false);
+  const [volunteers, setVolunteers] = useState([]);
+  const [actionLoading, setActionLoading] = useState(null);
+  const [selectedProof, setSelectedProof] = useState(null);
+
+  const navigate = useNavigate();
   const [incidents, setIncidents] = useState([]);
   const [stats, setStats] = useState({
     total: 0,
@@ -150,7 +170,24 @@ const AdminDashboard = () => {
     }
   };
 
+  // Real-time Firestore subscriptions
   useEffect(() => {
+    const unsubs = [
+      subscribeToAllComplaints(setComplaints),
+      subscribeToEmergencies(setEmergencies),
+      subscribeToAnalytics(setAnalytics),
+      subscribeToCollection(COLLECTIONS.NOTIFICATIONS, setSupportRequests, [], 'createdAt', 'desc', 10),
+      subscribeToCollection('volunteerRequests', (vols) => {
+        // Sort in-memory to avoid composite index requirements
+        const sorted = [...vols].sort((a, b) => {
+          const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+          const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+          return timeB - timeA;
+        });
+        setVolunteers(sorted);
+      }, [{ field: 'status', operator: '==', value: 'pending' }], null),
+    ];
+
     // 1. Fetch Incidents
     const qIncidents = query(
       collection(db, 'incidents'),
@@ -206,10 +243,47 @@ const AdminDashboard = () => {
     });
 
     return () => {
+      unsubs.forEach(u => u());
       unsubscribeIncidents();
       unsubscribeSupport();
     };
   }, []);
+
+  // Compute live stats
+  const totalComplaints = complaints.length;
+  const resolvedComplaints = complaints.filter(c => c.status === 'resolved').length;
+  const activeEmergencies = emergencies.filter(e => e.status === 'active').length;
+  const resolutionRate = totalComplaints > 0 ? ((resolvedComplaints / totalComplaints) * 100).toFixed(1) : '0';
+
+  const cityData = [
+    { name: 'Crime Reports', value: complaints.filter(c => c.category === 'crime' || c.department === 'police').length || 40 },
+    { name: 'Medical Response', value: complaints.filter(c => c.category === 'accident' || c.department === 'hospital').length || 30 },
+    { name: 'Fire Incidents', value: complaints.filter(c => c.category === 'fire' || c.department === 'fire').length || 20 },
+    { name: 'Civic Issues', value: complaints.filter(c => c.category === 'civic' || c.department === 'admin').length || 25 },
+  ];
+
+  const handleVolunteerAction = async (vol, status) => {
+    setActionLoading(vol.id);
+    try {
+      const { updateDocument, syncUserProfile } = await import('../../services/firestoreService');
+      
+      // 1. Update request status
+      await updateDocument('volunteerRequests', vol.id, { status });
+      
+      // 2. If approved, update user's profile role
+      if (status === 'approved') {
+        await syncUserProfile(vol.uid, {
+          role: 'volunteer',
+          displayName: vol.name
+        });
+        console.log(`✅ Volunteer ${vol.name} approved and role updated.`);
+      }
+    } catch (err) {
+      console.error("Action failed:", err);
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -226,6 +300,36 @@ const AdminDashboard = () => {
             </p>
           </div>
           <div className="flex gap-4">
+            <button 
+              onClick={async () => {
+                setSeeding(true);
+                try {
+                  await seedDatabase();
+                  setSeedDone(true);
+                  setTimeout(() => setSeedDone(false), 5000);
+                } catch (err) {
+                  console.error('Seed error:', err);
+                }
+                setSeeding(false);
+              }}
+              disabled={seeding}
+              className="px-4 py-2 bg-white/10 hover:bg-white/25 border border-white/20 rounded-xl text-xs font-bold transition-all disabled:opacity-50 inline-flex items-center gap-2"
+              title="Populate database with Pune infrastructure data"
+            >
+              {seeding ? (
+                <>
+                  <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                  Seeding Infrastructure...
+                </>
+              ) : seedDone ? (
+                "✅ Infrastructure Seeded!"
+              ) : (
+                <>
+                  <Download size={14} />
+                  Seed Pune Data
+                </>
+              )}
+            </button>
             <button 
               onClick={() => setIsSettingsOpen(true)}
               className={cn(
@@ -245,6 +349,11 @@ const AdminDashboard = () => {
               View Predictive Analytics
             </button>
           </div>
+          {seedDone && (
+            <div className="absolute top-4 right-4 px-4 py-2 bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg animate-bounce">
+              ✅ Database seeded with Pune data!
+            </div>
+          )}
         </div>
         <div className="absolute right-0 top-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl"></div>
       </div>
@@ -336,10 +445,10 @@ const AdminDashboard = () => {
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="Total Grievances" value={stats.total} icon={AlertTriangle} trend="4.2%" trendType="down" />
-        <StatCard title="Active Hotspots" value={stats.active} icon={Users} trend="12%" trendType="up" />
-        <StatCard title="Issues Resolved" value={stats.resolved} icon={CheckCircle} trend="5%" trendType="up" />
-        <StatCard title="Predictive Accuracy" value={`89%`} icon={Activity} trend="2.1%" trendType="up" />
+        <StatCard title="Total Complaints" value={totalComplaints.toString()} icon={AlertTriangle} trend={`${resolvedComplaints} resolved`} trendType="down" description="From Firestore real-time" />
+        <StatCard title="Active Emergencies" value={activeEmergencies.toString()} icon={Activity} trend="Live" trendType={activeEmergencies > 3 ? "up" : "down"} description="SOS & dispatch requests" />
+        <StatCard title="Resolution Rate" value={`${resolutionRate}%`} icon={CheckCircle} trend="2.1%" trendType="up" description="Across all departments" />
+        <StatCard title="Live Incidents" value={notifications.length.toString()} icon={Shield} trend="Socket.IO" trendType="up" description="Real-time city pulse" />
       </div>
 
       {/* Middle Row */}
@@ -773,6 +882,148 @@ const AdminDashboard = () => {
           </div>
         ))}
       </div>
+
+      {/* Volunteer Verification Hub */}
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <div>
+            <h3 className="text-xl font-bold font-outfit text-slate-900 dark:text-white">Volunteer Verification Hub</h3>
+            <p className="text-sm text-slate-500 font-medium">Review government IDs and expertise of applicants.</p>
+          </div>
+          <div className="px-4 py-2 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-rose-100 dark:border-rose-900/30">
+            {volunteers.length} Pending Requests
+          </div>
+        </div>
+
+        {volunteers.length === 0 ? (
+          <div className="p-20 text-center space-y-4">
+            <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto text-slate-300">
+              <BadgeCheck size={32} />
+            </div>
+            <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">All volunteers verified</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="bg-slate-50 dark:bg-slate-800/50">
+                <tr>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Applicant</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Expertise</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Verification Proof</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
+                {volunteers.map((vol) => (
+                  <tr key={vol.id} className="group hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 font-black text-xs">
+                          {vol.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-900 dark:text-white">{vol.name}</p>
+                          <p className="text-[10px] text-slate-400 font-medium">{vol.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex flex-wrap gap-2">
+                        {(vol.expertise || []).map(skill => (
+                          <span key={skill} className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px] font-bold rounded uppercase tracking-tighter">
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      {vol.idProofUrl && vol.idProofUrl !== 'Not provided' ? (
+                        <button 
+                          onClick={() => setSelectedProof({ url: vol.idProofUrl, name: vol.name })}
+                          className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 hover:underline text-[10px] font-black uppercase tracking-widest"
+                        >
+                          <ExternalLink size={14} /> View Document
+                        </button>
+                      ) : (
+                        <span className="text-slate-300 text-[10px] font-bold uppercase italic">No Proof Uploaded</span>
+                      )}
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={() => handleVolunteerAction(vol, 'approved')}
+                          disabled={actionLoading === vol.id}
+                          className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-black rounded-xl transition-all shadow-lg shadow-emerald-100 dark:shadow-none disabled:opacity-50"
+                        >
+                          {actionLoading === vol.id ? '...' : 'APPROVE'}
+                        </button>
+                        <button 
+                          onClick={() => handleVolunteerAction(vol, 'rejected')}
+                          disabled={actionLoading === vol.id}
+                          className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-[10px] font-black rounded-xl transition-all disabled:opacity-50"
+                        >
+                          REJECT
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Premium Glassmorphic Image Preview Modal */}
+      <AnimatePresence>
+        {selectedProof && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/60 backdrop-blur-md"
+            onClick={() => setSelectedProof(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              className="relative w-full max-w-3xl bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-2xl overflow-hidden p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+                <div>
+                  <h4 className="text-lg font-bold font-outfit text-slate-900 dark:text-white">Document Verification Proof</h4>
+                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-0.5">Submitted by {selectedProof.name}</p>
+                </div>
+                <button 
+                  onClick={() => setSelectedProof(null)}
+                  className="p-3 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700/80 rounded-2xl text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="flex items-center justify-center min-h-[300px] max-h-[60vh] bg-slate-50 dark:bg-slate-950/50 rounded-2xl overflow-y-auto p-4 border border-slate-100 dark:border-slate-800">
+                {selectedProof.url.startsWith('data:') || selectedProof.url.startsWith('http') ? (
+                  <img 
+                    src={selectedProof.url} 
+                    alt="ID Proof Document" 
+                    className="max-w-full max-h-[50vh] object-contain rounded-xl shadow-md"
+                  />
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-sm font-bold text-rose-500">{selectedProof.url}</p>
+                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-2">The upload was blocked by CORS or Network constraints. Verify manually via phone or email.</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

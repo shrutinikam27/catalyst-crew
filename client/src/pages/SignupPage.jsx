@@ -12,6 +12,7 @@ import {
   AlertTriangle, Clock
 } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { uploadFile } from '../services/storageService';
 
 function SignupPage() {
   const [step, setStep] = useState(1);
@@ -29,6 +30,7 @@ function SignupPage() {
     designation: ''
   });
   const [fileName, setFileName] = useState('');
+  const [idFile, setIdFile] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signup, loginWithGoogle } = useAuth();
@@ -39,6 +41,63 @@ function SignupPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    if (!formData.phone) return setError('Please enter a phone number first.');
+    
+    setLoading(true);
+    setError('');
+    try {
+      const verifier = setupRecaptcha('recaptcha-container');
+      const result = await loginWithPhone(formData.phone, verifier);
+      setConfirmationResult(result);
+      setShowOtpInput(true);
+      
+      if (result.isMock) {
+        alert('DEVELOPMENT MODE: Please use the test code "123456" to verify your number.');
+      } else {
+        alert('OTP sent to ' + formData.phone);
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Failed to send OTP. Ensure the number is in E.164 format (e.g. +91...)');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const compressImage = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Compress to JPEG with 0.7 quality
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          resolve(dataUrl);
+        };
+        img.onerror = () => resolve(event.target.result); // Fallback to uncompressed
+      };
+      reader.onerror = () => resolve(null);
+    });
+  };
   async function handleSubmit(e) {
     e.preventDefault();
     
@@ -48,29 +107,80 @@ function SignupPage() {
     
     setError('');
     setLoading(true);
+    
+    let localProofUrl = 'Not provided';
+    if (role === 'volunteer' && idFile) {
+      try {
+        localProofUrl = await compressImage(idFile);
+      } catch (compErr) {
+        console.error("Local proof compression failed:", compErr);
+      }
+    }
+
     try {
       // Continue with Email Signup and Profile creation
       const { user } = await signup(formData.email, formData.password);
 
       if (role === 'volunteer') {
-        await addDoc(collection(db, 'volunteerRequests'), {
+        // 1. Submit the volunteer request immediately with CORS-proof Base64 string
+        const docRef = await addDoc(collection(db, 'volunteerRequests'), {
           uid: user.uid,
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
           expertise: formData.skills,
+          idProofUrl: localProofUrl,
           idFileName: fileName || 'Not provided',
           status: 'pending',
           createdAt: serverTimestamp(),
         });
+        
         setSubmitted(true);
+
+        // 2. Perform file upload asynchronously in the background (as a backup)
+        if (idFile) {
+          (async () => {
+            try {
+              console.log("🚀 Starting background ID proof upload for doc:", docRef.id);
+              const path = `volunteer_proofs/${user.uid}/${Date.now()}_${fileName}`;
+              const downloadUrl = await uploadFile(idFile, path);
+              
+              // 3. Update document with the permanent download URL
+              const { updateDocument } = await import('../services/firestoreService');
+              await updateDocument('volunteerRequests', docRef.id, {
+                idProofUrl: downloadUrl
+              });
+              console.log("✅ Background ID proof upload complete and updated in DB.");
+            } catch (storageErr) {
+              console.error("❌ Background ID proof upload failed (CORS/Network):", storageErr);
+              // We already have the Base64 in Firestore, so no need to fail the status!
+            }
+          })();
+        }
       } else if (role === 'authority') {
         navigate('/admin');
       } else {
         navigate('/user');
       }
     } catch (err) {
-      setError(err.message || 'Failed to complete signup.');
+      console.error("Signup failed:", err);
+      let message = 'Failed to complete signup.';
+      
+      // Translate common Firebase Auth error codes into sleek, user-friendly messages
+      if (err.code === 'auth/email-already-in-use') {
+        message = 'This email address is already registered. Please go back to Login.';
+      } else if (err.code === 'auth/invalid-email') {
+        message = 'The email address format is not valid. Please check your spelling.';
+      } else if (err.code === 'auth/weak-password') {
+        message = 'The password is too weak. It must be at least 6 characters.';
+      } else if (err.code === 'auth/operation-not-allowed') {
+        message = 'Email/password signup is currently disabled on this system.';
+      } else if (err.message) {
+        // Strip out the ugly "Firebase: " prefix if present
+        message = err.message.replace(/^Firebase:\s*/, '').trim();
+      }
+      
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -303,7 +413,13 @@ function SignupPage() {
                             type="file" 
                             className="hidden" 
                             accept="image/*,.pdf" 
-                            onChange={(e) => setFileName(e.target.files[0]?.name || '')}
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                setIdFile(file);
+                                setFileName(file.name);
+                              }
+                            }}
                           />
                         </label>
                       </div>

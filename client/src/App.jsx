@@ -32,28 +32,36 @@ import NearbyEmergencies from './pages/volunteer/NearbyEmergencies';
 
 // Police Pages
 import PoliceDashboard from './pages/police/PoliceDashboard';
+import PoliceHeatmap from './pages/police/PoliceHeatmap';
+import IncidentManager from './pages/police/IncidentManager';
+import PatrolOptimizer from './pages/police/PatrolOptimizer';
+import PoliceProfileSettings from './pages/police/PoliceProfileSettings';
 
 // Fire Pages
 import FireDashboard from './pages/fire/FireDashboard';
+import FireDispatch from './pages/fire/FireDispatch';
 
 // Hospital Pages
 import HospitalDashboard from './pages/hospital/HospitalDashboard';
-import DispatchBoard from './pages/hospital/DispatchBoard';
+import HospitalDispatch from './pages/hospital/HospitalDispatch';
 import PatientAlerts from './pages/hospital/PatientAlerts';
+import HospitalProfileSettings from './pages/hospital/HospitalProfileSettings';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
 import CityAnalytics from './pages/admin/CityAnalytics';
+import AdminReports from './pages/admin/AdminReports';
 import UserManagement from './pages/admin/UserManagement';
 import SystemLogs from './pages/admin/SystemLogs';
 import AIForecasts from './pages/admin/AIForecasts';
-import AdminReports from './pages/admin/AdminReports';
 
 import './index.css';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const { currentUser, loading } = useAuth();
+  const auth = useAuth();
+  const currentUser = auth?.currentUser;
+  const loading = auth ? auth.loading : true;
   
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 text-indigo-600">
@@ -68,8 +76,8 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
-    <SocketProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <SocketProvider>
         <Router>
           <Routes>
           {/* Public Routes */}
@@ -108,23 +116,24 @@ function App() {
           {/* Police Dashboard Routes */}
           <Route path="/police" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
             <Route index element={<PoliceDashboard />} />
-            <Route path="incidents" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Incident Management Coming Soon</div>} />
-            <Route path="patrol" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Patrol Optimizer Coming Soon</div>} />
-            <Route path="map" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Crime Map Coming Soon</div>} />
-            <Route path="profile" element={<ProfileSettings />} />
+            <Route path="incidents" element={<IncidentManager />} />
+            <Route path="patrol" element={<PatrolOptimizer />} />
+            <Route path="map" element={<PoliceHeatmap />} />
+            <Route path="profile" element={<PoliceProfileSettings />} />
           </Route>
 
           {/* Hospital Dashboard Routes */}
           <Route path="/hospital" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
             <Route index element={<HospitalDashboard />} />
-            <Route path="dispatch" element={<DispatchBoard />} />
+            <Route path="dispatch" element={<HospitalDispatch />} />
             <Route path="alerts" element={<PatientAlerts />} />
+            <Route path="profile" element={<HospitalProfileSettings />} />
           </Route>
 
           {/* Fire Dashboard Routes */}
           <Route path="/fire" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
             <Route index element={<FireDashboard />} />
-            <Route path="dispatch" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Dispatch Board Coming Soon</div>} />
+            <Route path="dispatch" element={<FireDispatch />} />
             <Route path="hazmat" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Hazmat Tracking Coming Soon</div>} />
           </Route>
 
@@ -132,7 +141,6 @@ function App() {
           <Route path="/admin" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
             <Route index element={<AdminDashboard />} />
             <Route path="analytics" element={<CityAnalytics />} />
-            <Route path="reports" element={<AdminReports />} />
             <Route path="users" element={<UserManagement />} />
             <Route path="logs" element={<SystemLogs />} />
             <Route path="ai" element={<AIForecasts />} />
@@ -142,8 +150,8 @@ function App() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
-    </AuthProvider>
     </SocketProvider>
+    </AuthProvider>
   );
 }
 

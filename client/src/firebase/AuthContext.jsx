@@ -10,6 +10,7 @@ import {
   signInAnonymously
 } from 'firebase/auth';
 import { auth, googleProvider, firebaseConfig } from './config';
+import { syncUserProfile, subscribeToUserProfile } from '../services/firestoreService';
 
 // Determine if we should use mock authentication
 const USE_MOCK_AUTH = import.meta.env.VITE_USE_MOCK_AUTH === 'true' || 
@@ -24,6 +25,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   function signup(email, password) {
@@ -135,6 +137,29 @@ export function AuthProvider({ children }) {
     }
   }
 
+  // Sync Firestore profile when auth user changes
+  useEffect(() => {
+    let unsubProfile = null;
+
+    if (currentUser?.uid && !USE_MOCK_AUTH) {
+      // Sync user to Firestore, then subscribe to real-time profile updates
+      syncUserProfile(currentUser.uid, {
+        email: currentUser.email || '',
+        displayName: currentUser.displayName || currentUser.email?.split('@')[0] || '',
+        photoURL: currentUser.photoURL || '',
+        phone: currentUser.phoneNumber || ''
+      }).catch(err => console.warn('Profile sync:', err));
+
+      unsubProfile = subscribeToUserProfile(currentUser.uid, (profile) => {
+        setUserProfile(profile);
+      });
+    } else {
+      setUserProfile(null);
+    }
+
+    return () => { if (unsubProfile) unsubProfile(); };
+  }, [currentUser?.uid]);
+
   function loginAnonymously() {
     if (USE_MOCK_AUTH) {
       const mockUser = { uid: 'anon-' + Date.now(), isAnonymous: true };
@@ -161,6 +186,8 @@ export function AuthProvider({ children }) {
 
   const value = {
     currentUser,
+    userProfile,
+    userRole: userProfile?.role || 'citizen',
     signup,
     login,
     logout,

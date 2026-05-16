@@ -1,13 +1,15 @@
 import React from 'react';
 import { useAuth } from '../firebase/AuthContext';
+import PublicNavbar from '../components/PublicNavbar';
 
 function HomePage() {
   const { currentUser } = useAuth();
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0f172a] font-inter transition-colors duration-300">
+      <PublicNavbar />
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-6 max-w-[1400px] mx-auto">
+      <section className="pt-40 pb-16 px-6 max-w-[1400px] mx-auto">
         <div className="grid lg:grid-cols-[1fr_1.2fr] gap-12 items-center">
           <div className="space-y-8">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-full text-xs font-bold ring-1 ring-indigo-100 dark:ring-indigo-800">

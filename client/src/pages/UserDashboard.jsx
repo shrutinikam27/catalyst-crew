@@ -139,8 +139,8 @@ const UserDashboard = () => {
           
           <div className="overview-stats">
             <div className="stat-box">
-              <div className="stat-icon-wrapper bg-pink-light">
-                <Shield className="text-pink" size={24} />
+              <div className="stat-icon-wrapper bg-indigo-light">
+                <Shield className="text-indigo" size={24} />
               </div>
               <div className="stat-content">
                 <p className="stat-title">Total Complaints</p>
@@ -263,7 +263,7 @@ const UserDashboard = () => {
                     </div>
                   </div>
                   <div className="contact-item">
-                    <div className="contact-icon bg-pink-light text-pink"><Heart size={18}/></div>
+                    <div className="contact-icon bg-indigo-light text-indigo"><Heart size={18}/></div>
                     <div className="contact-info">
                       <p>Women Helpline</p>
                       <strong>1091</strong>
@@ -286,7 +286,7 @@ const UserDashboard = () => {
                 </div>
               </div>
 
-              <div className="safety-tip card bg-pink-gradient">
+              <div className="safety-tip card bg-indigo-gradient">
                 <Shield className="tip-watermark" size={100} />
                 <h3>Safety Tip of the Day</h3>
                 <p>Always share your live location with trusted contacts while traveling.</p>
@@ -302,7 +302,7 @@ const UserDashboard = () => {
             <h3>Explore More</h3>
             <div className="explore-grid">
               <div className="explore-card">
-                <div className="icon-wrapper text-pink bg-pink-light"><Shield size={20} /></div>
+                <div className="icon-wrapper text-indigo bg-indigo-light"><Shield size={20} /></div>
                 <span>Women Safety</span>
               </div>
               <div className="explore-card">

@@ -3,6 +3,7 @@
   height: 100vh;
   width: 100vw;
   background-color: var(--bg-dark);
+  font-family: 'Inter', sans-serif;
   overflow: hidden;
 }
 
@@ -15,6 +16,7 @@
   margin: 1rem;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(255,255,255,0.05);
+  font-family: 'Outfit', sans-serif;
 }
 
 .sidebar-header {
@@ -118,7 +120,9 @@
   width: 100%;
   font-size: 0.9rem;
 }
-
+.widget-header h3, .section-header h3, .banner-text h1, h2 {
+  font-family: 'Outfit', sans-serif;
+}
 .topbar-actions {
   display: flex;
   align-items: center;

@@ -2,9 +2,9 @@
   display: flex;
   height: 100vh;
   width: 100vw;
-  background-color: #F8F9FA;
+  background-color: #F8FAFC;
   font-family: 'Inter', sans-serif;
-  color: #333;
+  color: #1E293B;
   overflow: hidden;
 }
 
@@ -17,7 +17,7 @@
   padding: 1.25rem;
 }
 
-.text-pink { color: #EC4899; }
+.text-indigo { color: #6366f1; }
 .text-red { color: #EF4444; }
 .text-orange { color: #F97316; }
 .text-blue { color: #3B82F6; }
@@ -25,7 +25,7 @@
 .text-purple { color: #8B5CF6; }
 .text-gray-500 { color: #6B7280; }
 
-.bg-pink-light { background: #FDF2F8; }
+.bg-indigo-light { background: #EEF2FF; }
 .bg-red-light { background: #FEF2F2; }
 .bg-orange-light { background: #FFF7ED; }
 .bg-blue-light { background: #EFF6FF; }
@@ -49,10 +49,10 @@
 }
 
 .brand-icon-wrapper {
-  background: #FDF2F8;
+  background: #EEF2FF;
   padding: 0.5rem;
   border-radius: 8px;
-  color: #EC4899;
+  color: #6366f1;
 }
 
 .sidebar-brand {
@@ -61,12 +61,13 @@
   gap: 0.75rem;
   margin-bottom: 2rem;
   padding-left: 0.5rem;
+  font-family: 'Outfit', sans-serif;
 }
 
 .brand-text h2 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1F2937;
+  color: #1E293B;
   line-height: 1.2;
 }
 
@@ -101,19 +102,19 @@
 }
 
 .user-sidebar-nav .nav-item.active {
-  background: #FDF2F8;
-  color: #EC4899;
+  background: #EEF2FF;
+  color: #6366f1;
   font-weight: 600;
 }
 
 .sidebar-promo {
-  background: #FDF2F8;
+  background: #EEF2FF;
   border-radius: 12px;
   padding: 1.25rem;
   position: relative;
   overflow: hidden;
   margin-top: auto;
-  color: #831843;
+  color: #312E81;
 }
 
 .sidebar-promo h4 {
@@ -129,7 +130,7 @@
   left: 0;
   right: 0;
   height: 50px;
-  background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg"><path d="M0 20 L0 10 L10 5 L15 15 L25 8 L35 18 L50 2 L60 15 L70 5 L85 12 L100 0 L100 20 Z" fill="rgba(236,72,153,0.2)"/></svg>') no-repeat bottom;
+  background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg"><path d="M0 20 L0 10 L10 5 L15 15 L25 8 L35 18 L50 2 L60 15 L70 5 L85 12 L100 0 L100 20 Z" fill="rgba(99,102,241,0.2)"/></svg>') no-repeat bottom;
   background-size: cover;
   opacity: 0.6;
 }
@@ -264,7 +265,7 @@
 
 /* Welcome Banner */
 .welcome-banner {
-  background: linear-gradient(to right, #FDF2F8, #FCE7F3);
+  background: linear-gradient(to right, #EEF2FF, #E0E7FF);
   border-radius: 16px;
   padding: 2rem;
   display: flex;
@@ -282,19 +283,19 @@
 }
 
 .banner-icon-wrapper {
-  background: #EC4899;
+  background: #6366f1;
   width: 60px;
   height: 60px;
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(236,72,153,0.3);
+  box-shadow: 0 4px 12px rgba(99,102,241,0.3);
 }
 
-.banner-text p { color: #831843; font-size: 0.9rem; font-weight: 500; }
-.banner-text h1 { color: #831843; font-size: 2rem; font-weight: 800; margin: 0.2rem 0; }
-.banner-text .subtitle { color: #9D174D; font-size: 0.85rem; font-weight: 400; }
+.banner-text p { color: #312E81; font-size: 0.9rem; font-weight: 500; }
+.banner-text h1 { color: #1E293B; font-size: 2rem; font-weight: 800; margin: 0.2rem 0; font-family: 'Outfit', sans-serif; }
+.banner-text .subtitle { color: #4338CA; font-size: 0.85rem; font-weight: 400; }
 
 .banner-cityscape {
   position: absolute;
@@ -302,7 +303,7 @@
   bottom: 0;
   height: 80%;
   width: 50%;
-  background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg"><path d="M10 50 L10 20 L20 20 L20 50 M25 50 L25 15 L35 15 L35 50 M40 50 L40 10 L50 10 L50 50 M60 50 L60 25 L80 25 L80 50 M90 50 L90 5 L100 5 L100 50 M110 50 L110 15 L120 15 L120 50 M130 50 L130 20 L150 20 L150 50 M160 50 L160 10 L170 10 L170 50 M180 50 L180 30 L190 30 L190 50" stroke="rgba(236,72,153,0.3)" stroke-width="2" fill="none"/></svg>') no-repeat right bottom;
+  background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg"><path d="M10 50 L10 20 L20 20 L20 50 M25 50 L25 15 L35 15 L35 50 M40 50 L40 10 L50 10 L50 50 M60 50 L60 25 L80 25 L80 50 M90 50 L90 5 L100 5 L100 50 M110 50 L110 15 L120 15 L120 50 M130 50 L130 20 L150 20 L150 50 M160 50 L160 10 L170 10 L170 50 M180 50 L180 30 L190 30 L190 50" stroke="rgba(99,102,241,0.3)" stroke-width="2" fill="none"/></svg>') no-repeat right bottom;
   background-size: contain;
   opacity: 0.6;
 }
@@ -491,7 +492,7 @@
   border-radius: 100px;
   font-size: 0.8rem;
   font-weight: 500;
-  color: #EC4899;
+  color: #6366f1;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
@@ -509,7 +510,7 @@
 }
 
 .card-header h3 { font-size: 0.95rem; font-weight: 600; color: #1F2937; }
-.card-header a { font-size: 0.75rem; color: #EC4899; font-weight: 500; text-decoration: none; }
+.card-header a { font-size: 0.75rem; color: #6366f1; font-weight: 500; text-decoration: none; }
 
 .alerts-list { display: flex; flex-direction: column; gap: 1rem; }
 
@@ -543,8 +544,8 @@
 .contact-info p { font-size: 0.75rem; color: #6B7280; }
 .contact-info strong { font-size: 0.85rem; color: #1F2937; }
 
-.bg-pink-gradient {
-  background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%);
+.bg-indigo-gradient {
+  background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
   position: relative;
   overflow: hidden;
 }
@@ -558,8 +559,8 @@
   transform: rotate(-15deg);
 }
 
-.safety-tip h3 { color: #831843; font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; position: relative; z-index: 2; }
-.safety-tip p { color: #1F2937; font-size: 0.85rem; line-height: 1.4; position: relative; z-index: 2; }
+.safety-tip h3 { color: #312E81; font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; position: relative; z-index: 2; font-family: 'Outfit', sans-serif; }
+.safety-tip p { color: #1E293B; font-size: 0.85rem; line-height: 1.4; position: relative; z-index: 2; }
 
 .carousel-dots {
   display: flex;
@@ -571,11 +572,11 @@
 .carousel-dots span {
   width: 6px;
   height: 6px;
-  background: #F9A8D4;
+  background: #C7D2FE;
   border-radius: 50%;
   display: inline-block;
 }
-.carousel-dots span.active { background: #EC4899; width: 12px; border-radius: 100px; }
+.carousel-dots span.active { background: #6366f1; width: 12px; border-radius: 100px; }
 
 /* Explore More */
 .explore-more h3 { font-size: 1.1rem; font-weight: 700; color: #1F2937; margin-bottom: 1rem; }

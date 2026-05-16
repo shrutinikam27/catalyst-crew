@@ -9,8 +9,14 @@ import {
 import StatCard from '../../components/ui/StatCard';
 import AlertCard from '../../components/ui/AlertCard';
 import { cn } from '../../utils/cn';
+import { useAuth } from '../../firebase/AuthContext';
 
 const VolunteerDashboard = () => {
+  const { currentUser } = useAuth();
+  const initials = currentUser?.displayName 
+    ? currentUser.displayName.split(' ').map(n => n[0]).join('').toUpperCase()
+    : (currentUser?.email ? currentUser.email[0].toUpperCase() : 'U');
+
   return (
     <div className="space-y-8">
       {/* Header with Stats */}
@@ -79,11 +85,13 @@ const VolunteerDashboard = () => {
             <div className="relative w-24 h-24 mx-auto">
               <div className="absolute inset-0 bg-emerald-500/20 rounded-full animate-ping"></div>
               <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 border-4 border-white dark:border-slate-800 flex items-center justify-center text-white text-3xl font-bold shadow-xl shadow-emerald-100 dark:shadow-none">
-                JD
+                {initials}
               </div>
             </div>
             <div>
-              <h3 className="text-xl font-outfit font-bold text-slate-900 dark:text-white">John Doe</h3>
+              <h3 className="text-xl font-outfit font-bold text-slate-900 dark:text-white">
+                {currentUser?.displayName || (currentUser?.email ? currentUser.email.split('@')[0] : 'Volunteer')}
+              </h3>
               <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mt-1">Certified First Responder</p>
             </div>
             <div className="flex justify-center gap-2">

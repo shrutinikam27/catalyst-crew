@@ -83,11 +83,11 @@ function HomePage() {
             <img 
               src="/hero-illustration.png" 
               alt="City Safety Illustration" 
-              className="w-full h-auto drop-shadow-2xl dark:opacity-80"
+              className="w-full h-auto drop-shadow-2xl dark:opacity-80 translate-x-12"
             />
             
             {/* Restored: Predictive Safety Score Card */}
-            <div className="absolute -top-10 -right-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-6 rounded-[2rem] shadow-2xl border border-white dark:border-slate-700 animate-float-delayed z-30">
+            <div className="absolute -top-40 -right-16 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-6 rounded-[2rem] shadow-2xl border border-white dark:border-slate-700 animate-float-delayed z-30">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 dark:shadow-none">
                   <Activity size={24} />

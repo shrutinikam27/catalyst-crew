@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './firebase/AuthContext';
 
@@ -48,30 +48,12 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
-  const [isDark, setIsDark] = useState(() => {
-    if (localStorage.getItem('theme') === 'dark') return true;
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) return true;
-    return false;
-  });
-
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDark]);
-
-  const toggleTheme = () => setIsDark(!isDark);
-
   return (
     <AuthProvider>
       <Router>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<HomePage toggleTheme={toggleTheme} isDark={isDark} />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/features" element={<Features />} />
           <Route path="/login" element={<LoginPage />} />

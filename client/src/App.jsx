@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './firebase/AuthContext';
 
@@ -9,6 +9,7 @@ import DashboardLayout from './layouts/DashboardLayout';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import ReportIssue from './pages/ReportIssue';
 
 // Citizen Pages
 import CitizenDashboard from './pages/citizen/CitizenDashboard';
@@ -27,6 +28,8 @@ import HospitalDashboard from './pages/hospital/HospitalDashboard';
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
 
+import './index.css';
+
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { currentUser, loading } = useAuth();
@@ -43,14 +46,33 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
+  const [isDark, setIsDark] = useState(() => {
+    if (localStorage.getItem('theme') === 'dark') return true;
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) return true;
+    return false;
+  });
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDark]);
+
+  const toggleTheme = () => setIsDark(!isDark);
+
   return (
     <AuthProvider>
       <Router>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<HomePage toggleTheme={toggleTheme} isDark={isDark} />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/report" element={<ReportIssue />} />
 
           {/* Citizen Dashboard Routes */}
           <Route path="/user" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>

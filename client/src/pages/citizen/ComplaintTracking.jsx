@@ -5,9 +5,10 @@ import {
   CheckCircle, AlertTriangle, ArrowRight,
   MessageSquare, MapPin, Calendar, MoreHorizontal
 } from 'lucide-react';
-import { cn } from '../../utils/cn';
+import { db } from '../../firebase/config';
+import { collection, query, orderBy, getDocs, limit } from 'firebase/firestore';
 
-const complaints = [
+const initialComplaints = [
   { 
     id: '#CMP-4829', 
     type: 'Street Light Out', 
@@ -15,39 +16,66 @@ const complaints = [
     date: '12 May, 2026', 
     location: 'Baner, Sector 4', 
     severity: 'low',
+    source: 'Mock',
     updates: [
       { status: 'Resolved', time: 'Pending' },
       { status: 'Technician Assigned', time: '14 May, 10:30 AM' },
       { status: 'Complaint Registered', time: '12 May, 09:15 AM' }
     ]
-  },
-  { 
-    id: '#CMP-4830', 
-    type: 'Illegal Dumping', 
-    status: 'Resolved', 
-    date: '10 May, 2026', 
-    location: 'Hadapsar Area', 
-    severity: 'moderate',
-    updates: [
-      { status: 'Resolved', time: '12 May, 04:20 PM' },
-      { status: 'Clean-up Crew Dispatched', time: '11 May, 08:00 AM' },
-      { status: 'Complaint Registered', time: '10 May, 02:45 PM' }
-    ]
-  },
-  { 
-    id: '#CMP-4831', 
-    type: 'Road Pothole', 
-    status: 'Pending', 
-    date: '15 May, 2026', 
-    location: 'Kothrud Main Rd', 
-    severity: 'high',
-    updates: [
-      { status: 'Complaint Registered', time: '15 May, 11:30 AM' }
-    ]
   }
 ];
 
 const ComplaintTracking = () => {
+  const [activeComplaints, setActiveComplaints] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      let allComplaints = [...initialComplaints];
+
+      // 1. Fetch from LocalStorage
+      const localIncidents = JSON.parse(localStorage.getItem('local_incidents') || '[]');
+      const formattedLocal = localIncidents.map(inc => ({
+        ...inc,
+        type: inc.category,
+        source: 'Local',
+        updates: [{ status: 'Complaint Registered', time: inc.date }]
+      }));
+      allComplaints = [...formattedLocal, ...allComplaints];
+
+      // 2. Fetch from Firestore
+      try {
+        const q = query(collection(db, 'incidents'), orderBy('timestamp', 'desc'), limit(10));
+        const querySnapshot = await getDocs(q);
+        const firestoreIncidents = querySnapshot.docs.map(doc => ({
+          ...doc.data(),
+          id: doc.id.substring(0, 8).toUpperCase(),
+          type: doc.data().category,
+          source: 'Cloud',
+          updates: [{ status: 'Complaint Registered', time: doc.data().date || 'Today' }]
+        }));
+        
+        // Merge Cloud data (avoid duplicates if they were also in local)
+        const cloudIds = new Set(firestoreIncidents.map(fi => fi.timestamp)); // Using timestamp as a loose key
+        allComplaints = [...firestoreIncidents, ...allComplaints.filter(c => c.source !== 'Cloud')];
+      } catch (err) {
+        console.error("Firestore fetch error:", err);
+      }
+
+      setActiveComplaints(allComplaints);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  const stats = {
+    total: activeComplaints.length,
+    resolved: activeComplaints.filter(c => c.status === 'Resolved').length,
+    pending: activeComplaints.filter(c => c.status !== 'Resolved').length
+  };
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -76,20 +104,20 @@ const ComplaintTracking = () => {
           {/* Stats Bar */}
           <div className="grid grid-cols-3 gap-4">
             {[
-              { label: 'Total Filed', value: '12', color: 'bg-indigo-600' },
-              { label: 'Resolved', value: '08', color: 'bg-emerald-500' },
-              { label: 'In Progress', value: '04', color: 'bg-amber-500' },
+              { label: 'Total Filed', value: stats.total, color: 'text-indigo-600' },
+              { label: 'Resolved', value: stats.resolved, color: 'text-emerald-500' },
+              { label: 'In Progress', value: stats.pending, color: 'text-amber-500' },
             ].map((stat) => (
               <div key={stat.label} className="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center gap-1">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</span>
-                <span className={cn("text-2xl font-outfit font-black", stat.color.replace('bg-', 'text-'))}>{stat.value}</span>
+                <span className={cn("text-2xl font-outfit font-black", stat.color)}>{stat.value}</span>
               </div>
             ))}
           </div>
 
           {/* Complaints List */}
           <div className="space-y-4">
-            {complaints.map((comp, idx) => (
+            {activeComplaints.map((comp, idx) => (
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -110,6 +138,15 @@ const ComplaintTracking = () => {
                       <div className="flex items-center gap-2">
                         <h3 className="font-bold text-slate-900 dark:text-white">{comp.type}</h3>
                         <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">{comp.id}</span>
+                        {comp.source && (
+                          <span className={cn(
+                            "px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-tighter",
+                            comp.source === 'Cloud' ? "bg-emerald-100 text-emerald-700" : 
+                            comp.source === 'Local' ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"
+                          )}>
+                            {comp.source === 'Cloud' ? '☁️ Cloud' : comp.source === 'Local' ? '💻 Local' : 'Mock'}
+                          </span>
+                        )}
                       </div>
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
                         <span className="text-[11px] text-slate-500 flex items-center gap-1">

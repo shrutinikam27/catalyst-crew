@@ -51,6 +51,7 @@ function LoginPage() {
     else if (email.includes('police')) navigate('/police');
     else if (email.includes('volunteer')) navigate('/volunteer');
     else if (email.includes('hospital')) navigate('/hospital');
+    else if (email.includes('fire')) navigate('/fire');
     else navigate('/user');
   };
 

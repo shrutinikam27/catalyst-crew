@@ -25,6 +25,9 @@ import VolunteerDashboard from './pages/volunteer/VolunteerDashboard';
 // Police Pages
 import PoliceDashboard from './pages/police/PoliceDashboard';
 
+// Fire Pages
+import FireDashboard from './pages/fire/FireDashboard';
+
 // Hospital Pages
 import HospitalDashboard from './pages/hospital/HospitalDashboard';
 
@@ -93,6 +96,13 @@ function App() {
             <Route index element={<HospitalDashboard />} />
             <Route path="dispatch" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Dispatch Board Coming Soon</div>} />
             <Route path="alerts" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Patient Alerts Coming Soon</div>} />
+          </Route>
+
+          {/* Fire Dashboard Routes */}
+          <Route path="/fire" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+            <Route index element={<FireDashboard />} />
+            <Route path="dispatch" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Dispatch Board Coming Soon</div>} />
+            <Route path="hazmat" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Hazmat Tracking Coming Soon</div>} />
           </Route>
 
           {/* Admin Dashboard Routes */}

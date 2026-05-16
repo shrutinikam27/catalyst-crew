@@ -35,6 +35,11 @@ const roleMenus = {
     { name: 'Dispatch Board', icon: Ambulance, path: '/hospital/dispatch' },
     { name: 'Patient Alerts', icon: Bell, path: '/hospital/alerts' },
   ],
+  fire: [
+    { name: 'Fire Command', icon: Home, path: '/fire' },
+    { name: 'Dispatch Logs', icon: Flame, path: '/fire/dispatch' },
+    { name: 'Hazmat Tracking', icon: AlertTriangle, path: '/fire/hazmat' },
+  ],
   admin: [
     { name: 'City Command', icon: Home, path: '/admin' },
     { name: 'City Analytics', icon: PieChart, path: '/admin/analytics' },

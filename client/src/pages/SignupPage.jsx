@@ -48,6 +48,7 @@ function SignupPage() {
       // Success - redirect based on role
       if (role === 'authority') navigate('/admin');
       else if (role === 'volunteer') navigate('/volunteer');
+      else if (formData.email.includes('fire')) navigate('/fire');
       else navigate('/user');
     } catch (err) {
       setError(err.message || 'Failed to create account.');
@@ -84,6 +85,22 @@ function SignupPage() {
     'Medical Volunteer', 'Women Safety', 'Disaster Response', 
     'Blood Donor', 'Traffic Support', 'Community Safety'
   ];
+
+  async function handleGoogleLogin() {
+    try {
+      const { user } = await loginWithGoogle();
+      if (user.email.includes('admin')) navigate('/admin');
+      else if (user.email.includes('police')) navigate('/police');
+      else if (user.email.includes('volunteer')) navigate('/volunteer');
+      else if (user.email.includes('hospital')) navigate('/hospital');
+      else if (user.email.includes('fire')) navigate('/fire');
+      else navigate('/user');
+    } catch (err) {
+      console.error(err);
+      setError('Failed to sign up with Google.');
+    }
+    setLoading(false);
+  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 transition-colors py-12 px-6">

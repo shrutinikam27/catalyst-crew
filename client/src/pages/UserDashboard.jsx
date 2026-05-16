@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   Home, Map, AlertTriangle, MessageSquare, Shield, PieChart, 
   LineChart, Bell, Heart, Users, User, Settings, Search,
@@ -8,6 +8,34 @@ import {
 import './UserDashboard.css';
 
 const UserDashboard = () => {
+  const [sosClicks, setSosClicks] = useState(0);
+  const [showSosOptions, setShowSosOptions] = useState(false);
+  const clickTimeoutRef = useRef(null);
+
+  const handleSosClick = () => {
+    setSosClicks(prev => {
+      const newCount = prev + 1;
+      if (newCount >= 3) {
+        setShowSosOptions(true);
+        return 0; // reset
+      }
+      return newCount;
+    });
+
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+    }
+    clickTimeoutRef.current = setTimeout(() => {
+      setSosClicks(0);
+    }, 1500); // Reset if gap is more than 1.5 seconds
+  };
+
+  const handleEmergencySelect = (type) => {
+    // In the future, this will dispatch to volunteers/authorities
+    alert(`SOS Triggered for: ${type}\n\nNearby certified volunteers have been notified and will arrive immediately, followed by official emergency services.`);
+    setShowSosOptions(false);
+  };
+
   return (
     <div className="user-dashboard-layout">
       {/* Sidebar */}
@@ -101,12 +129,17 @@ const UserDashboard = () => {
 
           {/* Quick Actions */}
           <div className="quick-actions">
-            <div className="action-card">
+            <div className="action-card cursor-pointer relative hover:ring-2 hover:ring-red-400 transition-all select-none" onClick={handleSosClick}>
               <div className="icon-circle bg-red"><AlertTriangle size={20} color="white" /></div>
               <div className="action-text">
                 <h4>Emergency SOS</h4>
-                <p>Need immediate help?</p>
+                <p>Triple click to activate</p>
               </div>
+              {sosClicks > 0 && (
+                <div className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-black w-6 h-6 rounded-full flex items-center justify-center animate-bounce shadow-lg shadow-red-500/50 border-2 border-white">
+                  {sosClicks}
+                </div>
+              )}
             </div>
             <div className="action-card">
               <div className="icon-circle bg-purple"><MapPin size={20} color="white" /></div>
@@ -329,6 +362,49 @@ const UserDashboard = () => {
           </div>
         </div>
       </main>
+
+      {/* SOS Triple-Click Modal Overlay */}
+      {showSosOptions && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-md w-full mx-4 shadow-[0_0_50px_rgba(220,38,38,0.3)] border border-red-200 dark:border-red-900/50 text-center animate-in fade-in zoom-in duration-300">
+            <div className="w-24 h-24 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+              <div className="absolute inset-0 bg-red-500/20 rounded-full animate-ping"></div>
+              <AlertTriangle size={48} className="text-red-600 dark:text-red-500 relative z-10" />
+            </div>
+            
+            <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-3">EMERGENCY SOS</h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
+              Select the exact emergency. Nearby certified volunteers will be notified instantly to provide rapid response before official authorities arrive.
+            </p>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <button onClick={() => handleEmergencySelect('Fire')} className="flex flex-col items-center justify-center gap-3 py-6 rounded-2xl border-2 border-orange-200 bg-orange-50 hover:bg-orange-500 hover:border-orange-600 hover:text-white text-orange-700 transition-all active:scale-95 group shadow-sm">
+                <Flame size={36} className="group-hover:animate-bounce" />
+                <span className="font-bold text-lg tracking-wide">FIRE</span>
+              </button>
+              
+              <button onClick={() => handleEmergencySelect('Crime')} className="flex flex-col items-center justify-center gap-3 py-6 rounded-2xl border-2 border-blue-200 bg-blue-50 hover:bg-blue-600 hover:border-blue-700 hover:text-white text-blue-700 transition-all active:scale-95 group shadow-sm">
+                <ShieldAlert size={36} className="group-hover:animate-bounce" />
+                <span className="font-bold text-lg tracking-wide">CRIME</span>
+              </button>
+              
+              <button onClick={() => handleEmergencySelect('Medical')} className="flex flex-col items-center justify-center gap-3 py-6 rounded-2xl border-2 border-green-200 bg-green-50 hover:bg-green-600 hover:border-green-700 hover:text-white text-green-700 transition-all active:scale-95 group shadow-sm">
+                <Ambulance size={36} className="group-hover:animate-bounce" />
+                <span className="font-bold text-lg tracking-wide">MEDICAL</span>
+              </button>
+              
+              <button onClick={() => handleEmergencySelect('Accident')} className="flex flex-col items-center justify-center gap-3 py-6 rounded-2xl border-2 border-purple-200 bg-purple-50 hover:bg-purple-600 hover:border-purple-700 hover:text-white text-purple-700 transition-all active:scale-95 group shadow-sm">
+                <AlertTriangle size={36} className="group-hover:animate-bounce" />
+                <span className="font-bold text-lg tracking-wide">ACCIDENT</span>
+              </button>
+            </div>
+            
+            <button onClick={() => setShowSosOptions(false)} className="mt-8 px-6 py-2 rounded-full border border-slate-300 text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:border-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-300 font-semibold transition-colors">
+              Cancel Request
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,9 +1,36 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuth } from '../firebase/AuthContext';
+import { Flame, ShieldAlert, Ambulance, AlertTriangle } from 'lucide-react';
 import PublicNavbar from '../components/PublicNavbar';
 
 function HomePage() {
   const { currentUser } = useAuth();
+  const [sosClicks, setSosClicks] = useState(0);
+  const [showSosOptions, setShowSosOptions] = useState(false);
+  const clickTimeoutRef = useRef(null);
+
+  const handleSosClick = () => {
+    setSosClicks(prev => {
+      const newCount = prev + 1;
+      if (newCount >= 3) {
+        setShowSosOptions(true);
+        return 0; // reset
+      }
+      return newCount;
+    });
+
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+    }
+    clickTimeoutRef.current = setTimeout(() => {
+      setSosClicks(0);
+    }, 1500);
+  };
+
+  const handleEmergencySelect = (type) => {
+    alert(`SOS Triggered for: ${type}\n\nNearby certified volunteers have been notified and will arrive immediately, followed by official emergency services.`);
+    setShowSosOptions(false);
+  };
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0f172a] font-inter transition-colors duration-300">
@@ -50,33 +77,30 @@ function HomePage() {
             <img 
               src="/src/assets/hero-illustration.png" 
               alt="City Safety Illustration" 
-              className="w-full h-auto drop-shadow-2xl dark:opacity-80"
+              className="w-full h-auto drop-shadow-2xl dark:opacity-80 translate-x-16"
             />
-            {/* Floating Emergency Button */}
-            <div className="absolute top-1/2 -right-12 -translate-y-1/2 flex flex-col items-center gap-4">
-               <button className="w-24 h-24 bg-red-600 rounded-full flex items-center justify-center text-white font-black text-xl shadow-[0_0_50px_rgba(220,38,38,0.5)] border-8 border-white dark:border-slate-900 animate-pulse hover:scale-110 transition-transform active:scale-95 group relative">
-                  <span className="relative z-10">SOS</span>
-                  <div className="absolute inset-0 bg-red-500 rounded-full animate-ping opacity-20"></div>
-               </button>
-               <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur px-3 py-1 rounded-full border border-red-100 dark:border-red-900/30">
-                  <span className="text-[10px] font-black text-red-600 dark:text-red-400 uppercase tracking-widest whitespace-nowrap">Instant Trigger</span>
-               </div>
-            </div>
-            {/* Overlay Dashboard Snippet */}
-            <div className="absolute -bottom-6 -left-6 bg-white/90 dark:bg-slate-800/90 backdrop-blur p-6 rounded-3xl shadow-2xl border border-white/50 dark:border-slate-700 max-w-[240px] animate-pulse">
-               <div className="flex items-center gap-3 mb-4">
-                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Predictive Safety Score</span>
-               </div>
-               <div className="text-3xl font-black text-slate-800 dark:text-white mb-1">84%</div>
-               <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                 <div className="w-[84%] h-full bg-indigo-600"></div>
-               </div>
-               <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-3 italic">Risk level: Low in Core City areas</p>
+            {/* Floating SOS Button - Matching Image Style */}
+            <div className="absolute top-1/2 -translate-y-1/2 -left-16 z-20 flex flex-col items-center">
+              <button onClick={handleSosClick} className="w-24 h-24 bg-red-600 rounded-full flex items-center justify-center text-white font-black text-2xl shadow-[0_0_50px_rgba(220,38,38,0.5)] border-4 border-white dark:border-slate-900 animate-pulse-sos hover:scale-110 transition-transform active:scale-95 group relative overflow-hidden">
+                 <span className="relative z-10">SOS</span>
+                 {sosClicks > 0 && <span className="absolute top-2 right-2 text-xs z-20 bg-white text-red-600 rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-lg">{sosClicks}</span>}
+                 <div className="absolute inset-0 bg-red-400 animate-ping opacity-20"></div>
+              </button>
+              <div className="mt-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-2xl border border-white/50 dark:border-slate-700 shadow-xl">
+                <p className="text-[10px] font-black text-red-600 uppercase tracking-tighter text-center leading-tight">
+                  Click or <br /> Long Press <br /> for SOS
+                </p>
+                <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/90 dark:bg-slate-800/90 border-t border-l border-white/50 dark:border-slate-700 rotate-45"></div>
+              </div>
             </div>
           </div>
         </div>
       </section>
+      
+      {/* Emergency Status Bar - Positioned above Empowering Governance as requested */}
+      <div className="px-6 max-w-[1400px] mx-auto mb-16">
+        <EmergencyStatusBar />
+      </div>
 
       {/* Analytics & Grievance Section */}
       <section className="px-6 max-w-[1400px] mx-auto mb-24">
@@ -189,18 +213,6 @@ function HomePage() {
 
         {/* Predictive Stats Column */}
         <div className="space-y-8">
-          <div className="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-700 transition-colors">
-            <div className="flex justify-between items-center mb-8">
-              <h3 className="text-xl font-bold text-slate-800 dark:text-white">Predictive Analytics</h3>
-              <button className="text-indigo-600 dark:text-indigo-400 font-bold text-sm">Full Report</button>
-            </div>
-            <div className="space-y-6">
-               <PredictiveItem label="Emergency Probability" value="High" trend="up" color="red" />
-               <PredictiveItem label="Civic Health Score" value="7.2/10" trend="stable" color="green" />
-               <PredictiveItem label="Rescue Coverage" value="84%" trend="up" color="indigo" />
-            </div>
-          </div>
-
           <div className="bg-indigo-600 dark:bg-indigo-700 p-8 rounded-[2.5rem] shadow-2xl shadow-indigo-200 dark:shadow-none relative overflow-hidden group cursor-pointer">
             <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
             <div className="relative z-10 flex items-center justify-between">
@@ -208,8 +220,9 @@ function HomePage() {
                 <h3 className="text-2xl font-bold text-white mb-2">Instant Emergency Trigger</h3>
                 <p className="text-indigo-100 text-sm max-w-[200px]">Automated dispatch to nearest Pune Police or Health station.</p>
               </div>
-              <div className="w-24 h-24 bg-red-600 rounded-full border-8 border-indigo-500/30 dark:border-indigo-400/30 flex items-center justify-center text-white font-black text-xl shadow-2xl group-active:scale-90 transition-transform">
+              <div onClick={handleSosClick} className="w-24 h-24 bg-red-600 rounded-full border-8 border-indigo-500/30 dark:border-indigo-400/30 flex items-center justify-center text-white font-black text-xl shadow-2xl active:scale-90 transition-transform cursor-pointer relative select-none">
                 SOS
+                {sosClicks > 0 && <span className="absolute top-0 right-0 bg-white text-red-600 rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm shadow-md border-2 border-red-600">{sosClicks}</span>}
               </div>
             </div>
           </div>
@@ -217,15 +230,124 @@ function HomePage() {
       </section>
 
       {/* Footer Branding */}
-      <footer className="pb-12 text-center">
+      <footer className="pb-32 text-center">
         <p className="text-slate-400 dark:text-slate-500 text-xs font-bold uppercase tracking-widest mb-6">Trusted by Citizens. Powered by Technology.</p>
-        <div className="flex flex-wrap justify-center gap-12 opacity-50 dark:opacity-30">
+        <div className="flex flex-wrap justify-center gap-12 opacity-50 dark:opacity-30 mb-12">
           <span className="font-outfit font-black text-slate-800 dark:text-white">PUNE POLICE</span>
           <span className="font-outfit font-black text-slate-800 dark:text-white">PMC</span>
           <span className="font-outfit font-black text-slate-800 dark:text-white">FIRE BRIGADE</span>
           <span className="font-outfit font-black text-slate-800 dark:text-white">HEALTHCARE</span>
         </div>
+
+        <div className="flex flex-col md:flex-row items-center justify-center gap-8 py-8 border-t border-slate-100 dark:border-slate-800">
+           <div className="flex items-center gap-2 text-indigo-600 font-bold text-sm">
+             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+             No Login Required for Emergency
+           </div>
+           <div className="flex items-center gap-2 text-indigo-500 font-bold text-sm">
+             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+             Fast • Secure • Always Available
+           </div>
+        </div>
       </footer>
+
+      {/* New Features from Image */}
+      <QuickHelpButton />
+
+      {/* SOS Triple-Click Modal Overlay */}
+      {showSosOptions && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-md w-full mx-4 shadow-[0_0_50px_rgba(220,38,38,0.3)] border border-red-200 dark:border-red-900/50 text-center animate-in fade-in zoom-in duration-300">
+            <div className="w-24 h-24 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+              <div className="absolute inset-0 bg-red-500/20 rounded-full animate-ping"></div>
+              <AlertTriangle size={48} className="text-red-600 dark:text-red-500 relative z-10" />
+            </div>
+            
+            <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-3">EMERGENCY SOS</h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
+              Select the exact emergency. Nearby certified volunteers will be notified instantly to provide rapid response before official authorities arrive.
+            </p>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <button onClick={() => handleEmergencySelect('Fire')} className="flex flex-col items-center justify-center gap-3 py-6 rounded-2xl border-2 border-orange-200 bg-orange-50 hover:bg-orange-500 hover:border-orange-600 hover:text-white text-orange-700 transition-all active:scale-95 group shadow-sm">
+                <Flame size={36} className="group-hover:animate-bounce" />
+                <span className="font-bold text-lg tracking-wide">FIRE</span>
+              </button>
+              
+              <button onClick={() => handleEmergencySelect('Crime')} className="flex flex-col items-center justify-center gap-3 py-6 rounded-2xl border-2 border-blue-200 bg-blue-50 hover:bg-blue-600 hover:border-blue-700 hover:text-white text-blue-700 transition-all active:scale-95 group shadow-sm">
+                <ShieldAlert size={36} className="group-hover:animate-bounce" />
+                <span className="font-bold text-lg tracking-wide">CRIME</span>
+              </button>
+              
+              <button onClick={() => handleEmergencySelect('Medical')} className="flex flex-col items-center justify-center gap-3 py-6 rounded-2xl border-2 border-green-200 bg-green-50 hover:bg-green-600 hover:border-green-700 hover:text-white text-green-700 transition-all active:scale-95 group shadow-sm">
+                <Ambulance size={36} className="group-hover:animate-bounce" />
+                <span className="font-bold text-lg tracking-wide">MEDICAL</span>
+              </button>
+              
+              <button onClick={() => handleEmergencySelect('Accident')} className="flex flex-col items-center justify-center gap-3 py-6 rounded-2xl border-2 border-purple-200 bg-purple-50 hover:bg-purple-600 hover:border-purple-700 hover:text-white text-purple-700 transition-all active:scale-95 group shadow-sm">
+                <AlertTriangle size={36} className="group-hover:animate-bounce" />
+                <span className="font-bold text-lg tracking-wide">ACCIDENT</span>
+              </button>
+            </div>
+            
+            <button onClick={() => setShowSosOptions(false)} className="mt-8 px-6 py-2 rounded-full border border-slate-300 text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:border-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-300 font-semibold transition-colors">
+              Cancel Request
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function EmergencyStatusBar() {
+  return (
+    <div className="w-full bg-white dark:bg-slate-900 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-red-100 dark:border-red-900/20 p-6 flex flex-wrap items-center justify-between gap-8 relative overflow-hidden transition-all hover:shadow-xl">
+      <div className="absolute top-0 left-0 w-1 h-full bg-red-600"></div>
+      <div className="flex items-center gap-4 border-r border-slate-100 dark:border-slate-800 pr-6 shrink-0">
+        <div className="w-12 h-12 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center justify-center text-red-600">
+          <svg className="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+        </div>
+        <div>
+          <h5 className="font-bold text-red-600 text-sm">In Emergency?</h5>
+          <p className="text-[10px] text-slate-500 font-medium">Help is just one tap away.</p>
+        </div>
+      </div>
+
+      <div className="hidden lg:flex flex-1 items-center justify-around px-4">
+        <StatusOption icon="📍" label="Share Location" />
+        <StatusOption icon="🛡️" label="Alert Authorities" />
+        <StatusOption icon="👥" label="Notify Contacts" />
+        <StatusOption icon="📡" label="Track Response" />
+      </div>
+
+      <button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-2xl font-black text-sm flex items-center gap-2 transition-all group shrink-0 shadow-lg shadow-red-200 dark:shadow-none">
+        SEND SOS NOW
+        <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+      </button>
+    </div>
+  );
+}
+
+function StatusOption({ icon, label }) {
+  return (
+    <div className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-2 rounded-xl transition-colors">
+      <span className="text-lg">{icon}</span>
+      <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{label}</span>
+    </div>
+  );
+}
+
+function QuickHelpButton() {
+  return (
+    <div className="fixed right-6 bottom-32 flex flex-col items-center gap-2 z-40">
+      <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 group cursor-pointer hover:scale-110 transition-all text-center">
+        <div className="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center text-white mb-1 shadow-lg shadow-red-200 dark:shadow-none mx-auto">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+        </div>
+        <span className="text-[10px] font-black text-red-600 block uppercase leading-none">SOS</span>
+        <span className="text-[8px] font-bold text-slate-400 block uppercase">Quick Help</span>
+      </div>
     </div>
   );
 }
@@ -238,25 +360,6 @@ function FeatureCard({ icon, title, desc }) {
       </div>
       <h4 className="font-bold text-slate-800 dark:text-white mb-1">{title}</h4>
       <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{desc}</p>
-    </div>
-  );
-}
-
-function PredictiveItem({ label, value, trend, color }) {
-  const colorMap = {
-    red: "text-red-600 dark:text-red-400",
-    green: "text-green-600 dark:text-green-400",
-    indigo: "text-indigo-600 dark:text-indigo-400",
-  };
-  return (
-    <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50">
-      <div>
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{label}</p>
-        <p className={`text-xl font-black ${colorMap[color]}`}>{value}</p>
-      </div>
-      <div className={`text-xs font-bold ${trend === 'up' ? 'text-red-500' : 'text-green-500'}`}>
-        {trend === 'up' ? '↑ Increasing' : '↓ Improving'}
-      </div>
     </div>
   );
 }

@@ -13,7 +13,7 @@ const ReportIssue = () => {
     category: '',
     title: '',
     description: '',
-    location: 'Shivajinagar, Pune',
+    location: 'Pune Metropolitan Area',
     priority: 'Medium',
     isEmergency: false
   });

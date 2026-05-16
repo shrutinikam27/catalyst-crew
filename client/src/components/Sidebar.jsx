@@ -3,7 +3,7 @@ import {
   Home, Map, AlertTriangle, MessageSquare, FileText, 
   Shield, PieChart, LineChart, Bell, Heart, Users, 
   Settings, User, ChevronRight, LogOut, Briefcase, 
-  Activity, Cpu, Ambulance, Flame, Zap, Navigation
+  Activity, Cpu, Ambulance, Flame, Zap, Navigation, Mail
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../utils/cn';
@@ -96,7 +96,14 @@ const Sidebar = ({ role = 'citizen', isOpen, onClose }) => {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800">
+        <div className="p-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
+          <Link 
+            to="/contact"
+            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all group"
+          >
+            <Mail size={18} className="group-hover:scale-110 transition-transform" />
+            <span>Contact Support</span>
+          </Link>
           <button className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all group">
             <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
             <span>Logout</span>

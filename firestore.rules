@@ -1,31 +1,167 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
+    
+    // ─── Helper Functions ────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+    
+    function isPolice() {
+      return isAuthenticated() && getUserRole() == 'police';
+    }
+    
+    function isHospital() {
+      return isAuthenticated() && getUserRole() == 'hospital';
+    }
+    
+    function isFire() {
+      return isAuthenticated() && getUserRole() == 'fire';
+    }
+    
+    function isDepartment() {
+      return isPolice() || isHospital() || isFire() || isAdmin();
+    }
+    
+    // ─── Users Collection ────────────────────────────────────────
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    // ─── Complaints Collection ───────────────────────────────────
+    match /complaints/{complaintId} {
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isDepartment()
+      );
+      allow create: if isAuthenticated();
+      allow update: if isDepartment() || resource.data.userId == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+    
+    // ─── Crimes Collection ───────────────────────────────────────
+    match /crimes/{crimeId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isPolice() || isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    // ─── Emergency Requests ──────────────────────────────────────
+    match /emergency_requests/{requestId} {
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isDepartment()
+      );
+      allow create: if isAuthenticated();
+      allow update: if isDepartment();
+      allow delete: if isAdmin();
+    }
+    
+    // ─── Alerts ──────────────────────────────────────────────────
+    match /alerts/{alertId} {
+      allow read: if isAuthenticated();
+      allow create: if isDepartment();
+      allow update: if isDepartment();
+      allow delete: if isAdmin();
+    }
+    
+    // ─── Hotspots ────────────────────────────────────────────────
+    match /hotspots/{hotspotId} {
+      allow read: if isAuthenticated();
+      allow write: if isDepartment();
+    }
+    
+    // ─── Hospitals ───────────────────────────────────────────────
+    match /hospitals/{hospitalId} {
+      allow read: if isAuthenticated();
+      allow write: if isHospital() || isAdmin();
+    }
+    
+    // ─── Police Stations ─────────────────────────────────────────
+    match /police_stations/{stationId} {
+      allow read: if isAuthenticated();
+      allow write: if isPolice() || isAdmin();
+    }
+    
+    // ─── Fire Stations ───────────────────────────────────────────
+    match /fire_stations/{stationId} {
+      allow read: if isAuthenticated();
+      allow write: if isFire() || isAdmin();
+    }
+    
+    // ─── Analytics ───────────────────────────────────────────────
+    match /analytics/{docId} {
+      allow read: if isDepartment();
+      allow write: if isAuthenticated();  // Any action can increment counters
+    }
+    
+    // ─── Notifications ───────────────────────────────────────────
+    match /notifications/{notifId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    // ─── Response Teams ──────────────────────────────────────────
+    match /response_teams/{teamId} {
+      allow read: if isAuthenticated();
+      allow write: if isDepartment();
+    }
+    
+    // ─── Citizen Reports ─────────────────────────────────────────
+    match /citizen_reports/{reportId} {
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isDepartment()
+      );
+      allow create: if isAuthenticated();
+      allow update: if isDepartment();
+      allow delete: if isAdmin();
+    }
+    
+    // ─── Risk Zones ──────────────────────────────────────────────
+    match /risk_zones/{zoneId} {
+      allow read: if isAuthenticated();
+      allow write: if isDepartment();
+    }
 
-    // ─── SOS Alerts ──────────────────────────────────────────────────────────
+    // ─── SOS Alerts ──────────────────────────────────────────────
     // ANY visitor (even unauthenticated) can CREATE an SOS alert.
     // Emergency alerts must never be blocked by auth — anyone in distress
     // should be able to call for help regardless of login state.
-    // Only authenticated users (volunteers) can READ or UPDATE alerts.
+    // Only authenticated users (volunteers/admins/departments) can READ or UPDATE alerts.
     match /sosAlerts/{alertId} {
       allow create: if true;                // open to all — it's an emergency
-      allow read:   if request.auth != null; // volunteers must be signed in to see alerts
-      allow update: if request.auth != null; // only logged-in volunteers can accept/resolve
-      allow delete: if false;               // never delete; archive only
+      allow read:   if isAuthenticated();    // must be signed in to see alerts
+      allow update: if isAuthenticated();    // only logged-in users can accept/resolve
+      allow delete: if isAdmin();            // only admins can delete
     }
 
-    // ─── Volunteer Requests ───────────────────────────────────────────────────
+    // ─── Volunteer Requests ──────────────────────────────────────
     match /volunteerRequests/{docId} {
-      allow create: if request.auth != null;
-      allow read:   if request.auth != null;
-      allow update: if request.auth != null && request.auth.token.email != null; // admins only in prod
-      allow delete: if false;
+      allow create: if isAuthenticated();
+      allow read:   if isAuthenticated();
+      allow update: if isAuthenticated();    // volunteer review & signups
+      allow delete: if isAdmin();
     }
 
-    // ─── All other collections (default deny) ─────────────────────────────────
+    // ─── All other collections (default deny) ─────────────────────
     match /{document=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if isAuthenticated();
     }
   }
 }

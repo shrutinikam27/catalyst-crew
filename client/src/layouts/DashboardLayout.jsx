@@ -13,7 +13,7 @@ const DashboardLayout = () => {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
-  const { currentUser, logout } = useAuth();
+  const { currentUser, userProfile, userRole, logout } = useAuth();
   const navigate = useNavigate();
   const [isVolunteer, setIsVolunteer] = useState(false);
   
@@ -36,16 +36,29 @@ const DashboardLayout = () => {
     checkVolunteerStatus();
   }, [currentUser]);
   
-  // Mock role determination - in real app would come from user profile/claims
-  const role = currentUser?.email?.includes('admin') ? 'admin' : 
-               currentUser?.email?.includes('police') ? 'police' :
-               currentUser?.email?.includes('volunteer') ? 'volunteer' :
-               currentUser?.email?.includes('hospital') ? 'hospital' :
-               currentUser?.email?.includes('fire') ? 'fire' : 'citizen';
+  // High Priority: Email Pattern (Trust official domains/keywords)
+  const emailRole = 
+    currentUser?.email?.includes('admin') ? 'admin' : 
+    currentUser?.email?.includes('police') ? 'police' :
+    currentUser?.email?.includes('volunteer') ? 'volunteer' :
+    currentUser?.email?.includes('hospital') ? 'hospital' :
+    currentUser?.email?.includes('fire') ? 'fire' : null;
+
+  // Final Role: Email Pattern -> URL Path -> Firestore Profile -> Default
+  const role = emailRole || (
+    window.location.pathname.startsWith('/police') ? 'police' :
+    window.location.pathname.startsWith('/admin') ? 'admin' :
+    window.location.pathname.startsWith('/volunteer') ? 'volunteer' :
+    window.location.pathname.startsWith('/hospital') ? 'hospital' :
+    window.location.pathname.startsWith('/fire') ? 'fire' :
+    userRole || 'citizen'
+  );
 
   const user = {
-    name: currentUser?.email?.split('@')[0] || 'Guest User',
-    role: role.charAt(0).toUpperCase() + role.slice(1)
+    name: userProfile?.displayName || currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Guest User',
+    role: role.charAt(0).toUpperCase() + role.slice(1),
+    email: currentUser?.email || '',
+    photoURL: userProfile?.photoURL || currentUser?.photoURL || ''
   };
 
   const handleLogout = async () => {

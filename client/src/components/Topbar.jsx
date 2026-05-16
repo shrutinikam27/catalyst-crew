@@ -1,12 +1,89 @@
-import React, { useState } from 'react';
-import { Search, Bell, Menu, Sun, Moon, User, ChevronDown, LogOut, ShieldAlert, Heart } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Search, Bell, Menu, Sun, Moon, User, ChevronDown, LogOut, ShieldAlert, Heart, Flame, AlertTriangle, CheckCircle, X } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { useSocket } from '../context/SocketContext';
+import { useAuth } from '../firebase/AuthContext';
+import { subscribeToUserNotifications, markNotificationRead } from '../services/firestoreService';
 
 const Topbar = ({ onMenuClick, isDark, toggleTheme, user, onLogout }) => {
+  const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const { notifications } = useSocket();
+  const { notifications: socketNotifications } = useSocket();
+  const { currentUser } = useAuth();
+  const [firestoreNotifs, setFirestoreNotifs] = useState([]);
+
+  // Subscribe to Firestore notifications for this user
+  useEffect(() => {
+    if (!currentUser?.uid) return;
+    const unsub = subscribeToUserNotifications(currentUser.uid, setFirestoreNotifs);
+    return () => unsub();
+  }, [currentUser?.uid]);
+
+  // Merge notifications: Firestore (persistent) + Socket.IO (ephemeral)
+  const allNotifications = [
+    ...firestoreNotifs.map(n => ({
+      id: n.id,
+      type: n.type || 'ALERT',
+      message: n.message || n.title || 'New notification',
+      title: n.title,
+      time: n.createdAt?.toDate ? n.createdAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now',
+      read: n.read,
+      source: 'firestore',
+      firestoreId: n.id,
+    })),
+    ...socketNotifications.slice(0, 5).map(n => ({
+      ...n,
+      source: 'socket',
+    }))
+  ];
+
+  const unreadCount = firestoreNotifs.filter(n => !n.read).length + socketNotifications.length;
+
+  const handleMarkRead = async (notif) => {
+    if (notif.source === 'firestore' && !notif.read) {
+      try {
+        await markNotificationRead(notif.firestoreId);
+      } catch (err) {
+        console.error('Mark read error:', err);
+      }
+    }
+  };
+
+  const getNotifIcon = (type) => {
+    switch (type) {
+      case 'CRIME': return <ShieldAlert size={14} />;
+      case 'MEDICAL': return <Heart size={14} />;
+      case 'FIRE': return <Flame size={14} />;
+      case 'emergency': return <AlertTriangle size={14} />;
+      default: return <Bell size={14} />;
+    }
+  };
+
+  const getNotifColor = (type) => {
+    switch (type) {
+      case 'CRIME': return 'bg-rose-100 text-rose-500 dark:bg-rose-900/30 dark:text-rose-400';
+      case 'MEDICAL': return 'bg-blue-100 text-blue-500 dark:bg-blue-900/30 dark:text-blue-400';
+      case 'FIRE': return 'bg-orange-100 text-orange-500 dark:bg-orange-900/30 dark:text-orange-400';
+      case 'emergency': return 'bg-amber-100 text-amber-500 dark:bg-amber-900/30 dark:text-amber-400';
+      default: return 'bg-indigo-100 text-indigo-500 dark:bg-indigo-900/30 dark:text-indigo-400';
+    }
+  };
+
+  const handleProfileSettingsClick = () => {
+    setShowUserMenu(false);
+    const lowercaseRole = user?.role?.toLowerCase();
+    if (lowercaseRole === 'police') {
+      navigate('/police/profile');
+    } else if (lowercaseRole === 'hospital') {
+      navigate('/hospital/profile');
+    } else if (lowercaseRole === 'volunteer') {
+      navigate('/volunteer/profile');
+    } else {
+      navigate('/user/profile');
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800">
@@ -48,9 +125,9 @@ const Topbar = ({ onMenuClick, isDark, toggleTheme, user, onLogout }) => {
               className="relative p-2 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
             >
               <Bell size={20} />
-              {notifications.length > 0 && (
-                <span className="absolute top-2 right-2 w-4 h-4 bg-rose-500 text-white text-[8px] font-bold flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900">
-                  {notifications.length}
+              {unreadCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-5 h-5 bg-rose-500 text-white text-[8px] font-bold flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900 shadow-sm">
+                  {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
             </button>
@@ -58,37 +135,69 @@ const Topbar = ({ onMenuClick, isDark, toggleTheme, user, onLogout }) => {
             {showNotifications && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setShowNotifications(false)}></div>
-                <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden z-20 animate-in fade-in slide-in-from-top-2">
+                <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden z-20 animate-in fade-in slide-in-from-top-2">
                   <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
-                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Real-time City Alerts</h4>
-                    <span className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-bold">Live</span>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-widest">Notifications</h4>
+                      <p className="text-[10px] text-slate-400 mt-0.5">Socket.IO + Firestore real-time</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {firestoreNotifs.length > 0 && (
+                        <span className="text-[9px] bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 px-2 py-0.5 rounded-full font-bold">{firestoreNotifs.length} stored</span>
+                      )}
+                      <span className="text-[9px] bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 px-2 py-0.5 rounded-full font-bold animate-pulse">Live</span>
+                    </div>
                   </div>
-                  <div className="max-h-[300px] overflow-y-auto scrollbar-hide">
-                    {notifications.length > 0 ? (
-                      notifications.map((n) => (
-                        <div key={n.id} className="p-4 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+                  <div className="max-h-[350px] overflow-y-auto scrollbar-hide">
+                    {allNotifications.length > 0 ? (
+                      allNotifications.map((n) => (
+                        <div 
+                          key={n.id} 
+                          onClick={() => handleMarkRead(n)}
+                          className={cn(
+                            "p-4 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer",
+                            !n.read && n.source === 'firestore' && "bg-indigo-50/30 dark:bg-indigo-900/10"
+                          )}
+                        >
                           <div className="flex gap-3">
                             <div className={cn(
-                              "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
-                              n.type === 'CRIME' ? "bg-rose-100 text-rose-500" : "bg-amber-100 text-amber-500"
+                              "w-9 h-9 rounded-lg flex items-center justify-center shrink-0",
+                              getNotifColor(n.type)
                             )}>
-                              {n.type === 'CRIME' ? <ShieldAlert size={14} /> : <Heart size={14} />}
+                              {getNotifIcon(n.type)}
                             </div>
-                            <div>
-                              <p className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight mb-1">{n.message}</p>
-                              <p className="text-[10px] text-slate-400 font-medium">{n.time}</p>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex justify-between items-start gap-2">
+                                <p className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight truncate">{n.message || n.title}</p>
+                                {!n.read && n.source === 'firestore' && (
+                                  <div className="w-2 h-2 bg-indigo-500 rounded-full flex-shrink-0 mt-1" />
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 mt-1">
+                                <p className="text-[10px] text-slate-400 font-medium">{n.time}</p>
+                                <span className={cn(
+                                  "text-[8px] font-bold uppercase px-1.5 py-0.5 rounded",
+                                  n.source === 'firestore' ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400' : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                )}>
+                                  {n.source === 'firestore' ? 'DB' : 'LIVE'}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
                       ))
                     ) : (
-                      <div className="p-8 text-center text-slate-400 text-xs font-medium">
-                        No new notifications
+                      <div className="p-8 text-center text-slate-400">
+                        <Bell size={24} className="mx-auto mb-2 text-slate-200" />
+                        <p className="text-xs font-medium">No notifications yet</p>
                       </div>
                     )}
                   </div>
-                  <button className="w-full py-3 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border-t border-slate-100 dark:border-slate-800 uppercase tracking-widest">
-                    View All Alerts
+                  <button 
+                    onClick={() => setShowNotifications(false)}
+                    className="w-full py-3 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border-t border-slate-100 dark:border-slate-800 uppercase tracking-widest"
+                  >
+                    Close
                   </button>
                 </div>
               </>
@@ -123,7 +232,10 @@ const Topbar = ({ onMenuClick, isDark, toggleTheme, user, onLogout }) => {
                 <div className="fixed inset-0 z-10" onClick={() => setShowUserMenu(false)}></div>
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 py-2 z-20 animate-in fade-in slide-in-from-top-2">
                   {user?.role !== 'Admin' && (
-                    <button className="flex items-center gap-3 px-4 py-3 w-full text-left text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                    <button 
+                      onClick={handleProfileSettingsClick}
+                      className="flex items-center gap-3 px-4 py-3 w-full text-left text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                    >
                       <User size={16} /> Profile Settings
                     </button>
                   )}

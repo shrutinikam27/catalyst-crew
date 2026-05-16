@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Camera, MapPin, AlertTriangle, Send, 
   ChevronDown, Info, Shield, ShieldAlert,
-  CheckCircle2, X
+  CheckCircle, CheckCircle2, Loader2, X, Image as ImageIcon
 } from 'lucide-react';
 import { db, storage } from '../../firebase/config';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -11,6 +11,17 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useAuth } from '../../firebase/AuthContext';
 import { useLocationContext } from '../../contexts/LocationContext';
 import { cn } from '../../utils/cn';
+import { submitComplaint, updateComplaintImageUrl } from '../../services/firestoreService';
+import { uploadComplaintImage } from '../../services/storageService';
+import { useNavigate } from 'react-router-dom';
+
+const CATEGORIES = [
+  { value: 'crime', label: 'Crime / Theft' },
+  { value: 'accident', label: 'Accident / Medical' },
+  { value: 'fire', label: 'Fire Emergency' },
+  { value: 'civic', label: 'Civic / Infrastructure' },
+  { value: 'harassment', label: 'Harassment' },
+];
 
 // Leaflet Imports
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
@@ -33,21 +44,29 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 const ReportIncident = () => {
   const { currentUser } = useAuth();
-  const { location: userLocation } = useLocationContext();
-  const [category, setCategory] = useState('Crime / Theft');
-  const [severity, setSeverity] = useState('moderate');
-  const [description, setDescription] = useState('');
-  const [images, setImages] = useState([]); 
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null); 
-  const fileInputRef = React.useRef(null);
-  
+  const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+
+  const [form, setForm] = useState({
+    title: '',
+    category: 'crime',
+    description: '',
+    severity: 'moderate',
+  });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState(null);
+
   // Map State
+  const { location: userLocation } = useLocationContext();
   const [markerPos, setMarkerPos] = useState([18.5204, 73.8567]); // Default Pune
   const [address, setAddress] = useState("Shivaji Nagar, Pune");
 
   // Sync with user location once it's available
-  React.useEffect(() => {
+  useEffect(() => {
     if (userLocation) {
       setMarkerPos([userLocation.latitude, userLocation.longitude]);
       fetchAddress(userLocation.latitude, userLocation.longitude);
@@ -83,113 +102,170 @@ const ReportIncident = () => {
 
   const RecenterMap = ({ pos }) => {
     const map = useMap();
-    React.useEffect(() => {
+    useEffect(() => {
       map.setView(pos);
     }, [pos]);
     return null;
   };
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    console.log("Files selected:", files);
-    alert(`Detected ${files.length} images! Generating previews...`);
-    
-    const newImages = files.map(file => ({
-      file,
-      preview: URL.createObjectURL(file)
-    }));
-    setImages([...images, ...newImages]);
-  };
-
-  const removeImage = (index) => {
-    const newImages = [...images];
-    URL.revokeObjectURL(newImages[index].preview);
-    newImages.splice(index, 1);
-    setImages(newImages);
-  };
-
-  const uploadImages = async () => {
-    const imageUrls = [];
-    for (const img of images) {
-      try {
-        const storageRef = ref(storage, `incidents/${Date.now()}_${img.file.name}`);
-        const snapshot = await uploadBytes(storageRef, img.file);
-        const url = await getDownloadURL(snapshot.ref);
-        imageUrls.push(url);
-      } catch (err) {
-        console.warn("Storage upload failed, using base64 fallback:", err);
-        // Fallback: Convert to base64 string (note: this can be heavy)
-        const base64 = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result);
-          reader.readAsDataURL(img.file);
-        });
-        imageUrls.push(base64);
-      }
+  // Auto-detect user location
+  const detectLocation = () => {
+    setLocationLoading(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          setMarkerPos([lat, lng]);
+          fetchAddress(lat, lng);
+          setLocationLoading(false);
+        },
+        (err) => {
+          setMarkerPos([18.5204, 73.8567]);
+          fetchAddress(18.5204, 73.8567);
+          setLocationLoading(false);
+        }
+      );
+    } else {
+      setMarkerPos([18.5204, 73.8567]);
+      fetchAddress(18.5204, 73.8567);
+      setLocationLoading(false);
     }
-    return imageUrls;
   };
 
+  // Handle image selection
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setImagePreview(reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Remove selected image
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  // Submit complaint to Firestore
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!description) return;
+    if (!form.title.trim() || !form.description.trim()) {
+      setError('Please fill in title and description.');
+      return;
+    }
 
-    setLoading(true);
-    setStatus(null);
+    setSubmitting(true);
+    setError(null);
 
     try {
-      const uploadedUrls = await uploadImages();
-      const incidentId = `#INC-${Math.floor(1000 + Math.random() * 9000)}`;
-      const incidentData = {
-        id: incidentId,
+      const complaintData = {
+        title: form.title,
+        category: form.category,
+        description: form.description,
+        severity: form.severity,
+        priority: form.severity === 'high' ? 'high' : form.severity === 'moderate' ? 'medium' : 'low',
+        imageUrl: null, 
+        location: {
+          lat: markerPos[0],
+          lng: markerPos[1],
+          address: address
+        },
         userId: currentUser?.uid || 'anonymous',
-        userName: currentUser?.displayName || 'Anonymous Citizen',
-        category,
-        severity,
-        description,
-        images: uploadedUrls,
+        userName: currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Anonymous User',
+        userEmail: currentUser?.email || '',
+        status: 'pending',
+        createdAt: new Date(),
+        department: form.category === 'crime' || form.category === 'harassment' ? 'police' :
+                    form.category === 'fire' ? 'fire' :
+                    form.category === 'accident' ? 'hospital' : 'admin',
+      };
+
+      // Save to Firestore
+      const complaintId = await submitComplaint(complaintData);
+      console.log("🚀 SUCCESS: Incident saved to database with ID:", complaintId);
+
+      // Start background image upload
+      if (imageFile && currentUser?.uid) {
+        uploadComplaintImage(imageFile, currentUser.uid, complaintId)
+          .then(async (url) => {
+            console.log("📸 Image upload complete. Updating record...");
+            await updateComplaintImageUrl(complaintId, url);
+          })
+          .catch(err => {
+            console.warn("📸 Image upload failed in background.", err);
+          });
+      }
+
+      setSubmitted(true);
+      setTimeout(() => {
+        navigate('/user/tracking');
+      }, 2000);
+
+    } catch (err) {
+      console.error('Submit error:', err);
+      setError('Database sync failed. Saving locally...');
+      
+      const incidentData = {
+        id: `#INC-${Math.floor(1000 + Math.random() * 9000)}`,
+        title: form.title,
+        category: form.category,
+        description: form.description,
+        severity: form.severity,
         status: 'Pending',
         date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        timestamp: new Date().toISOString(),
         location: {
           address: address,
           coords: markerPos
         }
       };
-
-      try {
-        // Attempt Firestore
-        const docRef = await addDoc(collection(db, 'incidents'), {
-          ...incidentData,
-          timestamp: serverTimestamp() // Use Firestore server time if possible
-        });
-        console.log("Successfully stored in Firestore with ID:", docRef.id);
-        alert("Success: Stored in Hackonate Cloud!");
-      } catch (dbError) {
-        console.error("CRITICAL: Firestore failed!", dbError);
-        // Fallback to LocalStorage
-        const localIncidents = JSON.parse(localStorage.getItem('local_incidents') || '[]');
-        localIncidents.unshift(incidentData);
-        localStorage.setItem('local_incidents', JSON.stringify(localIncidents));
-        
-        // Alert the user about the specific error to help debug
-        if (dbError.code === 'permission-denied') {
-          alert("Firestore Error: Permission Denied. Please check your Security Rules in the Hackonate console.");
-        } else {
-          alert("Firestore failed (" + dbError.message + "). Data saved locally on your computer instead.");
-        }
-      }
+      const localIncidents = JSON.parse(localStorage.getItem('local_incidents') || '[]');
+      localIncidents.unshift(incidentData);
+      localStorage.setItem('local_incidents', JSON.stringify(localIncidents));
       
-      setStatus('success');
-      setDescription('');
-      setTimeout(() => setStatus(null), 5000);
-    } catch (error) {
-      console.error("Error reporting incident:", error);
-      setStatus('error');
+      setSubmitted(true);
+      setTimeout(() => {
+        navigate('/user/tracking');
+      }, 2000);
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
+
+  // Success state
+  if (submitted) {
+    return (
+      <div className="max-w-md mx-auto mt-20 text-center space-y-6">
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full flex items-center justify-center mx-auto"
+        >
+          <CheckCircle size={48} />
+        </motion.div>
+        <h2 className="text-2xl font-outfit font-extrabold text-slate-900 dark:text-white">Report Submitted!</h2>
+        <p className="text-slate-500 font-medium">Your complaint has been logged and assigned to the appropriate department. You'll receive real-time updates on the tracking page.</p>
+        <div className="flex gap-3 justify-center">
+          <button 
+            onClick={() => navigate('/user/tracking')}
+            className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl text-sm"
+          >
+            Track Status
+          </button>
+          <button 
+            onClick={() => { setSubmitted(false); setForm({ title: '', category: 'crime', description: '', severity: 'moderate' }); setImageFile(null); setImagePreview(null); }}
+            className="px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-sm"
+          >
+            File Another
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
@@ -230,24 +306,44 @@ const ReportIncident = () => {
         <p className="text-slate-500 dark:text-slate-400 font-medium">Your reports help authorities respond faster and keep the city safe.</p>
       </div>
 
-      <div className="grid md:grid-cols-[1fr_300px] gap-8">
+      <form onSubmit={handleSubmit} className="grid md:grid-cols-[1fr_300px] gap-8">
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-100 dark:border-slate-800 shadow-sm space-y-6">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-100 dark:border-slate-800 shadow-sm space-y-6">
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 bg-rose-50 dark:bg-rose-900/20 text-rose-600 rounded-xl text-sm font-bold flex items-center gap-2"
+            >
+              <AlertTriangle size={16} /> {error}
+            </motion.div>
+          )}
           <div className="space-y-4">
+            {/* Title */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Incident Title</label>
+              <input 
+                type="text"
+                value={form.title}
+                onChange={(e) => setForm(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="Brief title of the incident..."
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm font-semibold focus:ring-2 focus:ring-indigo-500 dark:text-white transition-all"
+                required
+              />
+            </div>
+
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Incident Category</label>
                 <div className="relative group">
                   <select 
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                    value={form.category}
+                    onChange={(e) => setForm(prev => ({ ...prev, category: e.target.value }))}
                     className="w-full pl-4 pr-10 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm font-semibold appearance-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition-all cursor-pointer"
                   >
-                    <option>Crime / Theft</option>
-                    <option>Accident / Medical</option>
-                    <option>Fire Emergency</option>
-                    <option>Civic / Infrastructure</option>
-                    <option>Harassment</option>
+                    {CATEGORIES.map(c => (
+                      <option key={c.value} value={c.value}>{c.label}</option>
+                    ))}
                   </select>
                   <ChevronDown size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-indigo-600 transition-colors pointer-events-none" />
                 </div>
@@ -260,10 +356,11 @@ const ReportIncident = () => {
                     <button 
                       type="button"
                       key={lvl}
-                      onClick={() => setSeverity(lvl)}
+                      type="button"
+                      onClick={() => setForm(prev => ({ ...prev, severity: lvl }))}
                       className={cn(
                         "flex-1 py-3 rounded-xl text-[10px] font-extrabold uppercase tracking-widest border-2 transition-all",
-                        severity === lvl 
+                        form.severity === lvl 
                           ? lvl === 'high' ? "bg-rose-500 border-rose-500 text-white shadow-lg shadow-rose-200" :
                             lvl === 'moderate' ? "bg-amber-500 border-amber-500 text-white shadow-lg shadow-amber-200" :
                             "bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-200"
@@ -280,57 +377,64 @@ const ReportIncident = () => {
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Description</label>
               <textarea 
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
+                value={form.description}
+                onChange={(e) => setForm(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Describe the incident in detail..."
                 className="w-full p-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 dark:text-white min-h-[120px]"
+                required
               />
             </div>
 
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Evidence / Images</label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {images.map((img, idx) => (
-                  <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden group border-2 border-slate-100 dark:border-slate-800">
-                    <img src={img.preview} alt="preview" className="w-full h-full object-cover" />
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {imagePreview ? (
+                  <div className="aspect-square rounded-2xl overflow-hidden relative group">
+                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                     <button 
                       type="button"
-                      onClick={() => removeImage(idx)}
-                      className="absolute top-2 right-2 p-1.5 bg-rose-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                      onClick={removeImage}
+                      className="absolute top-2 right-2 w-8 h-8 bg-rose-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                     >
-                      <X size={12} />
+                      <X size={14} />
                     </button>
                   </div>
-                ))}
-                
-                <button 
-                  type="button"
-                  onClick={() => fileInputRef.current.click()}
-                  className="aspect-square rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center gap-2 group hover:border-indigo-500 transition-all cursor-pointer"
-                >
-                  <input 
-                    type="file" 
-                    multiple 
-                    accept="image/*" 
-                    className="hidden" 
-                    ref={fileInputRef}
-                    onChange={handleImageChange}
-                  />
-                  <Camera size={24} className="text-slate-400 group-hover:text-indigo-500 transition-colors" />
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">Add Photos</span>
-                </button>
+                ) : (
+                  <button 
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="aspect-square rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center gap-2 group hover:border-indigo-500 transition-all cursor-pointer"
+                  >
+                    <Camera size={24} className="text-slate-400 group-hover:text-indigo-500 transition-colors" />
+                    <span className="text-[10px] font-bold text-slate-500 uppercase">Upload</span>
+                  </button>
+                )}
+                <input 
+                  ref={fileInputRef}
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleImageSelect}
+                  className="hidden" 
+                />
               </div>
             </div>
           </div>
 
           <button 
-            disabled={loading}
-            type="submit" 
-            className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-xl shadow-indigo-100 dark:shadow-none flex items-center justify-center gap-2 transition-all group active:scale-95 disabled:opacity-50"
+            type="submit"
+            disabled={submitting}
+            className={cn(
+              "w-full py-4 text-white font-bold rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-all group active:scale-95",
+              submitting 
+                ? "bg-slate-400 cursor-not-allowed" 
+                : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-100 dark:shadow-none"
+            )}
           >
-            {loading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            {submitting ? (
+              <>
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                Submitting to SafeLink...
+              </>
             ) : (
               <>
                 <Send size={18} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
@@ -338,7 +442,7 @@ const ReportIncident = () => {
               </>
             )}
           </button>
-        </form>
+        </div>
 
         {/* Sidebar Info */}
         <div className="space-y-6">
@@ -385,7 +489,8 @@ const ReportIncident = () => {
               {[
                 'Provide clear descriptions',
                 'Upload images if possible',
-                'Report genuine incidents',
+                'Reports are sent to authorities in real-time',
+                'Track status on the Tracking page',
                 'False reporting is illegal'
               ].map((tip, i) => (
                 <li key={i} className="flex gap-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">
@@ -395,7 +500,7 @@ const ReportIncident = () => {
             </ul>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 };

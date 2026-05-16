@@ -31,11 +31,13 @@ const roleMenus = {
     { name: 'Incident Manager', icon: FileText, path: '/police/incidents' },
     { name: 'Patrol Optimizer', icon: Map, path: '/police/patrol' },
     { name: 'Crime Heatmap', icon: Zap, path: '/police/map' },
+    { name: 'Profile Settings', icon: User, path: '/police/profile' },
   ],
   hospital: [
     { name: 'ER Dashboard', icon: Home, path: '/hospital' },
     { name: 'Dispatch Board', icon: Ambulance, path: '/hospital/dispatch' },
     { name: 'Patient Alerts', icon: Bell, path: '/hospital/alerts' },
+    { name: 'Profile Settings', icon: User, path: '/hospital/profile' },
   ],
   fire: [
     { name: 'Fire Command', icon: Home, path: '/fire' },
@@ -45,7 +47,6 @@ const roleMenus = {
   admin: [
     { name: 'City Command', icon: Home, path: '/admin' },
     { name: 'City Analytics', icon: PieChart, path: '/admin/analytics' },
-    { name: 'Grievance & Reports', icon: MessageSquare, path: '/admin/reports' },
     { name: 'User Management', icon: Users, path: '/admin/users' },
     { name: 'System Logs', icon: FileText, path: '/admin/logs' },
     { name: 'AI Forecasts', icon: Cpu, path: '/admin/ai' },
@@ -104,15 +105,13 @@ const Sidebar = ({ role = 'citizen', isOpen, onClose, onLogout, isVolunteer }) =
 
         {/* Footer */}
         <div className="p-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
-          {role !== 'admin' && (
-            <Link 
-              to="/contact"
-              className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all group"
-            >
-              <Mail size={18} className="group-hover:scale-110 transition-transform" />
-              <span>Contact Support</span>
-            </Link>
-          )}
+          <Link 
+            to="/contact"
+            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all group"
+          >
+            <Mail size={18} className="group-hover:scale-110 transition-transform" />
+            <span>Contact Support</span>
+          </Link>
           <button 
             onClick={onLogout}
             className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all group"

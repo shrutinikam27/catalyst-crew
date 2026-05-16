@@ -45,6 +45,7 @@ const roleMenus = {
   admin: [
     { name: 'City Command', icon: Home, path: '/admin' },
     { name: 'City Analytics', icon: PieChart, path: '/admin/analytics' },
+    { name: 'Grievance & Reports', icon: MessageSquare, path: '/admin/reports' },
     { name: 'User Management', icon: Users, path: '/admin/users' },
     { name: 'System Logs', icon: FileText, path: '/admin/logs' },
     { name: 'AI Forecasts', icon: Cpu, path: '/admin/ai' },
@@ -103,13 +104,15 @@ const Sidebar = ({ role = 'citizen', isOpen, onClose, onLogout, isVolunteer }) =
 
         {/* Footer */}
         <div className="p-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
-          <Link 
-            to="/contact"
-            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all group"
-          >
-            <Mail size={18} className="group-hover:scale-110 transition-transform" />
-            <span>Contact Support</span>
-          </Link>
+          {role !== 'admin' && (
+            <Link 
+              to="/contact"
+              className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all group"
+            >
+              <Mail size={18} className="group-hover:scale-110 transition-transform" />
+              <span>Contact Support</span>
+            </Link>
+          )}
           <button 
             onClick={onLogout}
             className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all group"

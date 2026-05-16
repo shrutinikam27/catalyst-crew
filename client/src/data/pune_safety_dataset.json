@@ -1,0 +1,112 @@
+[
+  {
+    "id": "PUNE-INC-001",
+    "ward": "Aundh",
+    "category": "Crime",
+    "subcategory": "Theft",
+    "severity": "moderate",
+    "location": { "lat": 18.5580, "lng": 73.8075, "address": "Baner Road, Aundh" },
+    "reportedTime": "2026-05-15T08:30:00Z",
+    "status": "Resolved",
+    "description": "Chain snatching incident reported near the bus stop."
+  },
+  {
+    "id": "PUNE-CIV-002",
+    "ward": "Shivajinagar",
+    "category": "Civic Grievance",
+    "subcategory": "Streetlight Issue",
+    "severity": "low",
+    "location": { "lat": 18.5314, "lng": 73.8446, "address": "FC Road, Shivajinagar" },
+    "reportedTime": "2026-05-16T19:45:00Z",
+    "status": "Pending",
+    "description": "Multiple streetlights are non-functional, creating a dark spot for pedestrians."
+  },
+  {
+    "id": "PUNE-INC-003",
+    "ward": "Hadapsar",
+    "category": "Crime",
+    "subcategory": "Assault",
+    "severity": "high",
+    "location": { "lat": 18.5089, "lng": 73.9259, "address": "Magarpatta City Gate, Hadapsar" },
+    "reportedTime": "2026-05-17T01:15:00Z",
+    "status": "Pending",
+    "description": "Altercation resulting in physical assault. Police units dispatched."
+  },
+  {
+    "id": "PUNE-CIV-004",
+    "ward": "Kothrud",
+    "category": "Civic Grievance",
+    "subcategory": "Waterlogging",
+    "severity": "moderate",
+    "location": { "lat": 18.5074, "lng": 73.8077, "address": "Karve Nagar, Kothrud" },
+    "reportedTime": "2026-05-16T14:20:00Z",
+    "status": "Resolved",
+    "description": "Severe waterlogging due to blocked drainage after unexpected rain."
+  },
+  {
+    "id": "PUNE-INC-005",
+    "ward": "Viman Nagar",
+    "category": "Crime",
+    "subcategory": "Vehicle Theft",
+    "severity": "high",
+    "location": { "lat": 18.5679, "lng": 73.9143, "address": "Phoenix Mall Parking, Viman Nagar" },
+    "reportedTime": "2026-05-16T22:10:00Z",
+    "status": "Pending",
+    "description": "Two-wheeler reported stolen from the open parking lot."
+  },
+  {
+    "id": "PUNE-CIV-006",
+    "ward": "Kalyani Nagar",
+    "category": "Civic Grievance",
+    "subcategory": "Garbage Dump",
+    "severity": "moderate",
+    "location": { "lat": 18.5476, "lng": 73.9033, "address": "Gold Adlabs Chowk, Kalyani Nagar" },
+    "reportedTime": "2026-05-15T09:00:00Z",
+    "status": "Pending",
+    "description": "Uncollected solid waste accumulating near the residential zone."
+  },
+  {
+    "id": "PUNE-INC-007",
+    "ward": "Camp",
+    "category": "Crime",
+    "subcategory": "Vandalism",
+    "severity": "low",
+    "location": { "lat": 18.5158, "lng": 73.8822, "address": "MG Road, Pune Camp" },
+    "reportedTime": "2026-05-16T23:30:00Z",
+    "status": "Resolved",
+    "description": "Public property vandalized by unknown miscreants."
+  },
+  {
+    "id": "PUNE-CIV-008",
+    "ward": "Wakad",
+    "category": "Civic Grievance",
+    "subcategory": "Pothole",
+    "severity": "high",
+    "location": { "lat": 18.5987, "lng": 73.7654, "address": "Datta Mandir Road, Wakad" },
+    "reportedTime": "2026-05-14T08:15:00Z",
+    "status": "Pending",
+    "description": "Massive pothole causing traffic slowdown and potential accidents."
+  },
+  {
+    "id": "PUNE-INC-009",
+    "ward": "Hinjewadi",
+    "category": "Crime",
+    "subcategory": "Cyber Fraud",
+    "severity": "high",
+    "location": { "lat": 18.5913, "lng": 73.7389, "address": "Phase 1, Hinjewadi IT Park" },
+    "reportedTime": "2026-05-16T11:45:00Z",
+    "status": "Pending",
+    "description": "Financial cyber fraud reported by a local IT employee."
+  },
+  {
+    "id": "PUNE-CIV-010",
+    "ward": "Pimpri",
+    "category": "Civic Grievance",
+    "subcategory": "Noise Pollution",
+    "severity": "low",
+    "location": { "lat": 18.6298, "lng": 73.7997, "address": "Pimpri Chinchwad Link Road" },
+    "reportedTime": "2026-05-16T23:00:00Z",
+    "status": "Resolved",
+    "description": "Loud music playing beyond permissible hours in a commercial zone."
+  }
+]

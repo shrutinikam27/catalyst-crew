@@ -42,6 +42,11 @@ import PatientAlerts from './pages/hospital/PatientAlerts';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
+import CityAnalytics from './pages/admin/CityAnalytics';
+import UserManagement from './pages/admin/UserManagement';
+import SystemLogs from './pages/admin/SystemLogs';
+import AIForecasts from './pages/admin/AIForecasts';
+import AdminReports from './pages/admin/AdminReports';
 
 import './index.css';
 
@@ -123,10 +128,11 @@ function App() {
           {/* Admin Dashboard Routes */}
           <Route path="/admin" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
             <Route index element={<AdminDashboard />} />
-            <Route path="analytics" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">City Analytics Coming Soon</div>} />
-            <Route path="users" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">User Management Coming Soon</div>} />
-            <Route path="logs" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">System Logs Coming Soon</div>} />
-            <Route path="ai" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">AI Forecasts Coming Soon</div>} />
+            <Route path="analytics" element={<CityAnalytics />} />
+            <Route path="reports" element={<AdminReports />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="logs" element={<SystemLogs />} />
+            <Route path="ai" element={<AIForecasts />} />
           </Route>
 
           {/* Fallback */}

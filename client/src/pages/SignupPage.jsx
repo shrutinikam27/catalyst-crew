@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../firebase/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import PublicNavbar from '../components/PublicNavbar';
 
 function SignupPage() {
   const [email, setEmail] = useState('');
@@ -19,10 +20,13 @@ function SignupPage() {
     }
 
     try {
-      setError('');
-      setLoading(true);
-      await signup(email, password);
-      navigate('/user');
+      const { user } = await signup(email, password);
+      // Role-based redirection logic
+      if (email.includes('admin')) navigate('/admin');
+      else if (email.includes('police')) navigate('/police');
+      else if (email.includes('volunteer')) navigate('/volunteer');
+      else if (email.includes('hospital')) navigate('/hospital');
+      else navigate('/user');
     } catch (err) {
       setError('Failed to create an account. ' + err.message);
     }
@@ -31,11 +35,15 @@ function SignupPage() {
 
   async function handleGoogleLogin() {
     try {
-      setError('');
-      setLoading(true);
-      await loginWithGoogle();
-      navigate('/user');
+      const { user } = await loginWithGoogle();
+      // Role-based redirection logic
+      if (user.email.includes('admin')) navigate('/admin');
+      else if (user.email.includes('police')) navigate('/police');
+      else if (user.email.includes('volunteer')) navigate('/volunteer');
+      else if (user.email.includes('hospital')) navigate('/hospital');
+      else navigate('/user');
     } catch (err) {
+      console.error(err);
       setError('Failed to sign up with Google.');
     }
     setLoading(false);

@@ -3,6 +3,8 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
 import { useAuth } from '../firebase/AuthContext';
+import { db } from '../firebase/config';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 const DashboardLayout = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -13,6 +15,26 @@ const DashboardLayout = () => {
 
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
+  const [isVolunteer, setIsVolunteer] = useState(false);
+  
+  useEffect(() => {
+    if (!currentUser) return;
+    const checkVolunteerStatus = async () => {
+      try {
+        const q = query(collection(db, 'volunteerRequests'), where('uid', '==', currentUser.uid));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          const volData = snap.docs[0].data();
+          if (volData.status === 'approved') {
+            setIsVolunteer(true);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching volunteer status:", err);
+      }
+    };
+    checkVolunteerStatus();
+  }, [currentUser]);
   
   // Mock role determination - in real app would come from user profile/claims
   const role = currentUser?.email?.includes('admin') ? 'admin' : 
@@ -51,6 +73,7 @@ const DashboardLayout = () => {
     <div className="min-h-screen bg-slate-50 dark:bg-[#0f172a] transition-colors duration-300">
       <Sidebar 
         role={role} 
+        isVolunteer={isVolunteer}
         isOpen={isSidebarOpen} 
         onClose={() => setSidebarOpen(false)} 
         onLogout={handleLogout}

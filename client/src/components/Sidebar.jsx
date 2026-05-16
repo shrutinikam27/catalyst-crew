@@ -23,6 +23,7 @@ const roleMenus = {
     { name: 'Nearby Alerts', icon: Bell, path: '/volunteer/alerts' },
     { name: 'Active Missions', icon: Activity, path: '/volunteer/missions' },
     { name: 'My Profile', icon: User, path: '/volunteer/profile' },
+    { name: 'Citizen Dashboard', icon: User, path: '/user' },
   ],
   police: [
     { name: 'Precinct Overview', icon: Home, path: '/police' },
@@ -49,9 +50,13 @@ const roleMenus = {
   ]
 };
 
-const Sidebar = ({ role = 'citizen', isOpen, onClose, onLogout }) => {
+const Sidebar = ({ role = 'citizen', isOpen, onClose, onLogout, isVolunteer }) => {
   const location = useLocation();
-  const menuItems = roleMenus[role] || roleMenus.citizen;
+  let menuItems = [...(roleMenus[role] || roleMenus.citizen)];
+
+  if (role === 'citizen' && isVolunteer) {
+    menuItems.push({ name: 'Volunteer Panel', icon: Shield, path: '/volunteer' });
+  }
 
   return (
     <aside className={cn(

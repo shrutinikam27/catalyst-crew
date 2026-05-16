@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { 
-  AlertTriangle, Shield, MapPin, Camera, Clock, 
+import {
+  AlertTriangle, Shield, MapPin, Camera, Clock,
   CheckCircle2, ArrowRight, MessageSquare, Plus, Info, X
 } from 'lucide-react';
 
@@ -23,11 +23,11 @@ import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 let DefaultIcon = L.icon({
-    iconUrl: markerIcon,
-    iconRetinaUrl: markerIconRetina,
-    shadowUrl: markerShadow,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41]
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIconRetina,
+  shadowUrl: markerShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41]
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
@@ -40,7 +40,7 @@ const ReportIssue = () => {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState([]);
   const fileInputRef = React.useRef(null);
-  
+
   const [formData, setFormData] = useState({
     category: '',
     title: '',
@@ -50,7 +50,7 @@ const ReportIssue = () => {
   });
 
   // Map State
-  const [markerPos, setMarkerPos] = useState([18.5204, 73.8567]); 
+  const [markerPos, setMarkerPos] = useState([18.5204, 73.8567]);
   const [address, setAddress] = useState("Pune Metropolitan Area");
 
   useEffect(() => {
@@ -170,11 +170,11 @@ const ReportIssue = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       const uploadedUrls = await uploadImages();
       const incidentId = `#SL-${Math.floor(1000 + Math.random() * 9000)}`;
-      
+
       const reportData = {
         id: incidentId,
         userId: currentUser?.uid || 'anonymous',
@@ -302,9 +302,9 @@ const ReportIssue = () => {
                   <div className="space-y-2">
                     <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Location</label>
                     <div className="h-48 bg-slate-100 dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 relative z-0">
-                      <MapContainer 
-                        center={markerPos} 
-                        zoom={13} 
+                      <MapContainer
+                        center={markerPos}
+                        zoom={13}
                         scrollWheelZoom={false}
                         style={{ height: '100%', width: '100%' }}
                       >
@@ -329,7 +329,7 @@ const ReportIssue = () => {
                           </button>
                         </div>
                       ))}
-                      <button 
+                      <button
                         type="button"
                         onClick={() => fileInputRef.current.click()}
                         className="aspect-square bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center hover:bg-slate-100 transition-all"
@@ -342,7 +342,7 @@ const ReportIssue = () => {
                 </div>
 
                 <div className="pt-4">
-                  <button 
+                  <button
                     disabled={loading}
                     type="submit"
                     className="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-5 rounded-[2rem] font-black text-lg shadow-2xl shadow-indigo-200 dark:shadow-none flex items-center justify-center gap-3 transition-all disabled:opacity-50"

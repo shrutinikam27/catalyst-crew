@@ -1,12 +1,28 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Bell, Menu, Sun, Moon, User, ChevronDown, LogOut, ShieldAlert, Heart } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { useSocket } from '../context/SocketContext';
 
 const Topbar = ({ onMenuClick, isDark, toggleTheme, user, onLogout }) => {
+  const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const { notifications } = useSocket();
+
+  const handleProfileSettingsClick = () => {
+    setShowUserMenu(false);
+    const lowercaseRole = user?.role?.toLowerCase();
+    if (lowercaseRole === 'police') {
+      navigate('/police/profile');
+    } else if (lowercaseRole === 'hospital') {
+      navigate('/hospital/profile');
+    } else if (lowercaseRole === 'volunteer') {
+      navigate('/volunteer/profile');
+    } else {
+      navigate('/user/profile');
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800">
@@ -123,7 +139,10 @@ const Topbar = ({ onMenuClick, isDark, toggleTheme, user, onLogout }) => {
                 <div className="fixed inset-0 z-10" onClick={() => setShowUserMenu(false)}></div>
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 py-2 z-20 animate-in fade-in slide-in-from-top-2">
                   {user?.role !== 'Admin' && (
-                    <button className="flex items-center gap-3 px-4 py-3 w-full text-left text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                    <button 
+                      onClick={handleProfileSettingsClick}
+                      className="flex items-center gap-3 px-4 py-3 w-full text-left text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                    >
                       <User size={16} /> Profile Settings
                     </button>
                   )}

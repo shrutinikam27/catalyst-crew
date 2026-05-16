@@ -21,11 +21,11 @@ function SignupPage() {
 
     try {
       const { user } = await signup(email, password);
-      // Role-based redirection logic
       if (email.includes('admin')) navigate('/admin');
       else if (email.includes('police')) navigate('/police');
       else if (email.includes('volunteer')) navigate('/volunteer');
       else if (email.includes('hospital')) navigate('/hospital');
+      else if (email.includes('fire')) navigate('/fire');
       else navigate('/user');
     } catch (err) {
       setError('Failed to create an account. ' + err.message);
@@ -36,11 +36,11 @@ function SignupPage() {
   async function handleGoogleLogin() {
     try {
       const { user } = await loginWithGoogle();
-      // Role-based redirection logic
       if (user.email.includes('admin')) navigate('/admin');
       else if (user.email.includes('police')) navigate('/police');
       else if (user.email.includes('volunteer')) navigate('/volunteer');
       else if (user.email.includes('hospital')) navigate('/hospital');
+      else if (user.email.includes('fire')) navigate('/fire');
       else navigate('/user');
     } catch (err) {
       console.error(err);

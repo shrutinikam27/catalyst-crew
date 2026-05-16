@@ -20,6 +20,7 @@ function LoginPage() {
       else if (email.includes('police')) navigate('/police');
       else if (email.includes('volunteer')) navigate('/volunteer');
       else if (email.includes('hospital')) navigate('/hospital');
+      else if (email.includes('fire')) navigate('/fire');
       else navigate('/user');
     } catch (err) {
       setError('Failed to log in. Please check your credentials.');
@@ -35,6 +36,7 @@ function LoginPage() {
       else if (user.email.includes('police')) navigate('/police');
       else if (user.email.includes('volunteer')) navigate('/volunteer');
       else if (user.email.includes('hospital')) navigate('/hospital');
+      else if (user.email.includes('fire')) navigate('/fire');
       else navigate('/user');
     } catch (err) {
       console.error(err);

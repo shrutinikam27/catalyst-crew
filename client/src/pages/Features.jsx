@@ -29,7 +29,7 @@ const Features = () => {
             Tools for a <span className="text-gradient">Safer Urban Future</span>
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-            SafeLinks provides a comprehensive suite of digital tools designed for real-time
+            SafeLink provides a comprehensive suite of digital tools designed for real-time
             risk assessment, emergency response, and community collaboration.
           </p>
         </section>
@@ -218,7 +218,7 @@ const Features = () => {
           <div className="order-1 lg:order-2">
             <h2 className="text-4xl font-bold mb-6 text-slate-900 dark:text-white">Authority & Citizen Portals</h2>
             <p className="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-              SafeLinks provides tailored experiences. Authorities get deep administrative controls and
+              SafeLink provides tailored experiences. Authorities get deep administrative controls and
               dispatch tools, while citizens receive high-level safety insights and personal report tracking.
             </p>
             <div className="grid sm:grid-cols-2 gap-6 mt-12">

@@ -14,7 +14,7 @@ const AboutUs = () => {
             Through Data Intelligence
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-            SafeLinks is a Smart Urban Risk Mapping platform designed to transform Pune into
+            SafeLink is a Smart Urban Risk Mapping platform designed to transform Pune into
             a safer, more resilient city using real-time analytics and community-driven insights.
           </p>
         </section>
@@ -40,7 +40,7 @@ const AboutUs = () => {
               and underserved areas often face delayed emergency responses and limited access to critical civic support.
             </p>
             <p className="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-              SafeLinks was born from the vision of "Data-driven Governance." By integrating crime statistics,
+              SafeLink was born from the vision of "Data-driven Governance." By integrating crime statistics,
               civic grievance reports, and demographic datasets, we identify urban risk zones to improve
               preparedness and strengthen citizen engagement.
             </p>
@@ -125,7 +125,7 @@ const AboutUs = () => {
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-400/20 rounded-full -ml-32 -mb-32 blur-3xl"></div>
           <h2 className="text-4xl font-bold mb-6 relative z-10">Ready to make your city safer?</h2>
           <p className="text-indigo-100 text-lg mb-10 max-w-2xl mx-auto relative z-10">
-            Join SafeLinks today and contribute to Pune's data-driven safety initiative.
+            Join SafeLink today and contribute to Pune's data-driven safety initiative.
             Together, we can build a smarter city for everyone.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">

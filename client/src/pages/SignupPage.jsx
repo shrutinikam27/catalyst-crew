@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../firebase/AuthContext';
+import { db } from '../firebase/config';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Shield, Mail, Lock, User, 
   ChevronRight, ArrowLeft, ArrowRight,
   Zap, Heart, ShieldAlert, Building2,
   Phone, CheckCircle2, Upload, BadgeCheck,
-  AlertTriangle
+  AlertTriangle, Clock
 } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 function SignupPage() {
   const [step, setStep] = useState(1);
-  const [role, setRole] = useState(null); // citizen, volunteer, authority
+  const [role, setRole] = useState(null);
+  const [submitted, setSubmitted] = useState(false); // pending approval screen
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -25,6 +28,7 @@ function SignupPage() {
     department: '',
     designation: ''
   });
+  const [fileName, setFileName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signup, loginWithGoogle } = useAuth();
@@ -40,16 +44,34 @@ function SignupPage() {
     if (formData.password !== formData.confirmPassword) {
       return setError('Passwords do not match');
     }
+    if (role === 'volunteer' && formData.skills.length === 0) {
+      return setError('Please select at least one expertise area.');
+    }
     
     setError('');
     setLoading(true);
     try {
-      await signup(formData.email, formData.password);
-      // Success - redirect based on role
-      if (role === 'authority') navigate('/admin');
-      else if (role === 'volunteer') navigate('/volunteer');
-      else if (formData.email.includes('fire')) navigate('/fire');
-      else navigate('/user');
+      const { user } = await signup(formData.email, formData.password);
+
+      if (role === 'volunteer') {
+        // Save volunteer request to Firestore with pending status
+        await addDoc(collection(db, 'volunteerRequests'), {
+          uid: user.uid,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          expertise: formData.skills, // array: ['crime'], ['medical'], ['firebrigade']
+          idFileName: fileName || 'Not provided',
+          status: 'pending',
+          createdAt: serverTimestamp(),
+        });
+        // Show pending approval screen instead of navigating
+        setSubmitted(true);
+      } else if (role === 'authority') {
+        navigate('/admin');
+      } else {
+        navigate('/user');
+      }
     } catch (err) {
       setError(err.message || 'Failed to create account.');
     } finally {
@@ -82,8 +104,7 @@ function SignupPage() {
   ];
 
   const volunteerCategories = [
-    'Medical Volunteer', 'Women Safety', 'Disaster Response', 
-    'Blood Donor', 'Traffic Support', 'Community Safety'
+    'firebrigade', 'medical', 'crime'
   ];
 
   async function handleGoogleLogin() {
@@ -105,6 +126,31 @@ function SignupPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 transition-colors py-12 px-6">
       <div className="max-w-4xl mx-auto">
+
+        {/* Pending Approval Screen */}
+        {submitted && (
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center max-w-md mx-auto bg-white dark:bg-slate-900 p-12 rounded-[3rem] shadow-2xl border border-slate-100 dark:border-slate-800">
+              <div className="w-24 h-24 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+                <div className="absolute inset-0 bg-amber-400/20 rounded-full animate-ping"></div>
+                <Clock size={48} className="text-amber-600 dark:text-amber-500 relative z-10" />
+              </div>
+              <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-3 font-outfit">Request Submitted!</h2>
+              <p className="text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+                Your volunteer application has been submitted and is <span className="text-amber-600 font-bold">pending review</span> by the relevant admin. 
+              </p>
+              <p className="text-slate-500 dark:text-slate-400 mb-8 text-sm leading-relaxed">
+                You will be able to log in only after your request has been <span className="font-bold text-emerald-600">verified and approved</span>. Please check back after you receive confirmation.
+              </p>
+              <button onClick={() => navigate('/login')} className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl transition-all shadow-xl shadow-indigo-100 dark:shadow-none">
+                Back to Login
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!submitted && (
+        <div>
         {/* Navigation / Progress */}
         <div className="flex items-center justify-between mb-12">
           <button 
@@ -247,8 +293,18 @@ function SignupPage() {
                       </div>
                       <div className="flex items-center gap-3 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl border border-indigo-100 dark:border-indigo-800">
                         <Upload size={20} className="text-indigo-600" />
-                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest">Upload Government ID</span>
-                        <button type="button" className="ml-auto px-4 py-1.5 bg-white dark:bg-slate-800 text-xs font-bold text-indigo-600 rounded-lg shadow-sm">Browse</button>
+                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest">
+                          {fileName ? fileName : 'Upload Government ID'}
+                        </span>
+                        <label className="ml-auto cursor-pointer px-4 py-1.5 bg-white dark:bg-slate-800 text-xs font-bold text-indigo-600 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                          {fileName ? 'Change' : 'Browse'}
+                          <input 
+                            type="file" 
+                            className="hidden" 
+                            accept="image/*,.pdf" 
+                            onChange={(e) => setFileName(e.target.files[0]?.name || '')}
+                          />
+                        </label>
                       </div>
                     </div>
                   )}
@@ -340,6 +396,7 @@ function SignupPage() {
           SOS
         </motion.button>
       </div>
+      )} {/* end !submitted */}
     </div>
   );
 }

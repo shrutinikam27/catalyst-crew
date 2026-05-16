@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../firebase/AuthContext';
+import { db } from '../firebase/config';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Shield, Mail, Lock, Eye, EyeOff, 
@@ -16,7 +18,7 @@ function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [loginMethod, setLoginMethod] = useState('email'); // email, phone
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, logout } = useAuth();
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
@@ -25,6 +27,22 @@ function LoginPage() {
     setLoading(true);
     try {
       const { user } = await login(email, password);
+      // Check volunteer status before redirecting
+      const q = query(collection(db, 'volunteerRequests'), where('uid', '==', user.uid));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const vol = snap.docs[0].data();
+        if (vol.status === 'pending') {
+          await logout();
+          return setError('Your volunteer application is pending admin approval. Please wait for verification.');
+        }
+        if (vol.status === 'rejected') {
+          await logout();
+          return setError('Your application was rejected. Please contact the admin.');
+        }
+        navigate('/volunteer');
+        return;
+      }
       redirectUser(email);
     } catch (err) {
       setError('Invalid credentials. Please try again.');

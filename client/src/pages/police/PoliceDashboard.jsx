@@ -1,17 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Shield, AlertTriangle, MapPin, 
-  TrendingUp, Users, Activity, FileText,
-  Clock, CheckCircle, Search
+  Users, Activity, Clock, CheckCircle, Search,
+  UserCheck, UserX, Loader2
 } from 'lucide-react';
 import StatCard from '../../components/ui/StatCard';
 import ChartCard from '../../components/ui/ChartCard';
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, 
-  Tooltip, ResponsiveContainer, LineChart, Line 
-} from 'recharts';
+import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { cn } from '../../utils/cn';
+import { db } from '../../firebase/config';
+import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 
 const crimeData = [
   { name: 'Jan', reports: 45, resolved: 38 },
@@ -23,6 +22,37 @@ const crimeData = [
 ];
 
 const PoliceDashboard = () => {
+  const [volunteers, setVolunteers] = useState([]);
+  const [loadingVols, setLoadingVols] = useState(true);
+  const [actionLoading, setActionLoading] = useState(null);
+  const [tab, setTab] = useState('pending'); // pending | approved | rejected
+
+  useEffect(() => {
+    // Real-time listener for crime volunteer requests
+    const q = query(
+      collection(db, 'volunteerRequests'),
+      where('expertise', 'array-contains', 'crime')
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      setVolunteers(data);
+      setLoadingVols(false);
+    });
+    return () => unsub();
+  }, []);
+
+  const handleAction = async (id, status) => {
+    setActionLoading(id + status);
+    try {
+      await updateDoc(doc(db, 'volunteerRequests', id), { status });
+    } catch (e) {
+      console.error(e);
+    }
+    setActionLoading(null);
+  };
+
+  const filtered = volunteers.filter(v => v.status === tab);
+
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
@@ -53,7 +83,7 @@ const PoliceDashboard = () => {
         <StatCard title="Avg. Response" value="6.5m" icon={Clock} trend="8%" trendType="down" />
       </div>
 
-      {/* Main Charts */}
+      {/* Chart */}
       <div className="grid lg:grid-cols-2 gap-8">
         <ChartCard title="Incident Frequency vs Resolutions" subtitle="Monthly tracking of precinct performance">
           <ResponsiveContainer width="100%" height="100%" minWidth={0}>
@@ -70,66 +100,105 @@ const PoliceDashboard = () => {
           <div className="relative h-full bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden flex items-center justify-center">
             <MapPin size={48} className="text-slate-300 dark:text-slate-800" />
             <p className="absolute bottom-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Zone Map Placeholder</p>
-            {/* Mock Heat Spots */}
             <div className="absolute w-20 h-20 bg-rose-500/20 blur-2xl rounded-full top-1/4 left-1/3"></div>
             <div className="absolute w-32 h-32 bg-amber-500/10 blur-3xl rounded-full bottom-1/4 right-1/4"></div>
           </div>
         </ChartCard>
       </div>
 
-      {/* Recent Incidents Table */}
+      {/* ─── REAL-TIME Volunteer Verification ─── */}
       <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
-          <h3 className="font-outfit font-bold text-slate-900 dark:text-white">Recent Active Incidents</h3>
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-800">
-            <Search size={14} className="text-slate-400" />
-            <input type="text" placeholder="Search ID..." className="bg-transparent border-none p-0 text-xs focus:ring-0 w-24" />
+        <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="font-outfit font-bold text-slate-900 dark:text-white text-lg">Crime Volunteer Requests</h3>
+              <p className="text-xs text-slate-500 mt-0.5">Real-time · approve or reject applicants</p>
+            </div>
+            {/* Tab switcher */}
+            <div className="flex gap-2">
+              {['pending','approved','rejected'].map(t => (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
+                  className={cn(
+                    'px-4 py-1.5 rounded-xl text-[11px] font-extrabold uppercase tracking-widest transition-all',
+                    tab === t
+                      ? t === 'pending'   ? 'bg-amber-500 text-white'
+                        : t === 'approved' ? 'bg-emerald-500 text-white'
+                        : 'bg-rose-500 text-white'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                  )}
+                >
+                  {t} ({volunteers.filter(v => v.status === t).length})
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-slate-50 dark:bg-slate-800/50">
-              <tr>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">ID</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Type</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Location</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Priority</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Officer</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {[
-                { id: '#INC-2048', type: 'Grand Theft Auto', loc: 'Hadapsar Sector 4', priority: 'High', officer: 'J. Doe', status: 'In Pursuit' },
-                { id: '#INC-2049', type: 'Public Disturbance', loc: 'Baner High St', priority: 'Low', officer: 'S. Smith', status: 'On Route' },
-                { id: '#INC-2050', type: 'Vandalism Report', loc: 'Aundh Area', priority: 'Moderate', officer: 'M. Vane', status: 'Investigating' },
-                { id: '#INC-2051', type: 'Street Harassment', loc: 'Viman Nagar', priority: 'High', officer: 'B. Wayne', status: 'Officer Assigned' },
-              ].map((row, i) => (
-                <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                  <td className="px-6 py-4 text-xs font-bold text-indigo-600 dark:text-indigo-400">{row.id}</td>
-                  <td className="px-6 py-4 text-xs font-semibold text-slate-700 dark:text-slate-300">{row.type}</td>
-                  <td className="px-6 py-4 text-xs font-medium text-slate-500">{row.loc}</td>
-                  <td className="px-6 py-4">
-                    <span className={cn(
-                      "px-2 py-1 rounded text-[10px] font-extrabold uppercase",
-                      row.priority === 'High' ? "bg-rose-100 text-rose-600" :
-                      row.priority === 'Moderate' ? "bg-amber-100 text-amber-600" : "bg-emerald-100 text-emerald-600"
-                    )}>
-                      {row.priority}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-xs font-semibold text-slate-700 dark:text-slate-300">{row.officer}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></div>
-                      <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">{row.status}</span>
-                    </div>
-                  </td>
+
+        {loadingVols ? (
+          <div className="flex items-center justify-center py-16 gap-3 text-slate-400">
+            <Loader2 className="animate-spin" size={24} />
+            <span className="text-sm font-bold uppercase tracking-widest">Loading requests…</span>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-400">
+            <UserCheck size={40} className="text-slate-200 dark:text-slate-700" />
+            <p className="text-sm font-bold uppercase tracking-widest">No {tab} requests</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="bg-slate-50 dark:bg-slate-800/50">
+                <tr>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Name</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Email</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Phone</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Expertise</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">ID Proof</th>
+                  {tab === 'pending' && <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Actions</th>}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {filtered.map(row => (
+                  <tr key={row.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="px-6 py-4 text-xs font-semibold text-slate-700 dark:text-slate-300">{row.name}</td>
+                    <td className="px-6 py-4 text-xs font-medium text-slate-500">{row.email}</td>
+                    <td className="px-6 py-4 text-xs font-medium text-slate-500">{row.phone || '—'}</td>
+                    <td className="px-6 py-4">
+                      {(row.expertise || []).map(e => (
+                        <span key={e} className="mr-1 px-2 py-1 rounded text-[10px] font-extrabold uppercase bg-indigo-100 text-indigo-600">{e}</span>
+                      ))}
+                    </td>
+                    <td className="px-6 py-4 text-xs font-medium text-slate-500">{row.idFileName || '—'}</td>
+                    {tab === 'pending' && (
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleAction(row.id, 'approved')}
+                            disabled={!!actionLoading}
+                            className="flex items-center gap-1 px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-bold rounded uppercase transition-colors disabled:opacity-60"
+                          >
+                            {actionLoading === row.id + 'approved' ? <Loader2 size={12} className="animate-spin" /> : <UserCheck size={12} />}
+                            Verify
+                          </button>
+                          <button
+                            onClick={() => handleAction(row.id, 'rejected')}
+                            disabled={!!actionLoading}
+                            className="flex items-center gap-1 px-3 py-1 bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-bold rounded uppercase transition-colors disabled:opacity-60"
+                          >
+                            {actionLoading === row.id + 'rejected' ? <Loader2 size={12} className="animate-spin" /> : <UserX size={12} />}
+                            Reject
+                          </button>
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

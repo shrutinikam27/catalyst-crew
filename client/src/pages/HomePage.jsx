@@ -1,17 +1,21 @@
 import React, { useState, useRef } from 'react';
 import { useAuth } from '../firebase/AuthContext';
-import { Activity, AlertTriangle, Shield, ArrowRight, Flame, ShieldAlert, Ambulance } from 'lucide-react';
+import { Activity, AlertTriangle, Shield, ArrowRight, Flame, ShieldAlert, Ambulance, CheckCircle2, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PublicNavbar from '../components/PublicNavbar';
 import Footer from '../components/Footer';
 import heroIllustration from '../assets/hero-illustration.png';
 import safetyMap from '../assets/safety-map.png';
+import { createSosAlert } from '../firebase/sosService';
 
 function HomePage() {
-  const { currentUser } = useAuth();
+  const { currentUser, loginAnonymously } = useAuth();
   const navigate = useNavigate();
   const [sosClicks, setSosClicks] = useState(0);
   const [showSosOptions, setShowSosOptions] = useState(false);
+  const [sosSubmitting, setSosSubmitting] = useState(false);
+  const [sosSuccess, setSosSuccess] = useState(null); // { type, alertId }
+  const [sosError, setSosError] = useState('');
   const clickTimeoutRef = useRef(null);
 
   const handleSosClick = () => {
@@ -19,22 +23,88 @@ function HomePage() {
       const newCount = prev + 1;
       if (newCount >= 3) {
         setShowSosOptions(true);
-        return 0; // reset
+        setSosSuccess(null);
+        setSosError('');
+        return 0;
       }
       return newCount;
     });
 
-    if (clickTimeoutRef.current) {
-      clearTimeout(clickTimeoutRef.current);
-    }
-    clickTimeoutRef.current = setTimeout(() => {
-      setSosClicks(0);
-    }, 1500);
+    if (clickTimeoutRef.current) clearTimeout(clickTimeoutRef.current);
+    clickTimeoutRef.current = setTimeout(() => setSosClicks(0), 1500);
   };
 
-  const handleEmergencySelect = (type) => {
-    alert(`SOS Triggered for: ${type}\n\nNearby certified volunteers have been notified and will arrive immediately, followed by official emergency services.`);
+  const handleEmergencySelect = async (type) => {
+    setSosSubmitting(true);
+    setSosError('');
+
+    // Try to get live geolocation
+    const getLocation = () =>
+      new Promise((resolve) => {
+        if (!navigator.geolocation) {
+          resolve({ latitude: 18.5204, longitude: 73.8567 });
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve({ latitude: pos.coords.latitude, longitude: pos.coords.longitude }),
+          (err) => {
+            console.warn('[SOS] Geolocation error:', err.message);
+            resolve({ latitude: 18.5204, longitude: 73.8567 });
+          },
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+      });
+
+    try {
+      // Attempt anonymous sign-in so the Firestore write has an auth token.
+      // If Anonymous Authentication is not enabled in Firebase Console
+      // (auth/admin-restricted-operation), we silently skip it and write
+      // to Firestore without auth — this works when Firestore rules allow
+      // unauthenticated writes to the sosAlerts collection.
+      let activeUser = currentUser;
+      if (!activeUser) {
+        try {
+          const result = await loginAnonymously();
+          activeUser = result?.user ?? null;
+        } catch (authErr) {
+          // auth/admin-restricted-operation = Anonymous Auth not enabled.
+          // Proceed without a uid; sosService handles this path.
+          console.warn('[SOS] Anonymous sign-in skipped:', authErr.code);
+          activeUser = null;
+        }
+      }
+
+      const location = await getLocation();
+      const alertId = await createSosAlert({
+        emergencyType: type,
+        location,
+        userId: activeUser?.uid ?? null,
+        userName: activeUser?.isAnonymous
+          ? 'Anonymous'
+          : (activeUser?.displayName || activeUser?.email || 'Anonymous'),
+      });
+      setSosSuccess({ type, alertId });
+    } catch (err) {
+      console.error('SOS error:', err);
+      let msg;
+      if (err?.code === 'permission-denied' || err?.code === 'firestore/permission-denied') {
+        msg =
+          'SOS could not reach the server (Firestore permission denied). ' +
+          'To fix: enable Anonymous Authentication in Firebase Console → Authentication → Sign-in providers, ' +
+          'OR set your sosAlerts Firestore rules to allow unauthenticated writes.';
+      } else {
+        msg = err?.message || 'Could not send SOS. Please call 112 directly.';
+      }
+      setSosError(msg);
+    } finally {
+      setSosSubmitting(false);
+    }
+  };
+
+  const closeSosModal = () => {
     setShowSosOptions(false);
+    setSosSuccess(null);
+    setSosError('');
   };
 
   return (
@@ -300,46 +370,93 @@ function HomePage() {
       {showSosOptions && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md">
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-lg w-full mx-4 shadow-[0_0_50px_rgba(220,38,38,0.3)] border border-red-200 dark:border-red-900/50 text-center animate-in fade-in zoom-in duration-300">
-            <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-3">EMERGENCY SOS</h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed text-sm">
-              Select the emergency type. Nearby certified volunteers and official emergency services will be notified instantly.
-            </p>
-            
-            <div className="relative w-[280px] h-[280px] sm:w-[420px] sm:h-[420px] mx-auto mb-8">
-              {/* Center Warning Icon */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 sm:w-24 sm:h-24 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center z-10 shadow-lg">
-                <div className="absolute inset-0 bg-red-500/20 rounded-full animate-ping"></div>
-                <AlertTriangle className="text-red-600 dark:text-red-500 relative z-10 w-10 h-10 sm:w-12 sm:h-12" />
-              </div>
 
-              {/* Fire (Top) */}
-              <button onClick={() => handleEmergencySelect('Fire')} className="absolute top-0 left-1/2 -translate-x-1/2 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px] flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-full border-2 border-orange-200 bg-orange-50 hover:bg-orange-500 hover:border-orange-600 hover:text-white text-orange-700 transition-all active:scale-95 group shadow-sm z-20">
-                <Flame className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
-                <span className="font-bold text-[10px] sm:text-xs">FIRE</span>
-              </button>
-              
-              {/* Crime (Right) */}
-              <button onClick={() => handleEmergencySelect('Crime')} className="absolute top-1/2 right-0 -translate-y-1/2 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px] flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-full border-2 border-blue-200 bg-blue-50 hover:bg-blue-600 hover:border-blue-700 hover:text-white text-blue-700 transition-all active:scale-95 group shadow-sm z-20">
-                <Shield className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
-                <span className="font-bold text-[10px] sm:text-xs">CRIME</span>
-              </button>
-              
-              {/* Medical (Bottom) */}
-              <button onClick={() => handleEmergencySelect('Medical')} className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px] flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-full border-2 border-green-200 bg-green-50 hover:bg-green-600 hover:border-green-700 hover:text-white text-green-700 transition-all active:scale-95 group shadow-sm z-20">
-                <Ambulance className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
-                <span className="font-bold text-[10px] sm:text-xs">MEDICAL</span>
-              </button>
-              
-              {/* Accident (Left) */}
-              <button onClick={() => handleEmergencySelect('Accident')} className="absolute top-1/2 left-0 -translate-y-1/2 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px] flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-full border-2 border-purple-200 bg-purple-50 hover:bg-purple-600 hover:border-purple-700 hover:text-white text-purple-700 transition-all active:scale-95 group shadow-sm z-20">
-                <AlertTriangle className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
-                <span className="font-bold text-[10px] sm:text-xs">ACCIDENT</span>
-              </button>
-            </div>
-            
-            <button onClick={() => setShowSosOptions(false)} className="px-6 py-2 rounded-full border border-slate-300 text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:border-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-300 font-semibold transition-colors">
-              Cancel Request
-            </button>
+            {/* ── SUCCESS STATE ── */}
+            {sosSuccess ? (
+              <div className="py-6 space-y-6">
+                <div className="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto relative">
+                  <div className="absolute inset-0 bg-emerald-400/20 rounded-full animate-ping"></div>
+                  <CheckCircle2 className="text-emerald-600 w-12 h-12 relative z-10" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-2">SOS Sent!</h2>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                    Your <span className="font-bold text-red-600">{sosSuccess.type}</span> emergency alert has been broadcast. Nearby certified volunteers are being notified with your live location.
+                  </p>
+                </div>
+                <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 text-left space-y-2">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">What happens next</p>
+                  {sosSuccess.type === 'Fire' && <p className="text-xs text-slate-600 dark:text-slate-300">🚒 Fire brigade &amp; medical volunteers are en route</p>}
+                  {sosSuccess.type === 'Crime' && <p className="text-xs text-slate-600 dark:text-slate-300">🛡️ Crime response volunteers are en route</p>}
+                  {sosSuccess.type === 'Medical' && <p className="text-xs text-slate-600 dark:text-slate-300">🏥 Medical &amp; crime volunteers are en route</p>}
+                  {sosSuccess.type === 'Accident' && <p className="text-xs text-slate-600 dark:text-slate-300">🚒🏥🛡️ All emergency volunteers are en route</p>}
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Also call <span className="font-black text-red-600">112</span> for official emergency services.</p>
+                </div>
+                <button onClick={closeSosModal} className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl transition-all">
+                  OK, I'm aware
+                </button>
+              </div>
+            ) : (
+              <>
+                {/* ── SELECTION STATE ── */}
+                <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-3">EMERGENCY SOS</h2>
+                <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed text-sm">
+                  Select the emergency type. Nearby certified volunteers and official emergency services will be notified instantly.
+                </p>
+                
+                {sosError && (
+                  <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-xl text-xs font-bold border border-red-100 dark:border-red-800">
+                    {sosError}
+                  </div>
+                )}
+
+                <div className="relative w-[280px] h-[280px] sm:w-[420px] sm:h-[420px] mx-auto mb-8">
+                  {/* Center — spinner or alert icon */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center z-10">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center shadow-lg relative">
+                      <div className="absolute inset-0 bg-red-500/20 rounded-full animate-ping"></div>
+                      {sosSubmitting
+                        ? <Loader2 className="text-red-600 dark:text-red-500 relative z-10 w-10 h-10 sm:w-12 sm:h-12 animate-spin" />
+                        : <AlertTriangle className="text-red-600 dark:text-red-500 relative z-10 w-10 h-10 sm:w-12 sm:h-12" />
+                      }
+                    </div>
+                    {sosSubmitting && (
+                      <p className="absolute -bottom-8 whitespace-nowrap text-[10px] font-bold text-red-600 animate-pulse uppercase tracking-widest bg-white/80 dark:bg-slate-900/80 px-2 py-1 rounded-full">
+                        Acquiring GPS...
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Fire (Top) */}
+                  <button disabled={sosSubmitting} onClick={() => handleEmergencySelect('Fire')} className="absolute top-0 left-1/2 -translate-x-1/2 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px] flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-full border-2 border-orange-200 bg-orange-50 hover:bg-orange-500 hover:border-orange-600 hover:text-white text-orange-700 transition-all active:scale-95 group shadow-sm z-20 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <Flame className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
+                    <span className="font-bold text-[10px] sm:text-xs">FIRE</span>
+                  </button>
+                  
+                  {/* Crime (Right) */}
+                  <button disabled={sosSubmitting} onClick={() => handleEmergencySelect('Crime')} className="absolute top-1/2 right-0 -translate-y-1/2 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px] flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-full border-2 border-blue-200 bg-blue-50 hover:bg-blue-600 hover:border-blue-700 hover:text-white text-blue-700 transition-all active:scale-95 group shadow-sm z-20 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <Shield className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
+                    <span className="font-bold text-[10px] sm:text-xs">CRIME</span>
+                  </button>
+                  
+                  {/* Medical (Bottom) */}
+                  <button disabled={sosSubmitting} onClick={() => handleEmergencySelect('Medical')} className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px] flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-full border-2 border-green-200 bg-green-50 hover:bg-green-600 hover:border-green-700 hover:text-white text-green-700 transition-all active:scale-95 group shadow-sm z-20 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <Ambulance className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
+                    <span className="font-bold text-[10px] sm:text-xs">MEDICAL</span>
+                  </button>
+                  
+                  {/* Accident (Left) */}
+                  <button disabled={sosSubmitting} onClick={() => handleEmergencySelect('Accident')} className="absolute top-1/2 left-0 -translate-y-1/2 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px] flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-full border-2 border-purple-200 bg-purple-50 hover:bg-purple-600 hover:border-purple-700 hover:text-white text-purple-700 transition-all active:scale-95 group shadow-sm z-20 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <AlertTriangle className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
+                    <span className="font-bold text-[10px] sm:text-xs">ACCIDENT</span>
+                  </button>
+                </div>
+                
+                <button disabled={sosSubmitting} onClick={closeSosModal} className="px-6 py-2 rounded-full border border-slate-300 text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:border-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-300 font-semibold transition-colors disabled:opacity-50">
+                  Cancel Request
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}

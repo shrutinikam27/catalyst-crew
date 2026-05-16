@@ -74,10 +74,26 @@ const generateMockPulse = () => {
   };
 };
 
+// ─── In-memory SOS alert store (fallback when Firestore rules are not yet set) ───
+const activeSosAlerts = []; // { id, emergencyType, location, userName, notifyVolunteers, status, createdAt }
+
+const EMERGENCY_VOLUNTEER_MAP = {
+  Fire:     ['firebrigade', 'medical'],
+  Crime:    ['crime'],
+  Medical:  ['medical', 'crime'],
+  Accident: ['firebrigade', 'medical', 'crime'],
+};
+
 // Socket Connection
 io.on('connection', (socket) => {
   console.log('A user connected'.cyan);
   
+  // Send existing pending SOS alerts immediately on connect (for volunteers already on dashboard)
+  const pending = activeSosAlerts.filter(a => a.status === 'pending');
+  if (pending.length > 0) {
+    socket.emit('sos_alerts', pending);
+  }
+
   // Send initial data pulse every 5 seconds
   const pulseInterval = setInterval(async () => {
     // Randomly choose between a simulation pulse and a verified data pulse
@@ -96,6 +112,30 @@ io.on('connection', (socket) => {
     }
   }, 5000);
 
+  // Volunteer accepts an SOS alert
+  socket.on('sos_accept', ({ alertId, volunteerId, volunteerName }) => {
+    const alert = activeSosAlerts.find(a => a.id === alertId);
+    if (alert && alert.status === 'pending') {
+      alert.status = 'accepted';
+      alert.acceptedBy = volunteerId;
+      alert.acceptedByName = volunteerName;
+      alert.acceptedAt = new Date().toISOString();
+      // Notify all clients about the status change
+      io.emit('sos_alerts', activeSosAlerts.filter(a => a.status === 'pending'));
+      io.emit('sos_update', alert);
+    }
+  });
+
+  // Volunteer resolves an SOS alert
+  socket.on('sos_resolve', ({ alertId }) => {
+    const alert = activeSosAlerts.find(a => a.id === alertId);
+    if (alert) {
+      alert.status = 'resolved';
+      alert.resolvedAt = new Date().toISOString();
+      io.emit('sos_alerts', activeSosAlerts.filter(a => a.status === 'pending'));
+    }
+  });
+
   socket.on('disconnect', () => {
     console.log('User disconnected'.red);
     clearInterval(pulseInterval);
@@ -108,6 +148,44 @@ app.get('/', (req, res) => {
         message: 'Catalyst Crew API is running with Socket.IO support',
         version: '1.1.0'
     });
+});
+
+// ─── SOS REST endpoint (primary fallback when Firestore rules block anonymous writes) ───
+app.post('/api/sos', (req, res) => {
+  const { emergencyType, location, userId, userName } = req.body;
+
+  if (!emergencyType || !location) {
+    return res.status(400).json({ error: 'emergencyType and location are required' });
+  }
+
+  const alert = {
+    id: 'sos-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6),
+    emergencyType,
+    location,                    // { latitude, longitude }
+    userId: userId || null,
+    userName: userName || 'Anonymous',
+    notifyVolunteers: EMERGENCY_VOLUNTEER_MAP[emergencyType] || [],
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+  };
+
+  activeSosAlerts.push(alert);
+
+  // Keep only the last 100 alerts in memory
+  if (activeSosAlerts.length > 100) activeSosAlerts.shift();
+
+  // Broadcast to all connected volunteer clients instantly
+  io.emit('sos_alert_new', alert);
+  io.emit('sos_alerts', activeSosAlerts.filter(a => a.status === 'pending'));
+
+  console.log(`🆘 SOS Alert: ${emergencyType} from ${userName || 'Anonymous'} at ${location.latitude}, ${location.longitude}`.bgRed.white);
+
+  res.status(201).json({ success: true, alertId: alert.id, alert });
+});
+
+// GET all pending SOS alerts (for volunteers who join late)
+app.get('/api/sos', (req, res) => {
+  res.json(activeSosAlerts.filter(a => a.status === 'pending'));
 });
 
 // Port configuration

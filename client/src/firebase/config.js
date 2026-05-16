@@ -10,10 +10,15 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
+// Simple check to see if we are using placeholder values
+if (firebaseConfig.apiKey === 'your_api_key' || !firebaseConfig.apiKey) {
+  console.error('Firebase Error: API Key is missing or invalid. Please update your .env.local file with your Firebase project credentials.');
+}
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
-export { auth, googleProvider };
+export { auth, googleProvider, firebaseConfig };
 export default app;

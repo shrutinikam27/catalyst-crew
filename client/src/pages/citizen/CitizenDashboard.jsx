@@ -12,6 +12,7 @@ import {
   Tooltip, ResponsiveContainer, BarChart, Bar 
 } from 'recharts';
 import { cn } from '../../utils/cn';
+import { useAuth } from '../../firebase/AuthContext';
 
 const data = [
   { name: 'Mon', accidents: 4, crime: 2 },
@@ -24,12 +25,14 @@ const data = [
 ];
 
 const CitizenDashboard = () => {
+  const { currentUser } = useAuth();
+  
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
       <div>
         <h1 className="text-3xl font-outfit font-extrabold text-slate-900 dark:text-white">
-          Good Morning, Citizen
+          Good Morning, {currentUser?.displayName || (currentUser?.email ? currentUser.email.split('@')[0] : 'Citizen')}
         </h1>
         <p className="text-slate-500 dark:text-slate-400 font-medium">
           The safety index in your current zone is <span className="text-emerald-500 font-bold">Stable (8.4/10)</span>.

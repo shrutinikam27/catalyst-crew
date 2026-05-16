@@ -16,7 +16,7 @@ function LoginPage() {
       setError('');
       setLoading(true);
       await login(email, password);
-      navigate('/');
+      navigate('/user');
     } catch (err) {
       setError('Failed to log in. Please check your credentials.');
     }
@@ -28,7 +28,7 @@ function LoginPage() {
       setError('');
       setLoading(true);
       await loginWithGoogle();
-      navigate('/');
+      navigate('/user');
     } catch (err) {
       setError('Failed to log in with Google.');
     }

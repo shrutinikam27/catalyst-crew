@@ -41,7 +41,7 @@ function Navbar({ toggleTheme, isDark }) {
           <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">About Us</a>
           <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">Features</a>
           <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">How It Works</a>
-          <Link to="/user" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">Dashboard</Link>
+          <Link to={currentUser ? "/user" : "/login"} className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">Dashboard</Link>
           <a href="#" className="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-600 transition-colors">Contact</a>
         </div>
 

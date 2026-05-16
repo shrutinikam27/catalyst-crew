@@ -3,17 +3,53 @@
     "mtime": 1778907255.5446472,
     "hash": "fa91453358b56681481f75f81d1bfccd"
   },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\postcss.config.js": {
+    "mtime": 1778909316.8113935,
+    "hash": "ee58a68dc3308c729e9a66e03a2cafad"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\tailwind.config.js": {
+    "mtime": 1778909316.8297555,
+    "hash": "ea356e98f2fed4acccb6ec8589ae36db"
+  },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\vite.config.js": {
     "mtime": 1778907255.5968826,
     "hash": "199e1221ae03d6974fdc8b5e23787b98"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\App.jsx": {
-    "mtime": 1778907255.577606,
-    "hash": "fa00f6bf2c6cbabf8c986d6acd26311a"
+    "mtime": 1778917902.5515203,
+    "hash": "046f288c4e0eb87d6d401aa936bd9905"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\main.jsx": {
     "mtime": 1778907255.594275,
     "hash": "51fd21c378330142b61bf8d1ef3795ef"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\firebase\\AuthContext.jsx": {
+    "mtime": 1778917902.5536587,
+    "hash": "e0f8360fc2f792a9d1b0ec6c59366341"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\firebase\\config.js": {
+    "mtime": 1778917902.5542164,
+    "hash": "b1c1adfddc33bf10797d9af9dfc86a42"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\Dashboard.jsx": {
+    "mtime": 1778917289.7025023,
+    "hash": "21605da60edf1c683f2fcd7d6910044e"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\HomePage.jsx": {
+    "mtime": 1778916137.0769641,
+    "hash": "3fbe1bcb5158d7b5343e10eb71d2c6cf"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\LoginPage.jsx": {
+    "mtime": 1778917902.5542164,
+    "hash": "a90ea9aa67457225a1de52c5345b63e2"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\SignupPage.jsx": {
+    "mtime": 1778917902.5542164,
+    "hash": "fe9a5af04d0fe8d790e0299a0b28a57a"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\UserDashboard.jsx": {
+    "mtime": 1778917289.7035213,
+    "hash": "1b2728e92627945f8098f4cb6470fc59"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\server\\index.js": {
     "mtime": 1778907255.5982637,
@@ -38,6 +74,10 @@
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\public\\icons.svg": {
     "mtime": 1778907255.5681586,
     "hash": "21c7473c592c67dc87223d49892c8f0a"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\assets\\hero-illustration.png": {
+    "mtime": 1778909316.8257637,
+    "hash": "5b7c5ce5f502fc60cf1a56419c8a1e26"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\assets\\hero.png": {
     "mtime": 1778907255.5805862,

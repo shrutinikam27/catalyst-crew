@@ -9,8 +9,26 @@
       "source_file": "client/eslint.config.js",
       "source_location": "L1",
       "id": "client_eslint_config_js",
-      "community": 1,
+      "community": 5,
       "norm_label": "eslint.config.js"
+    },
+    {
+      "label": "postcss.config.js",
+      "file_type": "code",
+      "source_file": "client/postcss.config.js",
+      "source_location": "L1",
+      "id": "client_postcss_config_js",
+      "community": 6,
+      "norm_label": "postcss.config.js"
+    },
+    {
+      "label": "tailwind.config.js",
+      "file_type": "code",
+      "source_file": "client/tailwind.config.js",
+      "source_location": "L1",
+      "id": "client_tailwind_config_js",
+      "community": 7,
+      "norm_label": "tailwind.config.js"
     },
     {
       "label": "vite.config.js",
@@ -18,7 +36,7 @@
       "source_file": "client/vite.config.js",
       "source_location": "L1",
       "id": "client_vite_config_js",
-      "community": 2,
+      "community": 8,
       "norm_label": "vite.config.js"
     },
     {
@@ -31,10 +49,19 @@
       "norm_label": "app.jsx"
     },
     {
+      "label": "Navbar()",
+      "file_type": "code",
+      "source_file": "client/src/App.jsx",
+      "source_location": "L11",
+      "id": "src_app_navbar",
+      "community": 0,
+      "norm_label": "navbar()"
+    },
+    {
       "label": "App()",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L4",
+      "source_location": "L82",
       "id": "src_app_app",
       "community": 0,
       "norm_label": "app()"
@@ -45,8 +72,152 @@
       "source_file": "client/src/main.jsx",
       "source_location": "L1",
       "id": "client_src_main_jsx",
-      "community": 3,
+      "community": 9,
       "norm_label": "main.jsx"
+    },
+    {
+      "label": "AuthContext.jsx",
+      "file_type": "code",
+      "source_file": "client/src/firebase/AuthContext.jsx",
+      "source_location": "L1",
+      "id": "client_src_firebase_authcontext_jsx",
+      "community": 0,
+      "norm_label": "authcontext.jsx"
+    },
+    {
+      "label": "useAuth()",
+      "file_type": "code",
+      "source_file": "client/src/firebase/AuthContext.jsx",
+      "source_location": "L13",
+      "id": "firebase_authcontext_useauth",
+      "community": 1,
+      "norm_label": "useauth()"
+    },
+    {
+      "label": "AuthProvider()",
+      "file_type": "code",
+      "source_file": "client/src/firebase/AuthContext.jsx",
+      "source_location": "L17",
+      "id": "firebase_authcontext_authprovider",
+      "community": 0,
+      "norm_label": "authprovider()"
+    },
+    {
+      "label": "config.js",
+      "file_type": "code",
+      "source_file": "client/src/firebase/config.js",
+      "source_location": "L1",
+      "id": "client_src_firebase_config_js",
+      "community": 10,
+      "norm_label": "config.js"
+    },
+    {
+      "label": "Dashboard.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/Dashboard.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_dashboard_jsx",
+      "community": 3,
+      "norm_label": "dashboard.jsx"
+    },
+    {
+      "label": "Dashboard()",
+      "file_type": "code",
+      "source_file": "client/src/pages/Dashboard.jsx",
+      "source_location": "L10",
+      "id": "pages_dashboard_dashboard",
+      "community": 3,
+      "norm_label": "dashboard()"
+    },
+    {
+      "label": "HomePage.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/HomePage.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_homepage_jsx",
+      "community": 2,
+      "norm_label": "homepage.jsx"
+    },
+    {
+      "label": "HomePage()",
+      "file_type": "code",
+      "source_file": "client/src/pages/HomePage.jsx",
+      "source_location": "L4",
+      "id": "pages_homepage_homepage",
+      "community": 2,
+      "norm_label": "homepage()"
+    },
+    {
+      "label": "FeatureCard()",
+      "file_type": "code",
+      "source_file": "client/src/pages/HomePage.jsx",
+      "source_location": "L231",
+      "id": "pages_homepage_featurecard",
+      "community": 2,
+      "norm_label": "featurecard()"
+    },
+    {
+      "label": "PredictiveItem()",
+      "file_type": "code",
+      "source_file": "client/src/pages/HomePage.jsx",
+      "source_location": "L243",
+      "id": "pages_homepage_predictiveitem",
+      "community": 2,
+      "norm_label": "predictiveitem()"
+    },
+    {
+      "label": "LoginPage.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/LoginPage.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_loginpage_jsx",
+      "community": 1,
+      "norm_label": "loginpage.jsx"
+    },
+    {
+      "label": "LoginPage()",
+      "file_type": "code",
+      "source_file": "client/src/pages/LoginPage.jsx",
+      "source_location": "L5",
+      "id": "pages_loginpage_loginpage",
+      "community": 1,
+      "norm_label": "loginpage()"
+    },
+    {
+      "label": "SignupPage.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/SignupPage.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_signuppage_jsx",
+      "community": 1,
+      "norm_label": "signuppage.jsx"
+    },
+    {
+      "label": "SignupPage()",
+      "file_type": "code",
+      "source_file": "client/src/pages/SignupPage.jsx",
+      "source_location": "L5",
+      "id": "pages_signuppage_signuppage",
+      "community": 1,
+      "norm_label": "signuppage()"
+    },
+    {
+      "label": "UserDashboard.jsx",
+      "file_type": "code",
+      "source_file": "client/src/pages/UserDashboard.jsx",
+      "source_location": "L1",
+      "id": "client_src_pages_userdashboard_jsx",
+      "community": 4,
+      "norm_label": "userdashboard.jsx"
+    },
+    {
+      "label": "UserDashboard()",
+      "file_type": "code",
+      "source_file": "client/src/pages/UserDashboard.jsx",
+      "source_location": "L10",
+      "id": "pages_userdashboard_userdashboard",
+      "community": 4,
+      "norm_label": "userdashboard()"
     },
     {
       "label": "index.js",
@@ -54,22 +225,221 @@
       "source_file": "server/index.js",
       "source_location": "L1",
       "id": "server_index_js",
-      "community": 4,
+      "community": 11,
       "norm_label": "index.js"
     }
   ],
   "links": [
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/App.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "client_src_app_jsx",
+      "target": "firebase_authcontext_authprovider",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/App.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "client_src_app_jsx",
+      "target": "firebase_authcontext_useauth",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/App.jsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "client_src_app_jsx",
+      "target": "src_app_navbar",
+      "confidence_score": 1.0
+    },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "client_src_app_jsx",
-      "target": "src_app_app",
+      "target": "src_app_app"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/App.jsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "src_app_navbar",
+      "target": "firebase_authcontext_useauth"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/firebase/AuthContext.jsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "client_src_firebase_authcontext_jsx",
+      "target": "firebase_authcontext_useauth",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/firebase/AuthContext.jsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "client_src_firebase_authcontext_jsx",
+      "target": "firebase_authcontext_authprovider",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/HomePage.jsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "client_src_pages_homepage_jsx",
+      "target": "firebase_authcontext_useauth",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/LoginPage.jsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "client_src_pages_loginpage_jsx",
+      "target": "firebase_authcontext_useauth",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/SignupPage.jsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "client_src_pages_signuppage_jsx",
+      "target": "firebase_authcontext_useauth",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/pages/HomePage.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "pages_homepage_homepage",
+      "target": "firebase_authcontext_useauth"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/pages/LoginPage.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "pages_loginpage_loginpage",
+      "target": "firebase_authcontext_useauth"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "client/src/pages/SignupPage.jsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "pages_signuppage_signuppage",
+      "target": "firebase_authcontext_useauth"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/Dashboard.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "client_src_pages_dashboard_jsx",
+      "target": "pages_dashboard_dashboard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/HomePage.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "client_src_pages_homepage_jsx",
+      "target": "pages_homepage_homepage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/HomePage.jsx",
+      "source_location": "L231",
+      "weight": 1.0,
+      "source": "client_src_pages_homepage_jsx",
+      "target": "pages_homepage_featurecard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/HomePage.jsx",
+      "source_location": "L243",
+      "weight": 1.0,
+      "source": "client_src_pages_homepage_jsx",
+      "target": "pages_homepage_predictiveitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/LoginPage.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "client_src_pages_loginpage_jsx",
+      "target": "pages_loginpage_loginpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/SignupPage.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "client_src_pages_signuppage_jsx",
+      "target": "pages_signuppage_signuppage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "client/src/pages/UserDashboard.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "client_src_pages_userdashboard_jsx",
+      "target": "pages_userdashboard_userdashboard",
       "confidence_score": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "24e32539239502f8c42de324922c0f21421bafe3"
+  "built_at_commit": "b40c0b08096048887d5e9bb280232268783174ac"
 }

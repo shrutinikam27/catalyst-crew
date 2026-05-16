@@ -15,9 +15,12 @@ import ReportIssue from './pages/ReportIssue';
 import CitizenDashboard from './pages/citizen/CitizenDashboard';
 import ReportIncident from './pages/citizen/ReportIncident';
 import CitizenHeatmap from './pages/citizen/CitizenHeatmap';
+import CitizenSOS from './pages/citizen/CitizenSOS';
+import ComplaintTracking from './pages/citizen/ComplaintTracking';
 
 // Volunteer Pages
 import VolunteerDashboard from './pages/volunteer/VolunteerDashboard';
+import NearbyEmergencies from './pages/volunteer/NearbyEmergencies';
 
 // Police Pages
 import PoliceDashboard from './pages/police/PoliceDashboard';
@@ -73,21 +76,24 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/report" element={<ReportIssue />} />
+          <Route path="/about" element={<div className="p-20 text-center font-outfit font-black text-4xl dark:text-white uppercase">About SafeLink Platform</div>} />
+          <Route path="/help" element={<div className="p-20 text-center font-outfit font-black text-4xl dark:text-white uppercase">SafeLink Help Center</div>} />
 
           {/* Citizen Dashboard Routes */}
           <Route path="/user" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
             <Route index element={<CitizenDashboard />} />
             <Route path="report" element={<ReportIncident />} />
             <Route path="map" element={<CitizenHeatmap />} />
-            <Route path="tracking" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Tracking Module Coming Soon</div>} />
-            <Route path="sos" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">SOS Module Coming Soon</div>} />
+            <Route path="tracking" element={<ComplaintTracking />} />
+            <Route path="sos" element={<CitizenSOS />} />
             <Route path="tips" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Safety Tips Module Coming Soon</div>} />
+            <Route path="route" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Smart Safe Route Module Coming Soon</div>} />
           </Route>
 
           {/* Volunteer Dashboard Routes */}
           <Route path="/volunteer" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
             <Route index element={<VolunteerDashboard />} />
-            <Route path="alerts" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Emergency Alerts Module Coming Soon</div>} />
+            <Route path="alerts" element={<NearbyEmergencies />} />
             <Route path="missions" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Missions Module Coming Soon</div>} />
             <Route path="profile" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Profile Module Coming Soon</div>} />
           </Route>

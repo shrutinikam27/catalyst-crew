@@ -5,7 +5,23 @@ import {
   Search, Shield, AlertTriangle, 
   CheckCircle, MoreHorizontal, Maximize2
 } from 'lucide-react';
+import SmartMap from '../../components/map/SmartMap';
 import { cn } from '../../utils/cn';
+
+const mockIncidents = [
+  { id: 1, type: 'Traffic Accident', location: 'Shivaji Nagar', severity: 'high', coords: [18.5312, 73.8445] },
+  { id: 2, type: 'Street Light Out', location: 'Hadapsar', severity: 'low', coords: [18.5089, 73.9260] },
+];
+
+const mockVolunteers = [
+  { id: 1, name: 'John D.', coords: [18.5250, 73.8500] },
+  { id: 2, name: 'Sarah M.', coords: [18.5400, 73.8600] },
+];
+
+const mockHotspots = [
+  { coords: [18.5089, 73.9260], radius: 800, color: '#f43f5e' }, // High crime
+  { coords: [18.5500, 73.8200], radius: 600, color: '#f59e0b' }, // Accident prone
+];
 
 const CitizenHeatmap = () => {
   return (
@@ -44,14 +60,15 @@ const CitizenHeatmap = () => {
       <div className="flex-1 flex gap-6 min-h-0">
         {/* Main Map */}
         <div className="flex-1 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden relative group">
-          <div className="absolute inset-0 bg-slate-100 dark:bg-slate-950 flex flex-col items-center justify-center gap-4 text-slate-400">
-            <div className="w-24 h-24 rounded-full border-4 border-slate-200 dark:border-slate-800 border-t-indigo-500 animate-spin opacity-50"></div>
-            <p className="text-xs font-bold uppercase tracking-widest animate-pulse">Initializing Smart Map...</p>
-          </div>
+          <SmartMap 
+            incidents={mockIncidents} 
+            volunteers={mockVolunteers}
+            hotspots={mockHotspots}
+          />
           
           {/* Overlay Map UI */}
-          <div className="absolute top-6 left-6 z-10 space-y-3">
-            <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-white/50 dark:border-slate-800 w-64">
+          <div className="absolute top-6 left-6 z-10 space-y-3 pointer-events-none">
+            <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-white/50 dark:border-slate-800 w-64 pointer-events-auto">
               <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
                 <Shield size={14} className="text-indigo-500" />
                 Zone Safety Index

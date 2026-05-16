@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
 
 @theme {
   --font-inter: "Inter", sans-serif;
@@ -10,10 +11,20 @@
   --color-accent-red: #ef4444;
   --color-accent-orange: #f59e0b;
   --color-accent-green: #10b981;
+  
+  /* Light Mode */
   --color-bg-main: #f8fafc;
   --color-bg-card: #ffffff;
   --color-text-main: #1e293b;
   --color-text-muted: #64748b;
+  --color-border-subtle: #f1f5f9;
+  
+  /* Dark Mode Variants */
+  --color-dark-bg-main: #0f172a;
+  --color-dark-bg-card: #1e293b;
+  --color-dark-text-main: #f8fafc;
+  --color-dark-text-muted: #94a3b8;
+  --color-dark-border-subtle: #334155;
   
   --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
@@ -22,7 +33,10 @@
 
 @layer base {
   body {
-    @apply font-inter bg-bg-main text-text-main antialiased;
+    @apply font-inter bg-bg-main text-text-main antialiased transition-colors duration-300;
+  }
+  .dark body {
+    @apply bg-dark-bg-main text-dark-text-main;
   }
   h1, h2, h3, h4 {
     @apply font-outfit font-bold;
@@ -33,13 +47,19 @@
   .glass-effect {
     @apply bg-white/70 backdrop-blur-xl border border-white/30;
   }
+  .dark .glass-effect {
+    @apply bg-slate-900/70 border-white/10;
+  }
   
   .btn {
     @apply px-6 py-2.5 rounded-xl font-semibold transition-all duration-300 cursor-pointer flex items-center justify-center;
   }
   
   .btn-primary {
-    @apply bg-primary text-white hover:bg-primary-dark hover:-translate-y-0.5 hover:shadow-lg active:scale-95;
+    @apply bg-primary text-white hover:bg-primary-dark hover:-translate-y-0.5 hover:shadow-lg active:scale-95 shadow-indigo-200/50;
+  }
+  .dark .btn-primary {
+    @apply shadow-none;
   }
   
   .btn-outline {
@@ -48,6 +68,9 @@
   
   .btn-white {
     @apply bg-white text-primary hover:shadow-md active:scale-95;
+  }
+  .dark .btn-white {
+    @apply bg-slate-800 text-white hover:bg-slate-700;
   }
 
   .text-gradient {

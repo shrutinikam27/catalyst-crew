@@ -17,6 +17,7 @@ const roleMenus = {
     { name: 'Track Complaints', icon: FileText, path: '/user/tracking' },
     { name: 'Emergency SOS', icon: Zap, path: '/user/sos' },
     { name: 'Safety Tips', icon: Heart, path: '/user/tips' },
+    { name: 'Profile Settings', icon: User, path: '/user/profile' },
   ],
   volunteer: [
     { name: 'Volunteer Hub', icon: Home, path: '/volunteer' },

@@ -48,7 +48,7 @@ const PUNE_AREAS = [
 ];
 
 const INCIDENT_TYPES = [
-  { type: 'CRIME', subtypes: ['Theft', 'Harassment', 'Illegal Activity'], color: '#f43f5e', source: 'Pune Police NCRB', url: 'http://punepolice.co.in/ncrb.php' },
+  { type: 'CRIME', subtypes: ['Armed Robbery', 'Street Violence', 'Chain Snatching', 'Break-in', 'Assault'], color: '#f43f5e', source: 'Pune Police NCRB', url: 'http://punepolice.co.in/ncrb.php' },
   { type: 'CIVIC', subtypes: ['Pothole', 'Street Light', 'Garbage', 'Water Leak'], color: '#f59e0b', source: 'PMC Pune Care', url: 'http://bi.punecorporation.org/' },
   { type: 'FIRE', subtypes: ['Building Fire', 'Forest Fire', 'Short Circuit'], color: '#ea580c', source: 'Fire Brigade Dispatch' },
   { type: 'MEDICAL', subtypes: ['Cardiac Arrest', 'Accident', 'Critical Care'], color: '#10b981', source: 'Sassoon Hospital EMS' }
@@ -56,7 +56,16 @@ const INCIDENT_TYPES = [
 
 const generateMockPulse = () => {
   const area = PUNE_AREAS[Math.floor(Math.random() * PUNE_AREAS.length)];
-  const category = INCIDENT_TYPES[Math.floor(Math.random() * INCIDENT_TYPES.length)];
+  
+  // High probability for CRIME incidents to simulate a "rapid increase"
+  let category;
+  const rand = Math.random();
+  if (rand < 0.6) {
+    category = INCIDENT_TYPES[0]; // CRIME
+  } else {
+    category = INCIDENT_TYPES[Math.floor(Math.random() * (INCIDENT_TYPES.length - 1)) + 1];
+  }
+  
   const subtype = category.subtypes[Math.floor(Math.random() * category.subtypes.length)];
   
   return {
@@ -94,7 +103,7 @@ io.on('connection', (socket) => {
       const pulse = generateMockPulse();
       socket.emit('city_pulse', pulse);
     }
-  }, 5000);
+  }, 3000);
 
   socket.on('disconnect', () => {
     console.log('User disconnected'.red);

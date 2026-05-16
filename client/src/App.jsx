@@ -36,6 +36,8 @@ import FireDashboard from './pages/fire/FireDashboard';
 
 // Hospital Pages
 import HospitalDashboard from './pages/hospital/HospitalDashboard';
+import DispatchBoard from './pages/hospital/DispatchBoard';
+import PatientAlerts from './pages/hospital/PatientAlerts';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -105,8 +107,8 @@ function App() {
           {/* Hospital Dashboard Routes */}
           <Route path="/hospital" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
             <Route index element={<HospitalDashboard />} />
-            <Route path="dispatch" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Dispatch Board Coming Soon</div>} />
-            <Route path="alerts" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Patient Alerts Coming Soon</div>} />
+            <Route path="dispatch" element={<DispatchBoard />} />
+            <Route path="alerts" element={<PatientAlerts />} />
           </Route>
 
           {/* Fire Dashboard Routes */}

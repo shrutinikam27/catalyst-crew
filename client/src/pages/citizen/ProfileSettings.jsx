@@ -18,11 +18,20 @@ const ProfileSettings = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [profileImage, setProfileImage] = useState(currentUser?.photoURL || null);
 
+  // Determine role
+  const role = currentUser?.email?.includes('admin') ? 'admin' : 
+               currentUser?.email?.includes('police') ? 'police' :
+               currentUser?.email?.includes('volunteer') ? 'volunteer' :
+               currentUser?.email?.includes('hospital') ? 'hospital' :
+               currentUser?.email?.includes('fire') ? 'fire' : 'citizen';
+
   // Form State
   const [formData, setFormData] = useState({
-    displayName: currentUser?.displayName || 'Citizen Pune',
+    displayName: currentUser?.displayName || (role === 'police' ? 'Officer Pune' : 'Citizen Pune'),
     phone: '+91 98765 43210',
-    location: 'Kothrud, Sector 4'
+    location: role === 'police' ? 'Shivaji Nagar Precinct' : 'Kothrud, Sector 4',
+    badgeNumber: role === 'police' ? 'PN-2045' : undefined,
+    department: role === 'police' ? 'Pune City Police' : undefined
   });
 
   const handleInputChange = (e) => {
@@ -190,7 +199,7 @@ const ProfileSettings = () => {
                       <input
                         type="email"
                         disabled
-                        defaultValue={currentUser?.email || 'pune.citizen@safelink.in'}
+                        defaultValue={currentUser?.email || (role === 'police' ? 'pune.officer@safelink.in' : 'pune.citizen@safelink.in')}
                         className="w-full pl-12 pr-5 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-not-allowed border border-transparent outline-none font-medium"
                       />
                     </div>
@@ -210,7 +219,7 @@ const ProfileSettings = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Location / Ward</label>
+                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">{role === 'police' ? 'Assigned Precinct / Ward' : 'Location / Ward'}</label>
                     <div className="relative group">
                       <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
                       <input
@@ -223,13 +232,52 @@ const ProfileSettings = () => {
                       />
                     </div>
                   </div>
+                  {role === 'police' && (
+                    <>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Officer Badge Number</label>
+                        <div className="relative group">
+                          <Shield className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
+                          <input
+                            type="text"
+                            name="badgeNumber"
+                            value={formData.badgeNumber}
+                            onChange={handleInputChange}
+                            className="w-full pl-12 pr-5 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent focus:border-indigo-600 outline-none transition-all dark:text-white font-medium"
+                            placeholder="e.g. PN-1234"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Department / Division</label>
+                        <div className="relative group">
+                          <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
+                          <input
+                            type="text"
+                            name="department"
+                            value={formData.department}
+                            onChange={handleInputChange}
+                            className="w-full pl-12 pr-5 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent focus:border-indigo-600 outline-none transition-all dark:text-white font-medium"
+                            placeholder="e.g. Traffic Division"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
-
+ 
                 <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div className="flex items-center gap-2 text-[10px] sm:text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 rounded-full">
-                    <Shield size={14} />
-                    Your profile is public for emergency responders
-                  </div>
+                  {role === 'police' ? (
+                    <div className="flex items-center gap-2 text-[10px] sm:text-xs font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 px-3 py-1.5 rounded-full">
+                      <Shield size={14} />
+                      Your police credentials are verified and active
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-[10px] sm:text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 rounded-full">
+                      <Shield size={14} />
+                      Your profile is public for emergency responders
+                    </div>
+                  )}
                   <button
                     onClick={handleSave}
                     disabled={loading}

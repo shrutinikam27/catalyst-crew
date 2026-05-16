@@ -109,6 +109,7 @@ function App() {
             <Route path="incidents" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Incident Management Coming Soon</div>} />
             <Route path="patrol" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Patrol Optimizer Coming Soon</div>} />
             <Route path="map" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Crime Map Coming Soon</div>} />
+            <Route path="profile" element={<ProfileSettings />} />
           </Route>
 
           {/* Hospital Dashboard Routes */}

@@ -31,6 +31,7 @@ const roleMenus = {
     { name: 'Incident Manager', icon: FileText, path: '/police/incidents' },
     { name: 'Patrol Optimizer', icon: Map, path: '/police/patrol' },
     { name: 'Crime Heatmap', icon: Zap, path: '/police/map' },
+    { name: 'Profile Settings', icon: User, path: '/police/profile' },
   ],
   hospital: [
     { name: 'ER Dashboard', icon: Home, path: '/hospital' },

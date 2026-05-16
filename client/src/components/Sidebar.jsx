@@ -49,7 +49,7 @@ const roleMenus = {
   ]
 };
 
-const Sidebar = ({ role = 'citizen', isOpen, onClose }) => {
+const Sidebar = ({ role = 'citizen', isOpen, onClose, onLogout }) => {
   const location = useLocation();
   const menuItems = roleMenus[role] || roleMenus.citizen;
 
@@ -97,7 +97,10 @@ const Sidebar = ({ role = 'citizen', isOpen, onClose }) => {
 
         {/* Footer */}
         <div className="p-4 border-t border-slate-100 dark:border-slate-800">
-          <button className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all group">
+          <button 
+            onClick={onLogout}
+            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all group"
+          >
             <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
             <span>Logout</span>
           </button>

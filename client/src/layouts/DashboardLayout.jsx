@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
 import { useAuth } from '../firebase/AuthContext';
@@ -11,7 +11,8 @@ const DashboardLayout = () => {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
   
   // Mock role determination - in real app would come from user profile/claims
   const role = currentUser?.email?.includes('admin') ? 'admin' : 
@@ -23,6 +24,15 @@ const DashboardLayout = () => {
   const user = {
     name: currentUser?.email?.split('@')[0] || 'Guest User',
     role: role.charAt(0).toUpperCase() + role.slice(1)
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error("Failed to log out", error);
+    }
   };
 
   useEffect(() => {
@@ -43,6 +53,7 @@ const DashboardLayout = () => {
         role={role} 
         isOpen={isSidebarOpen} 
         onClose={() => setSidebarOpen(false)} 
+        onLogout={handleLogout}
       />
       
       {/* Mobile Backdrop */}
@@ -59,6 +70,7 @@ const DashboardLayout = () => {
           isDark={isDark} 
           toggleTheme={toggleTheme}
           user={user}
+          onLogout={handleLogout}
         />
         
         <main className="flex-1 p-4 lg:p-8 overflow-x-hidden">

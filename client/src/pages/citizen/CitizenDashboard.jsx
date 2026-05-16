@@ -120,6 +120,68 @@ const CitizenDashboard = () => {
               </button>
             ))}
           </div>
+
+          {/* Safety Tips Section */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-bold font-outfit text-slate-900 dark:text-white">Personal Safety Guide</h3>
+              <button 
+                onClick={() => navigate('/user/tips')}
+                className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:underline transition-all"
+              >
+                View Handbook
+              </button>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {[
+                {
+                  title: "Emergency Readiness",
+                  desc: "Keep a list of local emergency numbers and nearby safe zones saved on your device.",
+                  icon: Zap,
+                  color: "text-amber-500",
+                  bg: "bg-amber-50 dark:bg-amber-900/10"
+                },
+                {
+                  title: "Digital Security",
+                  desc: "Avoid sharing your real-time location on public social media platforms.",
+                  icon: ShieldCheck,
+                  color: "text-emerald-500",
+                  bg: "bg-emerald-50 dark:bg-emerald-900/10"
+                },
+                {
+                  title: "Night Commute",
+                  desc: "Always stick to well-lit main roads and use the 'Safe Path' feature for navigation.",
+                  icon: MapPin,
+                  color: "text-indigo-500",
+                  bg: "bg-indigo-50 dark:bg-indigo-900/10"
+                },
+                {
+                  title: "First Aid Basics",
+                  desc: "Learn basic CPR and how to handle minor injuries until professional help arrives.",
+                  icon: Heart,
+                  color: "text-rose-500",
+                  bg: "bg-rose-50 dark:bg-rose-900/10"
+                }
+              ].map((tip, index) => (
+                <motion.div 
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                  className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition-all cursor-default"
+                >
+                  <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mb-4", tip.bg)}>
+                    <tip.icon size={20} className={tip.color} />
+                  </div>
+                  <h4 className="font-bold text-slate-900 dark:text-white mb-1">{tip.title}</h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                    {tip.desc}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="space-y-8">

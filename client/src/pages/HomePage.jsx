@@ -61,11 +61,11 @@ function HomePage() {
                   Click or <br /> Long Press <br /> for SOS
                 </p>
                 <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/90 dark:bg-slate-800/90 border-t border-l border-white/50 dark:border-slate-700 rotate-45"></div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
       
       {/* Emergency Status Bar - Positioned above Empowering Governance as requested */}
       <div className="px-6 max-w-[1400px] mx-auto mb-16">
@@ -183,7 +183,6 @@ function HomePage() {
 
         {/* Predictive Stats Column */}
         <div className="space-y-8">
-
           <div className="bg-indigo-600 dark:bg-indigo-700 p-8 rounded-[2.5rem] shadow-2xl shadow-indigo-200 dark:shadow-none relative overflow-hidden group cursor-pointer">
             <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
             <div className="relative z-10 flex items-center justify-between">

@@ -1,15 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  ShieldCheck, AlertCircle, MessageSquare, 
+import {
+  ShieldCheck, AlertCircle, MessageSquare,
   MapPin, Zap, TrendingUp, Users, Heart
 } from 'lucide-react';
 import StatCard from '../../components/ui/StatCard';
 import AlertCard from '../../components/ui/AlertCard';
 import ChartCard from '../../components/ui/ChartCard';
-import { 
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, 
-  Tooltip, ResponsiveContainer, BarChart, Bar 
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid,
+  Tooltip, ResponsiveContainer, BarChart, Bar
 } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../../utils/cn';
@@ -35,7 +35,7 @@ const CitizenDashboard = () => {
   const safetyScore = Math.max(0, (10 - (crimeNotifications.length * 0.5)).toFixed(1));
   const safetyStatus = safetyScore > 8 ? 'Stable' : safetyScore > 5 ? 'Warning' : 'Critical';
   const safetyColor = safetyScore > 8 ? 'text-emerald-500' : safetyScore > 5 ? 'text-amber-500' : 'text-rose-500';
-  
+
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
@@ -48,7 +48,7 @@ const CitizenDashboard = () => {
             The safety index in your current zone is <span className={cn("font-bold", safetyColor)}>{safetyStatus} ({safetyScore}/10)</span>.
           </p>
           {safetyScore < 7 && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               className="px-2 py-0.5 bg-rose-100 text-rose-600 text-[10px] font-black uppercase rounded border border-rose-200 animate-pulse"
@@ -58,7 +58,7 @@ const CitizenDashboard = () => {
           )}
         </div>
       </div>
-     
+
 
       {/* Live Crime Ticker */}
       {crimeNotifications.length > 0 && (
@@ -68,7 +68,7 @@ const CitizenDashboard = () => {
             Live Ticker
           </span>
           <div className="flex-1 overflow-hidden whitespace-nowrap">
-            <motion.div 
+            <motion.div
               animate={{ x: [1000, -2000] }}
               transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
               className="flex gap-12"
@@ -86,32 +86,32 @@ const CitizenDashboard = () => {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard 
-          title="Safe Routes" 
-          value="12 Available" 
-          icon={ShieldCheck} 
-          trend="8%" 
+        <StatCard
+          title="Safe Routes"
+          value="12 Available"
+          icon={ShieldCheck}
+          trend="8%"
           description="Based on real-time crime data"
         />
-        <StatCard 
-          title="Active Alerts" 
-          value={notifications.length.toString().padStart(2, '0')} 
-          icon={AlertCircle} 
-          trend="Live" 
+        <StatCard
+          title="Active Alerts"
+          value={notifications.length.toString().padStart(2, '0')}
+          icon={AlertCircle}
+          trend="Live"
           trendType={notifications.length > 5 ? "up" : "down"}
           description="Detected in real-time"
         />
-        <StatCard 
-          title="Civic Reports" 
-          value="48" 
-          icon={MessageSquare} 
-          trend="15%" 
+        <StatCard
+          title="Civic Reports"
+          value="48"
+          icon={MessageSquare}
+          trend="15%"
           description="Issues resolved in your ward"
         />
-        <StatCard 
-          title="SOS Contacts" 
-          value="05" 
-          icon={Users} 
+        <StatCard
+          title="SOS Contacts"
+          value="05"
+          icon={Users}
           description="Verified emergency contacts"
         />
       </div>
@@ -125,12 +125,12 @@ const CitizenDashboard = () => {
               <AreaChart data={data}>
                 <defs>
                   <linearGradient id="colorAccidents" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1} />
+                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
-                <Tooltip 
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                <Tooltip
                   contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                 />
                 <Area type="monotone" dataKey="accidents" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorAccidents)" />
@@ -147,8 +147,8 @@ const CitizenDashboard = () => {
               { name: 'SOS Help', icon: Zap, color: 'bg-amber-500', path: '/user/sos' },
               { name: 'Safe Path', icon: MapPin, color: 'bg-emerald-500', path: '/user/safety' },
             ].map((action) => (
-              <button 
-                key={action.name} 
+              <button
+                key={action.name}
                 onClick={() => navigate(action.path)}
                 className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:shadow-xl transition-all group text-center"
               >
@@ -166,7 +166,7 @@ const CitizenDashboard = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-bold font-outfit text-slate-900 dark:text-white">Personal Safety Guide</h3>
-              <button 
+              <button
                 onClick={() => navigate('/user/tips')}
                 className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:underline transition-all"
               >
@@ -204,7 +204,7 @@ const CitizenDashboard = () => {
                   bg: "bg-rose-50 dark:bg-rose-900/10"
                 }
               ].map((tip, index) => (
-                <motion.div 
+                <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -232,9 +232,9 @@ const CitizenDashboard = () => {
             <div className="space-y-4">
               {notifications.length > 0 ? (
                 notifications.slice(0, 3).map((n) => (
-                  <AlertCard 
+                  <AlertCard
                     key={n.id}
-                    title={n.message} 
+                    title={n.message}
                     type={n.type}
                     location="Pune Sector"
                     time={n.time}
@@ -243,15 +243,15 @@ const CitizenDashboard = () => {
                 ))
               ) : (
                 <>
-                  <AlertCard 
-                    title="Road Construction" 
+                  <AlertCard
+                    title="Road Construction"
                     type="Heavy machinery on Baner Road"
                     location="Baner, Pune"
                     time="10 mins ago"
                     severity="moderate"
                   />
-                  <AlertCard 
-                    title="Fire Outbreak" 
+                  <AlertCard
+                    title="Fire Outbreak"
                     type="Building fire reported"
                     location="Kothrud, Pune"
                     time="25 mins ago"

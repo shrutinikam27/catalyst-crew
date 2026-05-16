@@ -6,7 +6,8 @@ import {
   signOut, 
   signInWithPopup,
   RecaptchaVerifier,
-  signInWithPhoneNumber
+  signInWithPhoneNumber,
+  signInAnonymously
 } from 'firebase/auth';
 import { auth, googleProvider, firebaseConfig } from './config';
 
@@ -134,6 +135,15 @@ export function AuthProvider({ children }) {
     }
   }
 
+  function loginAnonymously() {
+    if (USE_MOCK_AUTH) {
+      const mockUser = { uid: 'anon-' + Date.now(), isAnonymous: true };
+      setCurrentUser(mockUser);
+      return Promise.resolve({ user: mockUser });
+    }
+    return signInAnonymously(auth);
+  }
+
   useEffect(() => {
     if (USE_MOCK_AUTH) {
       console.warn('Using Mock Authentication mode. Firebase is bypassed.');
@@ -155,6 +165,7 @@ export function AuthProvider({ children }) {
     login,
     logout,
     loginWithGoogle,
+    loginAnonymously,
     setupRecaptcha,
     loginWithPhone
   };

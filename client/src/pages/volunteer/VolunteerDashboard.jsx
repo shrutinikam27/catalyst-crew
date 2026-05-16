@@ -1,21 +1,97 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Home, Bell, Activity, User, 
+import {
+  Home, Bell, Activity, User,
   MapPin, Clock, Star, Zap,
   CheckCircle, MessageSquare, Heart,
-  Shield, Navigation
+  Shield, Navigation, Flame, AlertTriangle, Loader2
 } from 'lucide-react';
 import StatCard from '../../components/ui/StatCard';
-import AlertCard from '../../components/ui/AlertCard';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../firebase/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import {
+  subscribeToSosAlertsForVolunteer,
+  acceptSosAlert,
+  buildGoogleMapsUrl,
+} from '../../firebase/sosService';
+import { collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { db } from '../../firebase/config';
+
+// Inline type meta so we don't need a separate import
+const TYPE_META = {
+  Fire:     { color: 'bg-orange-500', label: 'Fire',     Icon: Flame },
+  Crime:    { color: 'bg-blue-600',   label: 'Crime',    Icon: Shield },
+  Medical:  { color: 'bg-rose-500',   label: 'Medical',  Icon: Heart },
+  Accident: { color: 'bg-purple-600', label: 'Accident', Icon: AlertTriangle },
+};
+
+function formatTime(ts) {
+  if (!ts) return 'Just now';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
 
 const VolunteerDashboard = () => {
   const { currentUser } = useAuth();
-  const initials = currentUser?.displayName 
+  const navigate = useNavigate();
+  const [alerts, setAlerts] = useState([]);
+  const [expertise, setExpertise] = useState(null);
+  const [myLocation, setMyLocation] = useState(null);
+  const [acceptingId, setAcceptingId] = useState(null);
+
+  const initials = currentUser?.displayName
     ? currentUser.displayName.split(' ').map(n => n[0]).join('').toUpperCase()
-    : (currentUser?.email ? currentUser.email[0].toUpperCase() : 'U');
+    : (currentUser?.email ? currentUser.email[0].toUpperCase() : 'V');
+
+  // Live location
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    const id = navigator.geolocation.watchPosition(
+      (p) => setMyLocation({ latitude: p.coords.latitude, longitude: p.coords.longitude }),
+      () => {},
+      { enableHighAccuracy: true }
+    );
+    return () => navigator.geolocation.clearWatch(id);
+  }, []);
+
+  // Fetch expertise
+  useEffect(() => {
+    if (!currentUser) return;
+    (async () => {
+      try {
+        const q = query(collection(db, 'volunteerRequests'), where('uid', '==', currentUser.uid), limit(1));
+        const snap = await getDocs(q);
+        if (!snap.empty) setExpertise(snap.docs[0].data().expertise || []);
+        else setExpertise(['firebrigade', 'medical', 'crime']);
+      } catch { setExpertise(['firebrigade', 'medical', 'crime']); }
+    })();
+  }, [currentUser]);
+
+  // Subscribe to alerts
+  useEffect(() => {
+    if (!expertise || expertise.length === 0) return;
+    const allAlerts = {};
+    const unsubs = expertise.map((tag) =>
+      subscribeToSosAlertsForVolunteer(tag, (tagAlerts) => {
+        tagAlerts.forEach((a) => { allAlerts[a.id] = a; });
+        setAlerts(Object.values(allAlerts).sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0)));
+      })
+    );
+    return () => unsubs.forEach(u => u());
+  }, [expertise]);
+
+  const handleAcceptAndNavigate = async (alert) => {
+    setAcceptingId(alert.id);
+    try {
+      await acceptSosAlert(alert.id, currentUser.uid, currentUser.displayName || currentUser.email || 'Volunteer');
+      const from = myLocation || { latitude: 18.5204, longitude: 73.8567 };
+      const to = { latitude: alert.location.latitude, longitude: alert.location.longitude };
+      window.open(buildGoogleMapsUrl(from, to), '_blank');
+    } finally {
+      setAcceptingId(null);
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -27,7 +103,7 @@ const VolunteerDashboard = () => {
               Volunteer Dashboard
             </h1>
             <p className="text-slate-500 dark:text-slate-400 font-medium">
-              You are currently <span className="text-emerald-500 font-bold">Active & Available</span> for response.
+              You are currently <span className="text-emerald-500 font-bold">Active &amp; Available</span> for response.
             </p>
           </div>
 
@@ -37,25 +113,93 @@ const VolunteerDashboard = () => {
             <StatCard title="People Helped" value="0" icon={Heart} trend="0" />
           </div>
 
-          {/* Active Missions */}
-          <div className="space-y-6">
-            <h3 className="text-lg font-bold font-outfit text-slate-900 dark:text-white flex items-center gap-2">
-              <Zap size={20} className="text-amber-500" />
-              Nearby Emergency Alerts
-            </h3>
-            <div className="grid sm:grid-cols-1 gap-4">
+          {/* Live SOS Alerts */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold font-outfit text-slate-900 dark:text-white flex items-center gap-2">
+                <Zap size={20} className="text-amber-500" />
+                Live SOS Alerts
+                {alerts.length > 0 && (
+                  <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-black rounded-full animate-pulse">
+                    {alerts.length}
+                  </span>
+                )}
+              </h3>
+              <button
+                onClick={() => navigate('/volunteer/alerts')}
+                className="text-xs font-bold text-indigo-600 hover:underline uppercase tracking-widest"
+              >
+                View All →
+              </button>
+            </div>
+
+            {expertise === null ? (
+              <div className="flex items-center justify-center py-10">
+                <Loader2 size={28} className="text-indigo-500 animate-spin" />
+              </div>
+            ) : alerts.length === 0 ? (
               <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center">
                 <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Zap size={24} className="text-slate-400" />
                 </div>
                 <h4 className="font-bold text-slate-900 dark:text-white mb-2">No Active Alerts</h4>
-                <p className="text-xs text-slate-500">Live citizen emergency requests will appear here once connected.</p>
+                <p className="text-xs text-slate-500">Live citizen SOS requests will appear here in real-time.</p>
               </div>
-            </div>
+            ) : (
+              <div className="grid gap-4">
+                {alerts.slice(0, 3).map((alert) => {
+                  const meta = TYPE_META[alert.emergencyType] || TYPE_META.Medical;
+                  const Icon = meta.Icon;
+                  return (
+                    <motion.div
+                      key={alert.id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 group"
+                    >
+                      <div className={cn('w-12 h-12 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-lg', meta.color)}>
+                        <Icon size={20} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-slate-900 dark:text-white text-sm">{meta.label}</p>
+                        <p className="text-xs text-slate-500 font-medium truncate">
+                          {alert.userName} · {formatTime(alert.createdAt)}
+                        </p>
+                        {alert.location && (
+                          <p className="text-[10px] text-indigo-600 font-bold flex items-center gap-1 mt-0.5">
+                            <MapPin size={10} />
+                            {alert.location.latitude.toFixed(4)}, {alert.location.longitude.toFixed(4)}
+                          </p>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => handleAcceptAndNavigate(alert)}
+                        disabled={acceptingId === alert.id}
+                        className="shrink-0 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-indigo-100 dark:shadow-none flex items-center gap-1 disabled:opacity-60"
+                      >
+                        {acceptingId === alert.id
+                          ? <Loader2 size={12} className="animate-spin" />
+                          : <CheckCircle size={12} />
+                        }
+                        Respond
+                      </button>
+                    </motion.div>
+                  );
+                })}
+                {alerts.length > 3 && (
+                  <button
+                    onClick={() => navigate('/volunteer/alerts')}
+                    className="w-full py-3 bg-slate-50 dark:bg-slate-800 text-slate-500 text-xs font-bold rounded-2xl hover:bg-indigo-50 hover:text-indigo-600 transition-all uppercase tracking-widest"
+                  >
+                    +{alerts.length - 3} more alerts → View all
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Sidebar Info */}
+        {/* Sidebar */}
         <div className="space-y-6">
           {/* Volunteer Status Card */}
           <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center space-y-6">
@@ -70,6 +214,15 @@ const VolunteerDashboard = () => {
                 {currentUser?.displayName || (currentUser?.email ? currentUser.email.split('@')[0] : 'Volunteer')}
               </h3>
               <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mt-1">Certified First Responder</p>
+              {expertise && (
+                <div className="flex flex-wrap justify-center gap-1 mt-3">
+                  {expertise.map(tag => (
+                    <span key={tag} className="px-2 py-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 text-[9px] font-black rounded-md uppercase tracking-tighter">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="flex justify-center gap-2">
               {['CERTIFIED', 'QUICK RESPONSE', 'TOP 1%'].map(badge => (

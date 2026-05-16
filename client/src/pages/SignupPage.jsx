@@ -31,10 +31,7 @@ function SignupPage() {
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showOtpInput, setShowOtpInput] = useState(false);
-  const [otp, setOtp] = useState('');
-  const [confirmationResult, setConfirmationResult] = useState(null);
-  const { signup, loginWithGoogle, setupRecaptcha, loginWithPhone } = useAuth();
+  const { signup, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -42,35 +39,8 @@ function SignupPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSendOtp = async (e) => {
-    e.preventDefault();
-    if (!formData.phone) return setError('Please enter a phone number first.');
-    
-    setLoading(true);
-    setError('');
-    try {
-      const verifier = setupRecaptcha('recaptcha-container');
-      const result = await loginWithPhone(formData.phone, verifier);
-      setConfirmationResult(result);
-      setShowOtpInput(true);
-      
-      if (result.isMock) {
-        alert('DEVELOPMENT MODE: Please use the test code "123456" to verify your number.');
-      } else {
-        alert('OTP sent to ' + formData.phone);
-      }
-    } catch (err) {
-      console.error(err);
-      setError('Failed to send OTP. Ensure the number is in E.164 format (e.g. +91...)');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   async function handleSubmit(e) {
     e.preventDefault();
-    
-    if (showOtpInput && !confirmationResult) return setError('Please send OTP first.');
     
     if (formData.password !== formData.confirmPassword) {
       return setError('Passwords do not match');
@@ -79,12 +49,7 @@ function SignupPage() {
     setError('');
     setLoading(true);
     try {
-      // 1. Verify OTP first if input is shown
-      if (showOtpInput) {
-        await confirmationResult.confirm(otp);
-      }
-
-      // 2. Continue with Email Signup and Profile creation
+      // Continue with Email Signup and Profile creation
       const { user } = await signup(formData.email, formData.password);
 
       if (role === 'volunteer') {
@@ -285,51 +250,11 @@ function SignupPage() {
                           <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={20} />
                           <input name="phone" value={formData.phone} onChange={handleInputChange} type="tel" required className="w-full pl-12 pr-5 py-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none ring-1 ring-slate-100 dark:ring-slate-700 focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-500 transition-all dark:text-white outline-none placeholder:text-slate-400" placeholder="+91 00000 00000" />
                         </div>
-                        {!showOtpInput && (
-                          <button 
-                            type="button"
-                            onClick={handleSendOtp}
-                            className="px-6 py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all text-xs uppercase tracking-widest"
-                          >
-                            Send OTP
-                          </button>
-                        )}
                       </div>
                     </div>
                   </div>
 
-                  {showOtpInput && (
-                    <motion.div 
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      className="space-y-2"
-                    >
-                      <label className="text-xs font-bold text-indigo-600 uppercase tracking-widest ml-1">Enter 6-Digit OTP</label>
-                      <div className="relative group">
-                        <BadgeCheck className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-600" size={20} />
-                        <input 
-                          value={otp} 
-                          onChange={(e) => setOtp(e.target.value)} 
-                          type="text" 
-                          maxLength="6"
-                          className="w-full pl-12 pr-5 py-4 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border-2 border-indigo-200 dark:border-indigo-800 focus:border-indigo-600 transition-all dark:text-white outline-none font-black tracking-[0.5em] text-center text-lg" 
-                          placeholder="000000" 
-                        />
-                      </div>
-                      {confirmationResult?.isMock ? (
-                        <div className="mt-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
-                          <p className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest flex items-center gap-2">
-                            <Zap size={14} className="fill-amber-500" />
-                            Development Mode: Use code 123456
-                          </p>
-                        </div>
-                      ) : (
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest ml-1">Check your mobile for the verification code</p>
-                      )}
-                    </motion.div>
-                  )}
 
-                  <div id="recaptcha-container"></div>
 
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Email Address</label>

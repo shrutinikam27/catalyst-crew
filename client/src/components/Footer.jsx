@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Mail, Phone, MapPin, Github, Twitter, Linkedin, Facebook } from 'lucide-react';
+import { Shield, Mail, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -24,10 +24,10 @@ const Footer = () => {
               Empowering Pune with real-time risk mapping and AI-driven emergency response prioritization for a safer urban future.
             </p>
             <div className="flex gap-4">
-              <SocialIcon icon={<Twitter size={18} />} href="#" />
-              <SocialIcon icon={<Linkedin size={18} />} href="#" />
-              <SocialIcon icon={<Github size={18} />} href="#" />
-              <SocialIcon icon={<Facebook size={18} />} href="#" />
+              <SocialIcon icon={<Mail size={18} />} href="#" />
+              <SocialIcon icon={<Phone size={18} />} href="#" />
+              <SocialIcon icon={<MapPin size={18} />} href="#" />
+              <SocialIcon icon={<Shield size={18} />} href="#" />
             </div>
           </div>
 

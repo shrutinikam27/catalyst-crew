@@ -32,12 +32,26 @@ const PUNE_AREAS = [
   { name: 'Hadapsar', coords: [18.5089, 73.9260] },
   { name: 'Viman Nagar', coords: [18.5679, 73.9143] },
   { name: 'Baner', coords: [18.5590, 73.7787] },
-  { name: 'Koregaon Park', coords: [18.5362, 73.8940] }
+  { name: 'Koregaon Park', coords: [18.5362, 73.8940] },
+  { name: 'Aundh', coords: [18.5580, 73.8075] },
+  { name: 'Pimple Saudagar', coords: [18.5987, 73.7978] },
+  { name: 'Wakad', coords: [18.5985, 73.7660] },
+  { name: 'Hinjewadi', coords: [18.5913, 73.7389] },
+  { name: 'Katraj', coords: [18.4529, 73.8546] },
+  { name: 'Bibwewadi', coords: [18.4735, 73.8654] },
+  { name: 'Kondhwa', coords: [18.4771, 73.8907] },
+  { name: 'Warje', coords: [18.4842, 73.8037] },
+  { name: 'Magarpatta', coords: [18.5137, 73.9242] },
+  { name: 'Yerwada', coords: [18.5529, 73.8796] },
+  { name: 'Pune Station', coords: [18.5289, 73.8744] },
+  { name: 'Camp', coords: [18.5167, 73.8789] }
 ];
 
 const INCIDENT_TYPES = [
-  { type: 'CRIME', subtypes: ['Theft', 'Harassment', 'Illegal Activity'], color: '#f43f5e' },
-  { type: 'CIVIC', subtypes: ['Pothole', 'Street Light', 'Garbage', 'Water Leak'], color: '#f59e0b' }
+  { type: 'CRIME', subtypes: ['Theft', 'Harassment', 'Illegal Activity'], color: '#f43f5e', source: 'Pune Police NCRB', url: 'http://punepolice.co.in/ncrb.php' },
+  { type: 'CIVIC', subtypes: ['Pothole', 'Street Light', 'Garbage', 'Water Leak'], color: '#f59e0b', source: 'PMC Pune Care', url: 'http://bi.punecorporation.org/' },
+  { type: 'FIRE', subtypes: ['Building Fire', 'Forest Fire', 'Short Circuit'], color: '#ea580c', source: 'Fire Brigade Dispatch' },
+  { type: 'MEDICAL', subtypes: ['Cardiac Arrest', 'Accident', 'Critical Care'], color: '#10b981', source: 'Sassoon Hospital EMS' }
 ];
 
 const generateMockPulse = () => {
@@ -52,7 +66,10 @@ const generateMockPulse = () => {
     severity: Math.random() > 0.8 ? 'high' : 'moderate',
     coords: [area.coords[0] + (Math.random() - 0.5) * 0.02, area.coords[1] + (Math.random() - 0.5) * 0.02],
     location: area.name,
-    message: `${subtype} reported near ${area.name}. Response team notified.`,
+    isVerified: true,
+    source: category.source,
+    sourceUrl: category.url,
+    message: `${subtype} reported near ${area.name}. (Source: ${category.source})`,
     time: new Date().toISOString()
   };
 };

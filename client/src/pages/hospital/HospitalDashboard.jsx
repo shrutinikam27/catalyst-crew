@@ -10,11 +10,16 @@ import { cn } from '../../utils/cn';
 import { db } from '../../firebase/config';
 import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 
+import { useSocket } from '../../context/SocketContext';
+
 const HospitalDashboard = () => {
+  const { notifications } = useSocket();
   const [volunteers, setVolunteers] = useState([]);
   const [loadingVols, setLoadingVols] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
   const [tab, setTab] = useState('pending');
+
+  const medicalAlerts = notifications.filter(n => n.type === 'MEDICAL');
 
   useEffect(() => {
     const q = query(
@@ -58,9 +63,9 @@ const HospitalDashboard = () => {
 
       {/* EMS Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="Total Emergencies" value="12" icon={AlertCircle} trend="5%" trendType="up" />
+        <StatCard title="Total Emergencies" value={medicalAlerts.length || "0"} icon={AlertCircle} trend="Live" trendType="up" />
         <StatCard title="Ambulances Active" value="08" icon={Ambulance} trend="2" />
-        <StatCard title="Critical Cases" value="03" icon={Heart} trend="1" trendType="down" />
+        <StatCard title="Critical Cases" value={medicalAlerts.filter(a => a.severity === 'high').length || "0"} icon={Heart} trend="1" trendType="down" />
         <StatCard title="Avg. Dispatch" value="2.4m" icon={Clock} trend="12s" trendType="down" />
       </div>
 
@@ -73,31 +78,27 @@ const HospitalDashboard = () => {
               <button className="text-xs font-bold text-indigo-600 uppercase tracking-widest hover:underline">View All</button>
             </div>
             <div className="space-y-4">
-              {[
-                { id: 'EMS-901', type: 'Cardiac Arrest', loc: 'Pune Univ Rd', eta: '4 min', status: 'En Route', color: 'bg-rose-500' },
-                { id: 'EMS-904', type: 'Accident/Trauma', loc: 'Kothrud Ph 2', eta: '12 min', status: 'Dispatched', color: 'bg-amber-500' },
-                { id: 'EMS-898', type: 'Pediatric Care', loc: 'Baner Hills', eta: 'Arrived', status: 'On Site', color: 'bg-emerald-500' },
-              ].map(ems => (
+              {medicalAlerts.map(ems => (
                 <div key={ems.id} className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-transparent hover:border-indigo-500/20 transition-all flex items-center gap-6">
-                  <div className={cn('w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg', ems.color)}>
+                  <div className={cn('w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg', ems.severity === 'high' ? 'bg-rose-500' : 'bg-indigo-500')}>
                     <Ambulance size={20} />
                   </div>
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
-                      <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">{ems.type}</h4>
-                      <span className="text-[10px] font-bold text-slate-400">{ems.id}</span>
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">{ems.title}</h4>
+                      <span className="text-[10px] font-bold text-slate-400">{ems.id.slice(0, 6)}</span>
                     </div>
                     <div className="flex items-center gap-3 mt-1">
-                      <div className="flex items-center gap-1 text-[11px] text-slate-500"><MapPin size={10}/> {ems.loc}</div>
-                      <div className="flex items-center gap-1 text-[11px] text-slate-500"><Clock size={10}/> ETA: {ems.eta}</div>
+                      <div className="flex items-center gap-1 text-[11px] text-slate-500"><MapPin size={10}/> {ems.location}</div>
+                      <div className="flex items-center gap-1 text-[11px] text-slate-500"><Clock size={10}/> Reported: {new Date(ems.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                     </div>
                   </div>
-                  <span className={cn('text-[10px] font-extrabold uppercase px-2 py-1 rounded',
-                    ems.status==='On Site' ? 'bg-emerald-100 text-emerald-600' :
-                    ems.status==='En Route' ? 'bg-indigo-100 text-indigo-600' : 'bg-amber-100 text-amber-600'
-                  )}>{ems.status}</span>
+                  <span className={cn('text-[10px] font-extrabold uppercase px-2 py-1 rounded', 'bg-indigo-100 text-indigo-600')}>En Route</span>
                 </div>
               ))}
+              {medicalAlerts.length === 0 && (
+                <p className="text-center py-8 text-slate-400 text-sm font-bold uppercase tracking-widest">No active medical dispatches</p>
+              )}
             </div>
           </div>
         </div>

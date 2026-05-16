@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { io } from 'socket.io-client';
 import { cn } from '../../utils/cn';
 import 'leaflet/dist/leaflet.css';
 
@@ -28,26 +27,13 @@ const createPulsingIcon = (color) => L.divIcon({
 
 const SmartMap = ({ 
   center = [18.5204, 73.8567], // Pune Coordinates
-  zoom = 13, 
+  zoom = 12, 
   incidents = [], 
   volunteers = [],
   hotspots = [],
   showHeatmap = false
 }) => {
-  const [liveIncidents, setLiveIncidents] = useState([]);
-
-  useEffect(() => {
-    const socket = io('http://localhost:8080'); // Adjust URL if needed
-    
-    socket.on('city_pulse', (pulse) => {
-      console.log('Real-time Pulse Received:', pulse);
-      setLiveIncidents(prev => [pulse, ...prev].slice(0, 20)); // Keep last 20
-    });
-
-    return () => socket.disconnect();
-  }, []);
-
-  const allIncidents = [...incidents, ...liveIncidents];
+  const allIncidents = incidents;
 
   return (
     <div className="h-full w-full rounded-3xl overflow-hidden shadow-inner border border-slate-100 dark:border-slate-800">
@@ -70,8 +56,9 @@ const SmartMap = ({
             radius={spot.radius || 500}
             pathOptions={{ 
               fillColor: spot.color || '#f43f5e', 
-              color: 'transparent',
-              fillOpacity: 0.3 
+              color: spot.color || '#f43f5e',
+              weight: 1,
+              fillOpacity: 0.4 
             }}
           />
         ))}
@@ -96,9 +83,21 @@ const SmartMap = ({
                 </div>
                 <p className="text-xs text-slate-500">{incident.location || 'Reported Location'}</p>
                 {incident.source && (
-                   <p className="text-[9px] font-bold text-indigo-500 mt-1 uppercase tracking-widest flex items-center gap-1">
-                     Source: {incident.source}
-                   </p>
+                   <div className="mt-1">
+                     <p className="text-[9px] font-bold text-indigo-500 uppercase tracking-widest flex items-center gap-1">
+                       Source: {incident.source}
+                     </p>
+                     {incident.sourceUrl && (
+                       <a 
+                         href={incident.sourceUrl} 
+                         target="_blank" 
+                         rel="noopener noreferrer"
+                         className="text-[8px] text-blue-400 hover:underline block"
+                       >
+                         View Official Data ↗
+                       </a>
+                     )}
+                   </div>
                 )}
                 {incident.message && <p className="text-[10px] text-slate-400 mt-1 italic">"{incident.message}"</p>}
                 <div className="mt-2 flex gap-1">

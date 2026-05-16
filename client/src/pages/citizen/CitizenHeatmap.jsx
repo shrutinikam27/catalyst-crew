@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Filter, Map as MapIcon, Layers, 
@@ -7,11 +7,7 @@ import {
 } from 'lucide-react';
 import SmartMap from '../../components/map/SmartMap';
 import { cn } from '../../utils/cn';
-
-const mockIncidents = [
-  { id: 1, type: 'Traffic Accident', location: 'Shivaji Nagar', severity: 'high', coords: [18.5312, 73.8445] },
-  { id: 2, type: 'Street Light Out', location: 'Hadapsar', severity: 'low', coords: [18.5089, 73.9260] },
-];
+import { useSocket } from '../../context/SocketContext';
 
 const mockVolunteers = [
   { id: 1, name: 'John D.', coords: [18.5250, 73.8500] },
@@ -19,11 +15,64 @@ const mockVolunteers = [
 ];
 
 const mockHotspots = [
-  { coords: [18.5089, 73.9260], radius: 800, color: '#f43f5e' }, // High crime
-  { coords: [18.5500, 73.8200], radius: 600, color: '#f59e0b' }, // Accident prone
+  // RED ZONES - High Crime
+  { coords: [18.5089, 73.9260], radius: 900, color: '#ef4444', label: 'RED' },   // Hadapsar
+  { coords: [18.5529, 73.8796], radius: 700, color: '#ef4444', label: 'RED' },   // Yerwada
+  { coords: [18.5289, 73.8744], radius: 600, color: '#ef4444', label: 'RED' },   // Pune Station
+  // ORANGE ZONES - Accident Prone
+  { coords: [18.5580, 73.8075], radius: 800, color: '#f59e0b', label: 'ORANGE' }, // Aundh
+  { coords: [18.5913, 73.7389], radius: 900, color: '#f59e0b', label: 'ORANGE' }, // Hinjewadi
+  { coords: [18.4771, 73.8907], radius: 700, color: '#f59e0b', label: 'ORANGE' }, // Kondhwa
+  // GREEN ZONES - Safe / Patrolled
+  { coords: [18.5204, 73.8567], radius: 1000, color: '#10b981', label: 'GREEN' }, // Central Pune
+  { coords: [18.5074, 73.8077], radius: 800, color: '#10b981', label: 'GREEN' },  // Kothrud
+  { coords: [18.5590, 73.7787], radius: 800, color: '#10b981', label: 'GREEN' },  // Baner
+  { coords: [18.5362, 73.8940], radius: 700, color: '#10b981', label: 'GREEN' },  // Koregaon Park
+  { coords: [18.4529, 73.8546], radius: 700, color: '#f59e0b', label: 'ORANGE' }, // Katraj
+  { coords: [18.5987, 73.7978], radius: 600, color: '#10b981', label: 'GREEN' },  // Pimple Saudagar
+  { coords: [18.5985, 73.7660], radius: 700, color: '#f59e0b', label: 'ORANGE' }, // Wakad
+  { coords: [18.5137, 73.9242], radius: 600, color: '#ef4444', label: 'RED' },    // Magarpatta
+  { coords: [18.4735, 73.8654], radius: 600, color: '#10b981', label: 'GREEN' },  // Bibwewadi
+  { coords: [18.4842, 73.8037], radius: 700, color: '#f59e0b', label: 'ORANGE' }, // Warje
 ];
 
 const CitizenHeatmap = () => {
+  const { notifications } = useSocket();
+  const [activeFilter, setActiveFilter] = useState('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filters = ['ALL', 'CRIME', 'ACCIDENTS', 'CIVIC', 'SAFE ZONES'];
+
+  const filteredIncidents = useMemo(() => {
+    let list = notifications.map(n => ({
+      id: n.id,
+      type: n.title || n.type,
+      location: n.location,
+      severity: n.severity,
+      coords: n.coords,
+      category: n.type // CRIME, CIVIC, FIRE, MEDICAL
+    }));
+
+    if (activeFilter !== 'ALL') {
+      list = list.filter(item => {
+        if (activeFilter === 'CRIME') return item.category === 'CRIME';
+        if (activeFilter === 'CIVIC') return item.category === 'CIVIC';
+        if (activeFilter === 'ACCIDENTS') return item.category === 'FIRE' || item.category === 'MEDICAL';
+        if (activeFilter === 'SAFE ZONES') return item.category === 'SAFE';
+        return true;
+      });
+    }
+
+    if (searchQuery) {
+      list = list.filter(item => 
+        item.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.type?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    return list;
+  }, [notifications, activeFilter, searchQuery]);
+
   return (
     <div className="h-[calc(100vh-140px)] flex flex-col gap-6">
       {/* Filters Bar */}
@@ -33,11 +82,33 @@ const CitizenHeatmap = () => {
             <Filter size={18} />
           </div>
           <div className="flex gap-2">
-            {['Crime', 'Accidents', 'Civic', 'Safe Zones'].map((tag) => (
-              <button key={tag} className="px-4 py-1.5 rounded-full bg-slate-50 dark:bg-slate-800 text-[10px] font-bold text-slate-500 uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all">
+            {filters.map((tag) => {
+              const count = tag === 'ALL' ? notifications.length
+                : tag === 'CRIME' ? notifications.filter(n => n.type === 'CRIME').length
+                : tag === 'ACCIDENTS' ? notifications.filter(n => n.type === 'FIRE' || n.type === 'MEDICAL').length
+                : tag === 'CIVIC' ? notifications.filter(n => n.type === 'CIVIC').length
+                : 0;
+              return (
+              <button 
+                key={tag} 
+                onClick={() => setActiveFilter(tag)}
+                className={cn(
+                  "px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-1.5",
+                  activeFilter === tag 
+                    ? tag === 'CRIME' ? "bg-rose-500 text-white shadow-lg shadow-rose-200"
+                    : tag === 'ACCIDENTS' ? "bg-amber-500 text-white shadow-lg shadow-amber-200"
+                    : tag === 'CIVIC' ? "bg-sky-500 text-white shadow-lg shadow-sky-200"
+                    : tag === 'SAFE ZONES' ? "bg-emerald-500 text-white shadow-lg shadow-emerald-200"
+                    : "bg-indigo-600 text-white shadow-lg shadow-indigo-200"
+                    : "bg-slate-50 dark:bg-slate-800 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700"
+                )}
+              >
                 {tag}
+                {count > 0 && (
+                  <span className="bg-white/20 px-1.5 py-0.5 rounded-full text-[9px] font-black">{count}</span>
+                )}
               </button>
-            ))}
+            );})}
           </div>
         </div>
         
@@ -46,8 +117,10 @@ const CitizenHeatmap = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input 
               type="text" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search area..." 
-              className="pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 w-64"
+              className="pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 w-64 dark:text-white"
             />
           </div>
           <button className="p-2 bg-slate-50 dark:bg-slate-800 text-slate-500 rounded-xl hover:text-indigo-600 transition-colors">
@@ -61,7 +134,7 @@ const CitizenHeatmap = () => {
         {/* Main Map */}
         <div className="flex-1 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden relative group">
           <SmartMap 
-            incidents={mockIncidents} 
+            incidents={filteredIncidents} 
             volunteers={mockVolunteers}
             hotspots={mockHotspots}
           />
@@ -75,9 +148,9 @@ const CitizenHeatmap = () => {
               </h4>
               <div className="space-y-3">
                 {[
-                  { name: 'Shivaji Nagar', score: 8.4, status: 'safe' },
-                  { name: 'Hadapsar', score: 4.2, status: 'high-risk' },
-                  { name: 'Kothrud', score: 9.1, status: 'very-safe' },
+                  { name: 'Hadapsar', score: 2.1, status: 'RED' },
+                  { name: 'Aundh', score: 5.4, status: 'ORANGE' },
+                  { name: 'Central Pune', score: 9.6, status: 'GREEN' },
                 ].map((zone) => (
                   <div key={zone.name} className="flex items-center justify-between">
                     <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">{zone.name}</span>
@@ -86,8 +159,8 @@ const CitizenHeatmap = () => {
                         <div 
                           className={cn(
                             "h-full rounded-full",
-                            zone.status === 'very-safe' ? "bg-emerald-500" :
-                            zone.status === 'safe' ? "bg-indigo-500" : "bg-rose-500"
+                            zone.status === 'GREEN' ? "bg-emerald-500" :
+                            zone.status === 'ORANGE' ? "bg-amber-500" : "bg-rose-500"
                           )} 
                           style={{ width: `${zone.score * 10}%` }}
                         />
@@ -115,10 +188,10 @@ const CitizenHeatmap = () => {
             <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-widest">Map Legend</h3>
             <div className="space-y-4">
               {[
-                { label: 'High Crime Zone', color: 'bg-rose-500', desc: 'Reported incidents > 10' },
-                { label: 'Accident Prone', color: 'bg-amber-500', desc: 'Multiple reports this week' },
-                { label: 'Sanitized Area', color: 'bg-emerald-500', desc: 'Frequent police patrols' },
-                { label: 'Live Incident', color: 'bg-indigo-500', desc: 'Active emergency response' },
+                { label: 'RED ZONE', color: 'bg-rose-500', desc: 'High Crime & Grievance Density' },
+                { label: 'ORANGE ZONE', color: 'bg-amber-500', desc: 'High Accident & Traffic Risk' },
+                { label: 'GREEN ZONE', color: 'bg-emerald-500', desc: 'Sanitized & Patrolled Safe Area' },
+                { label: 'LIVE INCIDENT', color: 'bg-indigo-500', desc: 'Active emergency response' },
               ].map((item) => (
                 <div key={item.label} className="flex gap-3">
                   <div className={cn("w-2 h-10 rounded-full flex-shrink-0", item.color)}></div>

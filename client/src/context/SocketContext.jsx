@@ -17,11 +17,18 @@ export const SocketProvider = ({ children }) => {
     newSocket.on('city_pulse', (pulse) => {
       setLastPulse(pulse);
       setNotifications(prev => [{
-        id: Date.now(),
+        id: pulse.id || Date.now(),
         message: pulse.message,
         type: pulse.type,
+        title: pulse.title,
+        severity: pulse.severity,
+        coords: pulse.coords,
+        location: pulse.location,
+        source: pulse.source,
+        sourceUrl: pulse.sourceUrl,
+        isVerified: pulse.isVerified,
         time: new Date().toLocaleTimeString()
-      }, ...prev].slice(0, 10));
+      }, ...prev].slice(0, 50));
     });
 
     return () => newSocket.close();

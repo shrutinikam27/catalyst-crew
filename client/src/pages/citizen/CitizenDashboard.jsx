@@ -11,7 +11,9 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, 
   Tooltip, ResponsiveContainer, BarChart, Bar 
 } from 'recharts';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '../../utils/cn';
+import { useAuth } from '../../firebase/AuthContext';
 
 const data = [
   { name: 'Mon', accidents: 4, crime: 2 },
@@ -24,12 +26,15 @@ const data = [
 ];
 
 const CitizenDashboard = () => {
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+  
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
       <div>
         <h1 className="text-3xl font-outfit font-extrabold text-slate-900 dark:text-white">
-          Good Morning, Citizen
+          Good Morning, {currentUser?.displayName || (currentUser?.email ? currentUser.email.split('@')[0] : 'Citizen')}
         </h1>
         <p className="text-slate-500 dark:text-slate-400 font-medium">
           The safety index in your current zone is <span className="text-emerald-500 font-bold">Stable (8.4/10)</span>.
@@ -94,12 +99,16 @@ const CitizenDashboard = () => {
           {/* Quick Actions */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { name: 'Report Crime', icon: ShieldCheck, color: 'bg-rose-500' },
-              { name: 'Civic Issue', icon: MessageSquare, color: 'bg-indigo-500' },
-              { name: 'SOS Help', icon: Zap, color: 'bg-amber-500' },
-              { name: 'Safe Path', icon: MapPin, color: 'bg-emerald-500' },
+              { name: 'Report Crime', icon: ShieldCheck, color: 'bg-rose-500', path: '/user/report' },
+              { name: 'Civic Issue', icon: MessageSquare, color: 'bg-indigo-500', path: '/user/report' },
+              { name: 'SOS Help', icon: Zap, color: 'bg-amber-500', path: '/user/sos' },
+              { name: 'Safe Path', icon: MapPin, color: 'bg-emerald-500', path: '/user/safety' },
             ].map((action) => (
-              <button key={action.name} className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:shadow-xl transition-all group text-center">
+              <button 
+                key={action.name} 
+                onClick={() => navigate(action.path)}
+                className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:shadow-xl transition-all group text-center"
+              >
                 <div className={cn("w-12 h-12 rounded-xl mx-auto mb-4 flex items-center justify-center text-white shadow-lg", action.color)}>
                   <action.icon size={24} />
                 </div>

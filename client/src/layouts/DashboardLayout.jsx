@@ -18,7 +18,8 @@ const DashboardLayout = () => {
   const role = currentUser?.email?.includes('admin') ? 'admin' : 
                currentUser?.email?.includes('police') ? 'police' :
                currentUser?.email?.includes('volunteer') ? 'volunteer' :
-               currentUser?.email?.includes('hospital') ? 'hospital' : 'citizen';
+               currentUser?.email?.includes('hospital') ? 'hospital' :
+               currentUser?.email?.includes('fire') ? 'fire' : 'citizen';
 
   const user = {
     name: currentUser?.email?.split('@')[0] || 'Guest User',

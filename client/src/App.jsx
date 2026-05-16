@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './firebase/AuthContext';
 
@@ -7,6 +7,8 @@ import DashboardLayout from './layouts/DashboardLayout';
 
 // Public Pages
 import HomePage from './pages/HomePage';
+import AboutUs from './pages/AboutUs';
+import Features from './pages/Features';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import ReportIssue from './pages/ReportIssue';
@@ -17,6 +19,7 @@ import ReportIncident from './pages/citizen/ReportIncident';
 import CitizenHeatmap from './pages/citizen/CitizenHeatmap';
 import CitizenSOS from './pages/citizen/CitizenSOS';
 import ComplaintTracking from './pages/citizen/ComplaintTracking';
+import SafetyCompanion from './pages/citizen/SafetyCompanion';
 
 // Volunteer Pages
 import VolunteerDashboard from './pages/volunteer/VolunteerDashboard';
@@ -24,6 +27,9 @@ import NearbyEmergencies from './pages/volunteer/NearbyEmergencies';
 
 // Police Pages
 import PoliceDashboard from './pages/police/PoliceDashboard';
+
+// Fire Pages
+import FireDashboard from './pages/fire/FireDashboard';
 
 // Hospital Pages
 import HospitalDashboard from './pages/hospital/HospitalDashboard';
@@ -49,30 +55,14 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
-  const [isDark, setIsDark] = useState(() => {
-    if (localStorage.getItem('theme') === 'dark') return true;
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) return true;
-    return false;
-  });
-
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDark]);
-
-  const toggleTheme = () => setIsDark(!isDark);
-
   return (
     <AuthProvider>
       <Router>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<HomePage toggleTheme={toggleTheme} isDark={isDark} />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/features" element={<Features />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/report" element={<ReportIssue />} />
@@ -86,6 +76,7 @@ function App() {
             <Route path="map" element={<CitizenHeatmap />} />
             <Route path="tracking" element={<ComplaintTracking />} />
             <Route path="sos" element={<CitizenSOS />} />
+            <Route path="safety" element={<SafetyCompanion />} />
             <Route path="tips" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Safety Tips Module Coming Soon</div>} />
             <Route path="route" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Smart Safe Route Module Coming Soon</div>} />
           </Route>
@@ -111,6 +102,13 @@ function App() {
             <Route index element={<HospitalDashboard />} />
             <Route path="dispatch" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Dispatch Board Coming Soon</div>} />
             <Route path="alerts" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Patient Alerts Coming Soon</div>} />
+          </Route>
+
+          {/* Fire Dashboard Routes */}
+          <Route path="/fire" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+            <Route index element={<FireDashboard />} />
+            <Route path="dispatch" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Dispatch Board Coming Soon</div>} />
+            <Route path="hazmat" element={<div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm text-center font-bold text-slate-500 uppercase tracking-widest">Hazmat Tracking Coming Soon</div>} />
           </Route>
 
           {/* Admin Dashboard Routes */}

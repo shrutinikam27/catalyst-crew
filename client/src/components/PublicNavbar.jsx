@@ -43,8 +43,8 @@ const PublicNavbar = () => {
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center gap-8">
             <Link to="/" className="text-sm font-bold text-indigo-600 border-b-2 border-indigo-600 pb-1">Home</Link>
-            <a href="#features" className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 transition-colors">Features</a>
-            <a href="#about" className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 transition-colors">How It Works</a>
+            <Link to="/features" className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 transition-colors">Features</Link>
+            <Link to="/about" className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 transition-colors">About Us</Link>
             <Link to={currentUser ? "/user" : "/login"} className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 transition-colors">Dashboard</Link>
           </div>
 
@@ -89,8 +89,8 @@ const PublicNavbar = () => {
       )}>
         <div className="p-6 space-y-4">
           <Link to="/" className="block text-lg font-bold text-indigo-600">Home</Link>
-          <a href="#" className="block text-lg font-semibold text-slate-600 dark:text-slate-400">Features</a>
-          <a href="#" className="block text-lg font-semibold text-slate-600 dark:text-slate-400">About</a>
+          <Link to="/features" className="block text-lg font-semibold text-slate-600 dark:text-slate-400">Features</Link>
+          <Link to="/about" className="block text-lg font-semibold text-slate-600 dark:text-slate-400">About Us</Link>
           <Link to={currentUser ? "/user" : "/login"} className="block text-lg font-semibold text-slate-600 dark:text-slate-400">Dashboard</Link>
           <div className="pt-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
             {currentUser ? (

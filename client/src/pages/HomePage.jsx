@@ -82,11 +82,11 @@ function HomePage() {
             <img 
               src="/hero-illustration.png" 
               alt="City Safety Illustration" 
-              className="w-full h-auto drop-shadow-2xl dark:opacity-80"
+              className="w-full h-auto drop-shadow-2xl dark:opacity-80 translate-x-12"
             />
             
             {/* Restored: Predictive Safety Score Card */}
-            <div className="absolute -top-10 -right-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-6 rounded-[2rem] shadow-2xl border border-white dark:border-slate-700 animate-float-delayed z-30">
+            <div className="absolute -top-40 -right-16 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-6 rounded-[2rem] shadow-2xl border border-white dark:border-slate-700 animate-float-delayed z-30">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 dark:shadow-none">
                   <Activity size={24} />
@@ -377,52 +377,6 @@ function StatusOption({ icon, label }) {
     <div className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-2 rounded-xl transition-colors">
       <span className="text-lg">{icon}</span>
       <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{label}</span>
-    </div>
-  );
-}
-
-function QuickHelpButton() {
-  const navigate = useNavigate();
-  return (
-    <div className="fixed right-6 bottom-32 flex flex-col items-center gap-2 z-40">
-      <div 
-        onClick={() => navigate('/report')}
-        className="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 group cursor-pointer hover:scale-110 transition-all text-center"
-      >
-        <div className="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center text-white mb-1 shadow-lg shadow-red-200 dark:shadow-none mx-auto">
-          <Shield size={20} />
-        </div>
-        <span className="text-[10px] font-black text-red-600 block uppercase leading-none">SOS</span>
-        <span className="text-[8px] font-bold text-slate-400 block uppercase">Quick Help</span>
-      </div>
-    </div>
-  );
-}
-
-function PredictiveItem({ label, value, trend, color }) {
-  const colors = {
-    indigo: 'bg-indigo-500',
-    blue: 'bg-blue-500',
-    amber: 'bg-amber-500'
-  };
-
-  return (
-    <div>
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{label}</span>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-black text-slate-800 dark:text-white">{value}</span>
-          <span className={`text-[10px] font-bold ${trend.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>
-            {trend}
-          </span>
-        </div>
-      </div>
-      <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-        <div 
-          className={`h-full ${colors[color]} rounded-full`} 
-          style={{ width: value }}
-        ></div>
-      </div>
     </div>
   );
 }

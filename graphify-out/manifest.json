@@ -16,44 +16,168 @@
     "hash": "199e1221ae03d6974fdc8b5e23787b98"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\App.jsx": {
-    "mtime": 1778917902.5515203,
-    "hash": "046f288c4e0eb87d6d401aa936bd9905"
+    "mtime": 1778948141.2235117,
+    "hash": "f9afd2e98891015e84fa90010006a375"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\main.jsx": {
-    "mtime": 1778907255.594275,
-    "hash": "51fd21c378330142b61bf8d1ef3795ef"
+    "mtime": 1778942484.261863,
+    "hash": "2a1f9b03de8edf2860af84bd3755db27"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\components\\Footer.jsx": {
+    "mtime": 1778940270.5837667,
+    "hash": "a90298f9be9ff64c4de67d5cae42cf12"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\components\\PublicNavbar.jsx": {
+    "mtime": 1778939996.3031325,
+    "hash": "d10d70947f117ae7c8976a33a7c831a7"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\components\\Sidebar.jsx": {
+    "mtime": 1778939996.3036764,
+    "hash": "5708a90fd027ea16368b65abdb52a278"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\components\\Topbar.jsx": {
+    "mtime": 1778948141.2245805,
+    "hash": "60311224a41d8d4562858a9b0d8723f4"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\components\\TopContactDrawer.jsx": {
+    "mtime": 1778939996.3036764,
+    "hash": "cbf94c02898e6543de6fa621054e9677"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\components\\map\\SmartMap.jsx": {
+    "mtime": 1778948141.22561,
+    "hash": "b10137a911b945d428b4abf9bd8dccb3"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\components\\ui\\AlertCard.jsx": {
+    "mtime": 1778925028.653834,
+    "hash": "3f3e6b6880311eb2100d6a215c03da82"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\components\\ui\\ChartCard.jsx": {
+    "mtime": 1778925028.6553924,
+    "hash": "8beaa8716c6ed2aeed2dba801b53b205"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\components\\ui\\StatCard.jsx": {
+    "mtime": 1778925028.6553924,
+    "hash": "d1ff9107dd5a8953caa8ee0be39a58b2"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\context\\SocketContext.jsx": {
+    "mtime": 1778948141.22561,
+    "hash": "1e82e8bfd37a38e431092d3f9321bea2"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\contexts\\LocationContext.jsx": {
+    "mtime": 1778942468.0497415,
+    "hash": "aaa9f740baeb90b4164890d40bcc053b"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\firebase\\AuthContext.jsx": {
-    "mtime": 1778917902.5536587,
-    "hash": "e0f8360fc2f792a9d1b0ec6c59366341"
+    "mtime": 1778948141.2273633,
+    "hash": "efc46aeee8f0035d611a032eba5ca52c"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\firebase\\config.js": {
-    "mtime": 1778917902.5542164,
-    "hash": "b1c1adfddc33bf10797d9af9dfc86a42"
+    "mtime": 1778939996.3079789,
+    "hash": "4c123a6cea7ac9931acdb6fe61f3da43"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\layouts\\DashboardLayout.jsx": {
+    "mtime": 1778937511.3085122,
+    "hash": "bf21d64fb6c853f1cf095cdabbff848a"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\AboutUs.jsx": {
+    "mtime": 1778939996.3099563,
+    "hash": "46b767d35885632ac9e3921f384eb00c"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\Contact.jsx": {
+    "mtime": 1778939996.3109875,
+    "hash": "a974c687cd5414cfdeb5e23f443d6d69"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\Dashboard.jsx": {
-    "mtime": 1778917289.7025023,
-    "hash": "21605da60edf1c683f2fcd7d6910044e"
+    "mtime": 1778939996.3140035,
+    "hash": "f02e627d4c74fda0b066c41ab25f5ec1"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\Features.jsx": {
+    "mtime": 1778939996.3150847,
+    "hash": "7e52caf175c9440756a3230bad69efd0"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\HomePage.jsx": {
-    "mtime": 1778916137.0769641,
-    "hash": "3fbe1bcb5158d7b5343e10eb71d2c6cf"
+    "mtime": 1778939996.318705,
+    "hash": "d09854fabef68f6be7cd8d488ef4c0b4"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\LoginPage.jsx": {
-    "mtime": 1778917902.5542164,
-    "hash": "a90ea9aa67457225a1de52c5345b63e2"
+    "mtime": 1778948141.2305598,
+    "hash": "36c19e867999de9cf23684c384c376aa"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\ReportIssue.jsx": {
+    "mtime": 1778939996.3197303,
+    "hash": "440b903332b9c04270a4034da8d9a15e"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\SignupPage.jsx": {
-    "mtime": 1778917902.5542164,
-    "hash": "fe9a5af04d0fe8d790e0299a0b28a57a"
+    "mtime": 1778948141.2317657,
+    "hash": "06aa09707e3ba0987038bd07a16f0c4b"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\UserDashboard.jsx": {
-    "mtime": 1778917289.7035213,
-    "hash": "1b2728e92627945f8098f4cb6470fc59"
+    "mtime": 1778925028.6615071,
+    "hash": "b45e7009ed424a1d981659529725384a"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\admin\\AdminDashboard.jsx": {
+    "mtime": 1778939996.3207564,
+    "hash": "76dbefd115ca7ca7037da6bbec40b544"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\citizen\\CitizenDashboard.jsx": {
+    "mtime": 1778948141.2345827,
+    "hash": "7d039446e41c287d5d70e08770a42bed"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\citizen\\CitizenHeatmap.jsx": {
+    "mtime": 1778948141.235818,
+    "hash": "67f93f609dabc2e391653c62e93f3393"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\citizen\\CitizenSOS.jsx": {
+    "mtime": 1778936549.80127,
+    "hash": "71b08b1d8b8979cf6b489646f838545f"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\citizen\\ComplaintTracking.jsx": {
+    "mtime": 1778936549.803199,
+    "hash": "77d8c43b38196c5707b53a12ffec7747"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\citizen\\ReportIncident.jsx": {
+    "mtime": 1778925028.6661308,
+    "hash": "58dedec99b20dc1fbad9f069db89a254"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\citizen\\SafetyCompanion.jsx": {
+    "mtime": 1778932013.801881,
+    "hash": "f68e9fd3448203b361ae3593c9043363"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\fire\\FireDashboard.jsx": {
+    "mtime": 1778948141.235818,
+    "hash": "2841c035c6325b2b345424d797158007"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\hospital\\HospitalDashboard.jsx": {
+    "mtime": 1778948141.237386,
+    "hash": "ff2e4c7a4128564e7ca302ab7937f0f2"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\police\\PoliceDashboard.jsx": {
+    "mtime": 1778948141.237386,
+    "hash": "a7bf271c2557f154890293e67f158817"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\volunteer\\NearbyEmergencies.jsx": {
+    "mtime": 1778948141.237386,
+    "hash": "3a970c28abc4d1779e301b3f3b210180"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\pages\\volunteer\\VolunteerDashboard.jsx": {
+    "mtime": 1778939837.6882687,
+    "hash": "e1be734108004c01bae5ae2adcb1d07a"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\utils\\cn.js": {
+    "mtime": 1778925028.6706567,
+    "hash": "cdb5cf22dfa9fbbe5d28c673e5b8a3ce"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\server\\index.js": {
-    "mtime": 1778907255.5982637,
-    "hash": "d4e54af58377eb8163cc3df0ad942c83"
+    "mtime": 1778948141.237386,
+    "hash": "35daa4d30fa3a282a163cd07cc6f561a"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\server\\test_scrape.js": {
+    "mtime": 1778936549.8103724,
+    "hash": "bac7f032f72ea8f44f0e8440d94c947b"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\server\\services\\dataFetcher.js": {
+    "mtime": 1778936549.8098497,
+    "hash": "74f2312d4d09a50e8a1589aa5877dd17"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\README.md": {
     "mtime": 1778907255.5337796,
@@ -67,9 +191,21 @@
     "mtime": 1778907255.5435803,
     "hash": "abfa161e3e5434e3e85394bf03d387a4"
   },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\server\\civic_raw.html": {
+    "mtime": 1778936549.8055744,
+    "hash": "400b8b21e8b8ff0277a052c6f6ab2e4c"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\server\\police_raw.html": {
+    "mtime": 1778936549.808835,
+    "hash": "7bb1b12af2d475052c3e817d1b6588c6"
+  },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\public\\favicon.svg": {
     "mtime": 1778907255.5639994,
     "hash": "7e840862161341271697daa99a40d76b"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\public\\hero-illustration.png": {
+    "mtime": 1778926569.2708764,
+    "hash": "5b7c5ce5f502fc60cf1a56419c8a1e26"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\public\\icons.svg": {
     "mtime": 1778907255.5681586,
@@ -86,6 +222,14 @@
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\assets\\react.svg": {
     "mtime": 1778907255.5845003,
     "hash": "f0402b67b6ce880f65666bb49e841696"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\assets\\safety-analysis.png": {
+    "mtime": 1778939996.2881224,
+    "hash": "fbd6f132847411f4bf74f4d5075c7b0c"
+  },
+  "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\assets\\safety-map.png": {
+    "mtime": 1778939996.298417,
+    "hash": "9cd6150d7ce5db845ca633681d4b55e7"
   },
   "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\catalyst-crew\\client\\src\\assets\\vite.svg": {
     "mtime": 1778907255.5882082,

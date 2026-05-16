@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Mail, Phone, MapPin, Github, Twitter, Linkedin, Facebook } from 'lucide-react';
+import { Shield, Mail, Phone, MapPin, Github, Twitter, Linkedin, Instagram } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -27,7 +27,7 @@ const Footer = () => {
               <SocialIcon icon={<Twitter size={18} />} href="#" />
               <SocialIcon icon={<Linkedin size={18} />} href="#" />
               <SocialIcon icon={<Github size={18} />} href="#" />
-              <SocialIcon icon={<Facebook size={18} />} href="#" />
+              <SocialIcon icon={<Instagram size={18} />} href="#" />
             </div>
           </div>
 

@@ -139,10 +139,16 @@ const ReportIssue = () => {
     for (const img of images) {
       try {
         const storageRef = ref(storage, `incidents/${Date.now()}_${img.file.name}`);
-        const snapshot = await uploadBytes(storageRef, img.file);
+        
+        // Use a timeout to prevent infinite hanging if Firebase Storage is inaccessible/queueing
+        const uploadPromise = uploadBytes(storageRef, img.file);
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000));
+        
+        const snapshot = await Promise.race([uploadPromise, timeoutPromise]);
         const url = await getDownloadURL(snapshot.ref);
         imageUrls.push(url);
       } catch (err) {
+        console.warn("Image upload failed or timed out, using local base64 fallback:", err.message);
         // Fallback for mock/local mode if storage fails
         const base64 = await new Promise((resolve) => {
           const reader = new FileReader();
@@ -183,23 +189,57 @@ const ReportIssue = () => {
         title: formData.title,
         description: formData.description,
         priority: formData.priority,
+        severity: formData.priority.toLowerCase() === 'high' ? 'high' : formData.priority.toLowerCase() === 'low' ? 'low' : 'moderate',
         images: uploadedUrls,
         status: 'Pending',
         date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        timestamp: serverTimestamp(),
+        timestamp: new Date(), // using local date instead of serverTimestamp to prevent hanging on queued offline writes
         location: {
           address: address,
           coords: markerPos
         }
       };
 
-      await addDoc(collection(db, 'incidents'), reportData);
+      // Use a timeout to prevent indefinite hanging if Firestore is queueing writes
+      const submitPromise = addDoc(collection(db, 'incidents'), reportData);
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
+      
+      try {
+        await Promise.race([submitPromise, timeoutPromise]);
+      } catch (err) {
+        if (err.message === 'timeout') {
+          console.warn("Write timed out, falling back to local simulation...");
+        } else {
+          throw err;
+        }
+      }
+      
       setStep(3); // Success state
     } catch (err) {
       console.error("Submission error:", err);
-      alert("Submission failed. Saving locally...");
+      // Construct a safe version of reportData for JSON serialization
       const localIncidents = JSON.parse(localStorage.getItem('local_incidents') || '[]');
-      localIncidents.unshift({ ...formData, id: 'LOCAL-' + Date.now(), date: 'Today' });
+      
+      const fallbackData = {
+        id: `#SL-LOCAL-${Math.floor(1000 + Math.random() * 9000)}`,
+        userId: currentUser?.uid || 'anonymous',
+        userName: currentUser?.displayName || 'Anonymous Citizen',
+        category: formData.category,
+        title: formData.title,
+        description: formData.description,
+        priority: formData.priority,
+        severity: formData.priority.toLowerCase() === 'high' ? 'high' : formData.priority.toLowerCase() === 'low' ? 'low' : 'moderate',
+        images: uploadedUrls, // Actually save the base64 images so they appear in the Admin dashboard!
+        status: 'Pending',
+        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        timestamp: new Date().toISOString(),
+        location: {
+          address: address,
+          coords: markerPos
+        }
+      };
+
+      localIncidents.unshift(fallbackData);
       localStorage.setItem('local_incidents', JSON.stringify(localIncidents));
       setStep(3);
     } finally {

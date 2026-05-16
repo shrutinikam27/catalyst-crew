@@ -299,40 +299,45 @@ function HomePage() {
       {/* SOS Triple-Click Modal Overlay */}
       {showSosOptions && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-md w-full mx-4 shadow-[0_0_50px_rgba(220,38,38,0.3)] border border-red-200 dark:border-red-900/50 text-center animate-in fade-in zoom-in duration-300">
-            <div className="w-24 h-24 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6 relative">
-              <div className="absolute inset-0 bg-red-500/20 rounded-full animate-ping"></div>
-              <AlertTriangle size={48} className="text-red-600 dark:text-red-500 relative z-10" />
-            </div>
-            
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-lg w-full mx-4 shadow-[0_0_50px_rgba(220,38,38,0.3)] border border-red-200 dark:border-red-900/50 text-center animate-in fade-in zoom-in duration-300">
             <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-3">EMERGENCY SOS</h2>
             <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed text-sm">
               Select the emergency type. Nearby certified volunteers and official emergency services will be notified instantly.
             </p>
             
-            <div className="grid grid-cols-2 gap-4">
-              <button onClick={() => handleEmergencySelect('Fire')} className="flex flex-col items-center justify-center gap-3 py-6 rounded-2xl border-2 border-orange-200 bg-orange-50 hover:bg-orange-500 hover:border-orange-600 hover:text-white text-orange-700 transition-all active:scale-95 group shadow-sm">
-                <Flame size={32} />
-                <span className="font-bold text-sm">FIRE</span>
+            <div className="relative w-[280px] h-[280px] sm:w-[420px] sm:h-[420px] mx-auto mb-8">
+              {/* Center Warning Icon */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 sm:w-24 sm:h-24 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center z-10 shadow-lg">
+                <div className="absolute inset-0 bg-red-500/20 rounded-full animate-ping"></div>
+                <AlertTriangle className="text-red-600 dark:text-red-500 relative z-10 w-10 h-10 sm:w-12 sm:h-12" />
+              </div>
+
+              {/* Fire (Top) */}
+              <button onClick={() => handleEmergencySelect('Fire')} className="absolute top-0 left-1/2 -translate-x-1/2 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px] flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-full border-2 border-orange-200 bg-orange-50 hover:bg-orange-500 hover:border-orange-600 hover:text-white text-orange-700 transition-all active:scale-95 group shadow-sm z-20">
+                <Flame className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
+                <span className="font-bold text-[10px] sm:text-xs">FIRE</span>
               </button>
               
-              <button onClick={() => handleEmergencySelect('Crime')} className="flex flex-col items-center justify-center gap-3 py-6 rounded-2xl border-2 border-blue-200 bg-blue-50 hover:bg-blue-600 hover:border-blue-700 hover:text-white text-blue-700 transition-all active:scale-95 group shadow-sm">
-                <Shield size={32} />
-                <span className="font-bold text-sm">CRIME</span>
+              {/* Crime (Right) */}
+              <button onClick={() => handleEmergencySelect('Crime')} className="absolute top-1/2 right-0 -translate-y-1/2 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px] flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-full border-2 border-blue-200 bg-blue-50 hover:bg-blue-600 hover:border-blue-700 hover:text-white text-blue-700 transition-all active:scale-95 group shadow-sm z-20">
+                <Shield className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
+                <span className="font-bold text-[10px] sm:text-xs">CRIME</span>
               </button>
               
-              <button onClick={() => handleEmergencySelect('Medical')} className="flex flex-col items-center justify-center gap-3 py-6 rounded-2xl border-2 border-green-200 bg-green-50 hover:bg-green-600 hover:border-green-700 hover:text-white text-green-700 transition-all active:scale-95 group shadow-sm">
-                <Ambulance size={32} />
-                <span className="font-bold text-sm">MEDICAL</span>
+              {/* Medical (Bottom) */}
+              <button onClick={() => handleEmergencySelect('Medical')} className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px] flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-full border-2 border-green-200 bg-green-50 hover:bg-green-600 hover:border-green-700 hover:text-white text-green-700 transition-all active:scale-95 group shadow-sm z-20">
+                <Ambulance className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
+                <span className="font-bold text-[10px] sm:text-xs">MEDICAL</span>
               </button>
               
-              <button onClick={() => handleEmergencySelect('Accident')} className="flex flex-col items-center justify-center gap-3 py-6 rounded-2xl border-2 border-purple-200 bg-purple-50 hover:bg-purple-600 hover:border-purple-700 hover:text-white text-purple-700 transition-all active:scale-95 group shadow-sm">
-                <AlertTriangle size={32} />
-                <span className="font-bold text-sm">ACCIDENT</span>
+              {/* Accident (Left) */}
+              <button onClick={() => handleEmergencySelect('Accident')} className="absolute top-1/2 left-0 -translate-y-1/2 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px] flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-full border-2 border-purple-200 bg-purple-50 hover:bg-purple-600 hover:border-purple-700 hover:text-white text-purple-700 transition-all active:scale-95 group shadow-sm z-20">
+                <AlertTriangle className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
+                <span className="font-bold text-[10px] sm:text-xs">ACCIDENT</span>
               </button>
             </div>
             
-            <button onClick={() => setShowSosOptions(false)} className="mt-8 px-6 py-2 rounded-full border border-slate-300 text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:border-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-300 font-semibold transition-colors">
+            <button onClick={() => setShowSosOptions(false)} className="px-6 py-2 rounded-full border border-slate-300 text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:border-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-300 font-semibold transition-colors">
               Cancel Request
             </button>
           </div>

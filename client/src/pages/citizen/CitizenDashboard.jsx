@@ -30,6 +30,11 @@ const CitizenDashboard = () => {
   const { currentUser } = useAuth();
   const { notifications } = useSocket();
   const navigate = useNavigate();
+
+  const crimeNotifications = notifications.filter(n => n.type === 'CRIME');
+  const safetyScore = Math.max(0, (10 - (crimeNotifications.length * 0.5)).toFixed(1));
+  const safetyStatus = safetyScore > 8 ? 'Stable' : safetyScore > 5 ? 'Warning' : 'Critical';
+  const safetyColor = safetyScore > 8 ? 'text-emerald-500' : safetyScore > 5 ? 'text-amber-500' : 'text-rose-500';
   
   return (
     <div className="space-y-8">
@@ -38,10 +43,46 @@ const CitizenDashboard = () => {
         <h1 className="text-3xl font-outfit font-extrabold text-slate-900 dark:text-white">
           Good Morning, {currentUser?.displayName || (currentUser?.email ? currentUser.email.split('@')[0] : 'Citizen')}
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 font-medium">
-          The safety index in your current zone is <span className="text-emerald-500 font-bold">Stable (8.4/10)</span>.
-        </p>
+        <div className="flex items-center gap-2 mt-1">
+          <p className="text-slate-500 dark:text-slate-400 font-medium">
+            The safety index in your current zone is <span className={cn("font-bold", safetyColor)}>{safetyStatus} ({safetyScore}/10)</span>.
+          </p>
+          {safetyScore < 7 && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="px-2 py-0.5 bg-rose-100 text-rose-600 text-[10px] font-black uppercase rounded border border-rose-200 animate-pulse"
+            >
+              Crime Spike Detected
+            </motion.div>
+          )}
+        </div>
       </div>
+     
+
+      {/* Live Crime Ticker */}
+      {crimeNotifications.length > 0 && (
+        <div className="bg-rose-50 dark:bg-rose-900/10 border-y border-rose-100 dark:border-rose-900/30 py-2 -mx-6 px-6 overflow-hidden flex items-center gap-4">
+          <span className="flex-shrink-0 flex items-center gap-2 text-[10px] font-black text-rose-600 uppercase tracking-tighter bg-rose-100 px-2 py-0.5 rounded">
+            <Zap size={12} className="fill-rose-600" />
+            Live Ticker
+          </span>
+          <div className="flex-1 overflow-hidden whitespace-nowrap">
+            <motion.div 
+              animate={{ x: [1000, -2000] }}
+              transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+              className="flex gap-12"
+            >
+              {crimeNotifications.map((n, i) => (
+                <span key={i} className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
+                  {n.title} reported in {n.location} • {n.time}
+                </span>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      )}
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -244,6 +285,7 @@ const CitizenDashboard = () => {
       </div>
     </div>
   );
+
 };
 
 export default CitizenDashboard;

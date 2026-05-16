@@ -4,7 +4,7 @@ import {
   Shield, Zap, ShieldCheck, MapPin, 
   Heart, Phone, AlertTriangle, Lightbulb,
   Search, BookOpen, ChevronRight, Users,
-  X, CheckCircle2
+  X, CheckCircle2, ExternalLink
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
@@ -177,6 +177,24 @@ const ProtocolModal = ({ tip, isOpen, onClose }) => {
         </div>
       )}
     </AnimatePresence>
+  );
+};
+
+const ContactCard = ({ number, label, color }) => {
+  const colors = {
+    rose: "bg-rose-50 border-rose-100 text-rose-600 dark:bg-rose-900/10 dark:border-rose-900/30 dark:text-rose-400",
+    orange: "bg-orange-50 border-orange-100 text-orange-600 dark:bg-orange-900/10 dark:border-orange-900/30 dark:text-orange-400",
+    emerald: "bg-emerald-50 border-emerald-100 text-emerald-600 dark:bg-emerald-900/10 dark:border-emerald-900/30 dark:text-emerald-400",
+    indigo: "bg-indigo-50 border-indigo-100 text-indigo-600 dark:bg-indigo-900/10 dark:border-indigo-900/30 dark:text-indigo-400",
+    purple: "bg-purple-50 border-purple-100 text-purple-600 dark:bg-purple-900/10 dark:border-purple-900/30 dark:text-purple-400",
+  };
+
+  return (
+    <div className={`p-6 rounded-2xl border ${colors[color]} flex flex-col items-center justify-center text-center gap-2 hover:scale-105 transition-transform cursor-pointer`}>
+      <Phone size={24} className="mb-2" />
+      <span className="text-2xl font-black">{number}</span>
+      <span className="text-xs font-bold uppercase tracking-tighter opacity-70">{label}</span>
+    </div>
   );
 };
 
@@ -367,6 +385,23 @@ const SafetyTips = () => {
         
         {/* Background Decoration */}
         <div className="absolute -left-10 -bottom-10 w-64 h-64 bg-indigo-600/10 rounded-full blur-3xl"></div>
+      </div>
+
+      {/* Emergency Contacts Section (Merged from incoming branch) */}
+      <div className="pt-8 border-t border-slate-100 dark:border-slate-800">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Quick Emergency Contacts</h2>
+          <button className="text-indigo-600 font-bold text-sm flex items-center gap-1 hover:underline">
+            View All <ExternalLink size={14} />
+          </button>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <ContactCard number="100" label="Police Control Room" color="rose" />
+          <ContactCard number="101" label="Fire Brigade" color="orange" />
+          <ContactCard number="108" label="Ambulance Service" color="emerald" />
+          <ContactCard number="1091" label="Woman Helpline" color="purple" />
+          <ContactCard number="112" label="National Emergency" color="indigo" />
+        </div>
       </div>
     </div>
   );

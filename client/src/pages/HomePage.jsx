@@ -130,14 +130,14 @@ function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <button
-                onClick={() => navigate(currentUser ? '/report' : '/login', { state: { category: 'civic' } })}
+                onClick={() => navigate(currentUser ? '/report' : '/login', { state: { from: '/report', category: 'civic' } })}
                 className="px-6 sm:px-8 py-4 bg-indigo-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 dark:shadow-none group w-full sm:w-auto"
               >
                 <svg className="w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                 Report Civic Issue
               </button>
               <button
-                onClick={() => navigate('/user/map')}
+                onClick={() => navigate(currentUser ? '/user/map' : '/login', { state: { from: '/user/map' } })}
                 className="px-6 sm:px-8 py-4 bg-white dark:bg-slate-800 border-2 border-indigo-100 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-50 dark:hover:bg-slate-700 transition-all w-full sm:w-auto"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
@@ -331,14 +331,14 @@ function HomePage() {
           </div>
           <div className="mt-6 flex items-center gap-8 border-t border-slate-50 dark:border-slate-700 pt-6">
             <div
-              onClick={() => navigate('/report', { state: { category: 'crime' } })}
+              onClick={() => navigate(currentUser ? '/report' : '/login', { state: { from: '/report', category: 'crime' } })}
               className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
             >
               <div className="w-3 h-3 bg-red-600 rounded-full"></div>
               <span className="text-xs font-bold text-slate-600 dark:text-slate-400">High Risk (Crime)</span>
             </div>
             <div
-              onClick={() => navigate('/report', { state: { category: 'civic' } })}
+              onClick={() => navigate(currentUser ? '/report' : '/login', { state: { from: '/report', category: 'civic' } })}
               className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
             >
               <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
@@ -354,7 +354,7 @@ function HomePage() {
             <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-6">Citizen Action Center</h3>
             <div className="grid gap-4">
               <button
-                onClick={() => navigate('/report', { state: { category: 'crime' } })}
+                onClick={() => navigate(currentUser ? '/report' : '/login', { state: { from: '/report', category: 'crime' } })}
                 className="w-full bg-red-600 hover:bg-red-700 text-white p-5 rounded-3xl font-black text-sm flex items-center justify-between transition-all group shadow-lg shadow-red-100 dark:shadow-none"
               >
                 <div className="flex items-center gap-4">
@@ -367,7 +367,7 @@ function HomePage() {
               </button>
 
               <button
-                onClick={() => navigate('/report', { state: { category: 'civic' } })}
+                onClick={() => navigate(currentUser ? '/report' : '/login', { state: { from: '/report', category: 'civic' } })}
                 className="w-full bg-amber-500 hover:bg-amber-600 text-white p-5 rounded-3xl font-black text-sm flex items-center justify-between transition-all group shadow-lg shadow-amber-100 dark:shadow-none"
               >
                 <div className="flex items-center gap-4">
@@ -501,6 +501,7 @@ function HomePage() {
 
 function EmergencyStatusBar() {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   return (
     <div className="w-full bg-white dark:bg-slate-900 rounded-2xl sm:rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-slate-800 p-4 sm:p-6 flex flex-wrap items-center justify-between gap-4 sm:gap-8 relative overflow-hidden transition-all hover:shadow-xl">
       <div className="absolute top-0 left-0 w-1 h-full bg-indigo-600"></div>
@@ -522,7 +523,7 @@ function EmergencyStatusBar() {
       </div>
 
       <button
-        onClick={() => navigate('/report', { state: { category: 'other' } })}
+        onClick={() => navigate(currentUser ? '/report' : '/login', { state: { from: '/report', category: 'other' } })}
         className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-2xl font-black text-sm flex items-center gap-2 transition-all group shrink-0 shadow-lg shadow-red-200 dark:shadow-none"
       >
         REPORT NOW

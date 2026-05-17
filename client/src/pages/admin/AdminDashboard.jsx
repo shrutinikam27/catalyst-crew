@@ -299,21 +299,21 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* City Status Banner */}
-      <div className="bg-indigo-600 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl shadow-indigo-200 dark:shadow-none">
-        <div className="relative z-10 grid md:grid-cols-[1fr_auto] gap-8 items-center">
-          <div className="space-y-4">
+      <div className="bg-indigo-600 rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white relative overflow-hidden shadow-2xl shadow-indigo-200 dark:shadow-none">
+        <div className="relative z-10 space-y-4 sm:space-y-6">
+          <div className="space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-extrabold uppercase tracking-widest">
               <Globe size={12} /> Pune D7: PS-1 Operational
             </div>
-            <h1 className="text-4xl font-outfit font-extrabold">Smart Urban Risk Mapping <br /> & Citizen Safety Platform</h1>
-            <p className="text-indigo-100 font-medium max-w-xl">
+            <h1 className="text-xl sm:text-2xl lg:text-4xl font-outfit font-extrabold">Smart Urban Risk Mapping &amp; Citizen Safety Platform</h1>
+            <p className="text-indigo-100 font-medium max-w-xl text-sm">
               Integrating crime statistics, civic grievance reports, and demographic datasets to identify high-risk zones and prioritize emergency response planning across Pune.
             </p>
           </div>
-          <div className="flex gap-4">
-            <button 
+          <div className="flex flex-wrap gap-2 sm:gap-4">
+            <button
               onClick={async () => {
                 setSeeding(true);
                 try {
@@ -332,10 +332,10 @@ const AdminDashboard = () => {
               {seeding ? (
                 <>
                   <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
-                  Seeding Infrastructure...
+                  Seeding...
                 </>
               ) : seedDone ? (
-                "✅ Infrastructure Seeded!"
+                "✅ Seeded!"
               ) : (
                 <>
                   <Download size={14} />
@@ -343,28 +343,29 @@ const AdminDashboard = () => {
                 </>
               )}
             </button>
-            <button 
+            <button
               onClick={() => setIsSettingsOpen(true)}
               className={cn(
-                "p-4 rounded-2xl border transition-all group",
-                isEmergencyMode 
-                  ? "bg-rose-500 text-white border-rose-400 animate-pulse" 
+                "p-3 sm:p-4 rounded-2xl border transition-all group",
+                isEmergencyMode
+                  ? "bg-rose-500 text-white border-rose-400 animate-pulse"
                   : "bg-white/10 backdrop-blur-md hover:bg-white/20 border-white/20 text-white"
               )}
             >
-              <Settings size={24} className="group-hover:rotate-90 transition-transform" />
+              <Settings size={20} className="group-hover:rotate-90 transition-transform" />
             </button>
-            <button 
+            <button
               onClick={() => navigate('/admin/analytics')}
-              className="px-6 py-4 bg-white text-indigo-600 font-bold rounded-2xl flex items-center gap-2 hover:bg-indigo-50 transition-all shadow-lg shadow-white/10"
+              className="px-4 sm:px-6 py-3 sm:py-4 bg-white text-indigo-600 font-bold rounded-2xl flex items-center gap-2 hover:bg-indigo-50 transition-all shadow-lg shadow-white/10 text-sm"
             >
-              <BarChart size={20} />
-              View Predictive Analytics
+              <BarChart size={18} />
+              <span className="hidden sm:inline">View Predictive Analytics</span>
+              <span className="sm:hidden">Analytics</span>
             </button>
           </div>
           {seedDone && (
-            <div className="absolute top-4 right-4 px-4 py-2 bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg animate-bounce">
-              ✅ Database seeded with Pune data!
+            <div className="absolute top-3 right-3 px-3 py-1.5 bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg animate-bounce">
+              ✅ Database seeded!
             </div>
           )}
         </div>
@@ -372,8 +373,8 @@ const AdminDashboard = () => {
       </div>
 
       {/* Live Command Map */}
-      <div className="bg-white dark:bg-slate-900 p-2 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-xl relative overflow-hidden">
-        <div className="h-[500px] w-full rounded-[2rem] overflow-hidden z-0 border border-slate-100 dark:border-slate-800 relative">
+      <div className="bg-white dark:bg-slate-900 p-2 rounded-[2rem] sm:rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-xl relative overflow-hidden">
+        <div className="h-64 sm:h-80 lg:h-[500px] w-full rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden z-0 border border-slate-100 dark:border-slate-800 relative">
           <MapContainer 
             center={[18.5204, 73.8567]} 
             zoom={12} 
@@ -457,7 +458,7 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <StatCard title="Total Complaints" value={totalComplaints.toString()} icon={AlertTriangle} trend={`${resolvedComplaints} resolved`} trendType="down" description="From Firestore real-time" />
         <StatCard title="Active Emergencies" value={activeEmergencies.toString()} icon={Activity} trend="Live" trendType={activeEmergencies > 3 ? "up" : "down"} description="SOS & dispatch requests" />
         <StatCard title="Resolution Rate" value={`${resolutionRate}%`} icon={CheckCircle} trend="2.1%" trendType="up" description="Across all departments" />
@@ -465,7 +466,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Middle Row */}
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-3 gap-5 sm:gap-8">
         <ChartCard title="Incident Analytics" subtitle="Crime vs Civic Grievances" className="lg:col-span-1">
           <div className="h-[250px] w-full flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
@@ -557,7 +558,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Support Inquiries Section */}
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-3 gap-5 sm:gap-8">
         <ChartCard title="Citizen Grievance Analysis" subtitle="Real-time civic complaint processing" className="lg:col-span-2">
           <div className="space-y-4 overflow-y-auto max-h-[400px] pr-2">
             {supportRequests.length === 0 ? (
@@ -932,7 +933,7 @@ const AdminDashboard = () => {
         </div>
 
         {volunteers.length === 0 ? (
-          <div className="p-20 text-center space-y-4">
+          <div className="p-10 sm:p-20 text-center space-y-4">
             <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto text-slate-300">
               <BadgeCheck size={32} />
             </div>

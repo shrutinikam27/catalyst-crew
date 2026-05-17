@@ -117,7 +117,7 @@ const PatientAlerts = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
             <BedStat label="ICU Beds" occupied={bedStatus.icu.occupied} total={bedStatus.icu.total} color="rose" />
             <BedStat label="ER Bays" occupied={bedStatus.er.occupied} total={bedStatus.er.total} color="amber" />
             <BedStat label="General" occupied={bedStatus.general.occupied} total={bedStatus.general.total} color="indigo" />
@@ -151,7 +151,7 @@ const PatientAlerts = () => {
       </div>
 
       {/* Main Alert Feed */}
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between px-4">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">Active Emergency Feed</h2>

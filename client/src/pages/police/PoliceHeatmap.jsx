@@ -120,7 +120,7 @@ const PoliceHeatmap = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex gap-6 min-h-0 relative" style={{ minHeight: '500px' }}>
+      <div className="flex-1 flex flex-col xl:flex-row gap-6 min-h-[500px] xl:min-h-0 relative">
         {/* Map Container */}
         <div className="flex-1 bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-xl overflow-hidden relative">
           <SmartMap 
@@ -136,7 +136,7 @@ const PoliceHeatmap = () => {
              <motion.div 
                initial={{ x: -20, opacity: 0 }}
                animate={{ x: 0, opacity: 1 }}
-               className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-4 rounded-3xl shadow-2xl border border-white/50 dark:border-slate-800 w-64 pointer-events-auto"
+               className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-4 rounded-3xl shadow-2xl border border-white/50 dark:border-slate-800 w-[calc(100vw-2rem)] sm:w-64 pointer-events-auto"
              >
                <div className="flex items-center justify-between mb-4">
                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
@@ -178,7 +178,7 @@ const PoliceHeatmap = () => {
                    initial={{ scale: 0.8, opacity: 0, y: 10 }}
                    animate={{ scale: 1, opacity: 1, y: 0 }}
                    exit={{ scale: 0.8, opacity: 0, y: -10 }}
-                   className="bg-indigo-600 text-white p-4 rounded-2xl shadow-2xl w-64 pointer-events-auto border border-white/20"
+                   className="bg-indigo-600 text-white p-4 rounded-2xl shadow-2xl w-[calc(100vw-2rem)] sm:w-64 pointer-events-auto border border-white/20"
                  >
                     <div className="flex items-center gap-2 mb-2">
                       <Crosshair size={14} className="animate-pulse" />
@@ -217,7 +217,7 @@ const PoliceHeatmap = () => {
               initial={{ x: 300, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 300, opacity: 0 }}
-              className="w-80 bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col"
+              className="w-[calc(100vw-2rem)] sm:w-80 bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col"
             >
               <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                 <h3 className="font-outfit font-black text-slate-900 dark:text-white text-sm uppercase tracking-widest">Active Feed</h3>

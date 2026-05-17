@@ -120,7 +120,7 @@ const CitizenHeatmap = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search area..." 
-              className="pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 w-64 dark:text-white"
+              className="pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 w-[calc(100vw-3rem)] sm:w-64 dark:text-white"
             />
           </div>
           <button className="p-2 bg-slate-50 dark:bg-slate-800 text-slate-500 rounded-xl hover:text-indigo-600 transition-colors">
@@ -141,7 +141,7 @@ const CitizenHeatmap = () => {
           
           {/* Overlay Map UI */}
           <div className="absolute top-6 left-6 z-10 space-y-3 pointer-events-none">
-            <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-white/50 dark:border-slate-800 w-64 pointer-events-auto">
+            <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-white/50 dark:border-slate-800 w-[calc(100vw-2rem)] sm:w-64 pointer-events-auto">
               <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
                 <Shield size={14} className="text-indigo-500" />
                 Zone Safety Index

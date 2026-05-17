@@ -127,7 +127,7 @@ export default function SosDirectPage() {
           </div>
 
           {/* Emergency buttons - large, touch-friendly */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-2 gap-4">
             {EMERGENCY_TYPES.map(({ type, emoji, Icon, color, border, hover }) => (
               <button
                 key={type}

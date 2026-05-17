@@ -100,7 +100,7 @@ const PoliceProfileSettings = () => {
         <p className="text-slate-500 dark:text-slate-400 font-medium">Manage your precinct coordinates, badge verification, and emergency routing protocols.</p>
       </div>
 
-      <div className="grid lg:grid-cols-4 gap-8">
+      <div className="grid lg:grid-cols-4 gap-6 lg:gap-8">
         {/* Navigation Sidebar */}
         <div className="space-y-2">
           {tabs.map((tab) => (

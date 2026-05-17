@@ -22,28 +22,28 @@ const Features = () => {
     <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300">
       <PublicNavbar />
       
-      <div className="pt-40 pb-20 px-6 max-w-[1400px] mx-auto">
+      <div className="pt-24 sm:pt-32 lg:pt-40 pb-16 sm:pb-20 px-4 sm:px-6 max-w-[1400px] mx-auto">
         {/* Header Section */}
         <motion.section 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center max-w-4xl mx-auto mb-32"
+          className="text-center max-w-4xl mx-auto mb-16 sm:mb-24 lg:mb-32"
         >
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full text-xs font-black uppercase tracking-widest mb-8 ring-1 ring-indigo-100 dark:ring-indigo-800">
             <Cpu size={14} className="animate-pulse" /> Advanced Core Architecture
           </div>
-          <h1 className="text-6xl md:text-7xl font-outfit font-black text-slate-900 dark:text-white leading-tight mb-8">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-outfit font-black text-slate-900 dark:text-white leading-tight mb-6 sm:mb-8">
             Precision Tools for <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-emerald-500 uppercase">Urban Protection</span>
           </h1>
-          <p className="text-xl text-slate-500 dark:text-slate-400 font-medium leading-relaxed max-w-3xl mx-auto">
+          <p className="text-base sm:text-xl text-slate-500 dark:text-slate-400 font-medium leading-relaxed max-w-3xl mx-auto">
             SafeLink provides a comprehensive ecosystem of digital tools designed for real-time
             risk assessment, automated emergency response, and community-driven safety governance.
           </p>
         </motion.section>
 
         {/* Primary Features Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 mb-40">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8 lg:gap-10 mb-16 sm:mb-24 lg:mb-40">
           <FeatureCard 
             icon={<Map />}
             title="Dynamic Risk Mapping"
@@ -95,7 +95,7 @@ const Features = () => {
         </div>
 
         {/* Deep Dive Section: Data Integration */}
-        <section className="grid lg:grid-cols-2 gap-24 items-center mb-40">
+        <section className="grid lg:grid-cols-2 gap-10 lg:gap-24 items-center mb-16 sm:mb-24 lg:mb-40">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -103,7 +103,7 @@ const Features = () => {
             className="space-y-8"
           >
             <div className="w-20 h-2 bg-indigo-600 rounded-full mb-10"></div>
-            <h2 className="text-5xl font-outfit font-black text-slate-900 dark:text-white leading-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-outfit font-black text-slate-900 dark:text-white leading-tight">
               Unified Data <br />
               <span className="text-indigo-600">Governance Engine</span>
             </h2>
@@ -160,14 +160,14 @@ const Features = () => {
         </section>
 
         {/* Feature Focus Section: Emergency Response */}
-        <section className="bg-slate-900 rounded-[4rem] p-16 lg:p-24 relative overflow-hidden mb-32">
+        <section className="bg-slate-900 rounded-3xl sm:rounded-[4rem] p-8 sm:p-12 lg:p-16 xl:p-24 relative overflow-hidden mb-16 sm:mb-24 lg:mb-32">
           <div className="absolute top-0 left-0 w-full h-full opacity-10">
              <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-indigo-500 rounded-full blur-[200px] translate-x-1/2 -translate-y-1/2"></div>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-20 items-center relative z-10">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center relative z-10">
              <div className="order-2 lg:order-1 relative">
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 gap-3 sm:gap-6">
                    <ResponseCard icon={<Flame />} label="Fire Support" count="04 mins" color="rose" />
                    <ResponseCard icon={<ShieldAlert />} label="Police Unit" count="07 mins" color="blue" />
                    <ResponseCard icon={<Ambulance />} label="Medical Team" count="05 mins" color="emerald" />
@@ -197,8 +197,8 @@ const Features = () => {
         </section>
 
         {/* Final CTA */}
-        <section className="text-center py-20">
-           <h2 className="text-5xl font-outfit font-black text-slate-900 dark:text-white mb-8">Ready to secure your urban space?</h2>
+        <section className="text-center py-12 sm:py-20">
+           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-outfit font-black text-slate-900 dark:text-white mb-6 sm:mb-8">Ready to secure your urban space?</h2>
            <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <button 
                 onClick={() => navigate('/signup')}
@@ -316,8 +316,8 @@ const FeatureCard = ({ icon, title, desc, badge, color, path }) => {
 
   return (
     <motion.div 
-      whileHover={{ y: -10 }}
-      className="p-10 rounded-[3rem] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-none hover:border-indigo-500/50 transition-all group flex flex-col"
+      whileHover={{ y: -6 }}
+      className="p-6 sm:p-8 lg:p-10 rounded-3xl sm:rounded-[3rem] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-premium dark:shadow-none hover:border-indigo-500/50 transition-all group flex flex-col"
     >
       <div className={cn("w-16 h-16 rounded-2xl flex items-center justify-center text-white mb-8 group-hover:scale-110 transition-transform shadow-xl", colors[color])}>
         {React.cloneElement(icon, { size: 32 })}
@@ -361,7 +361,7 @@ const ResponseCard = ({ icon, label, count, color }) => {
   };
 
   return (
-    <div className={cn("p-8 rounded-[2.5rem] border text-center space-y-4", colors[color])}>
+    <div className={cn("p-5 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border text-center space-y-3 sm:space-y-4", colors[color])}>
        <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center mx-auto">
           {React.cloneElement(icon, { size: 24 })}
        </div>

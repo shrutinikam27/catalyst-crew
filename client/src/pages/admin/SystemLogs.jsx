@@ -114,7 +114,7 @@ const SystemLogs = () => {
                 <input 
                   type="text" 
                   placeholder="Filter logs..."
-                  className="bg-slate-800 border-none ring-1 ring-slate-700 p-2 pl-10 rounded-lg text-xs text-white focus:ring-2 focus:ring-indigo-500 transition-all w-64"
+                  className="bg-slate-800 border-none ring-1 ring-slate-700 p-2 pl-10 rounded-lg text-xs text-white focus:ring-2 focus:ring-indigo-500 transition-all w-full sm:w-64"
                 />
               </div>
               <button className="p-2 bg-slate-800 text-slate-400 rounded-lg hover:text-white transition-colors">

@@ -28,7 +28,7 @@ const AboutUs = () => {
       <PublicNavbar />
       
       {/* Hero Section */}
-      <div className="relative pt-40 pb-20 overflow-hidden">
+      <div className="relative pt-24 sm:pt-32 lg:pt-40 pb-16 sm:pb-20 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-indigo-50/50 via-white to-white dark:from-indigo-900/10 dark:via-slate-950 dark:to-slate-950"></div>
         </div>
@@ -72,8 +72,8 @@ const AboutUs = () => {
       </div>
 
       {/* Origin Story Section */}
-      <section className="py-24 px-6 max-w-[1400px] mx-auto">
-        <div className="grid lg:grid-cols-2 gap-20 items-center">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 max-w-[1400px] mx-auto">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -205,7 +205,7 @@ const AboutUs = () => {
       </section>
 
       {/* Data Sources Section */}
-      <section className="py-32 px-6 max-w-[1400px] mx-auto text-center">
+      <section className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 max-w-[1400px] mx-auto text-center">
         <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.3em] mb-12">Integrated Intelligence From</h3>
         <div className="flex flex-wrap justify-center items-center gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
            <div className="flex items-center gap-3 grayscale hover:grayscale-0">

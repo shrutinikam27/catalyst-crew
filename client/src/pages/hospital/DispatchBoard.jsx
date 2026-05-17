@@ -127,7 +127,7 @@ const DispatchBoard = () => {
             <input
               type="text"
               placeholder="Search ambulance or location..."
-              className="pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl w-64 focus:ring-2 focus:ring-rose-500 outline-none transition-all"
+              className="pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl w-full sm:w-64 focus:ring-2 focus:ring-rose-500 outline-none transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />

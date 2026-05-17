@@ -135,7 +135,7 @@ const CitizenDashboard = () => {
       )}
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <StatCard
           title="Safe Routes"
           value={`${safeRoutesCount} Available`}
@@ -169,7 +169,7 @@ const CitizenDashboard = () => {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid lg:grid-cols-[1fr_400px] gap-8">
+      <div className="grid lg:grid-cols-[1fr_400px] gap-6 lg:gap-8">
         <div className="space-y-8">
           {/* Chart Section */}
           <ChartCard title="Weekly Safety Trends" subtitle="Crime vs Accident frequency in your city">

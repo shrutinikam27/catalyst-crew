@@ -377,7 +377,7 @@ const UserDashboard = () => {
               Select the exact emergency. Nearby certified volunteers will be notified instantly to provide rapid response before official authorities arrive.
             </p>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-2 gap-4">
               <button onClick={() => handleEmergencySelect('Fire')} className="flex flex-col items-center justify-center gap-3 py-6 rounded-2xl border-2 border-orange-200 bg-orange-50 hover:bg-orange-500 hover:border-orange-600 hover:text-white text-orange-700 transition-all active:scale-95 group shadow-sm">
                 <Flame size={36} className="group-hover:animate-bounce" />
                 <span className="font-bold text-lg tracking-wide">FIRE</span>

@@ -70,7 +70,7 @@ const HospitalDashboard = () => {
       </div>
 
       {/* EMS Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <StatCard title="Total Emergencies" value={medicalAlerts.length || "0"} icon={AlertCircle} trend="Live" trendType="up" />
         <StatCard title="Ambulances Active" value="08" icon={Ambulance} trend="2" />
         <StatCard title="Critical Cases" value={medicalAlerts.filter(a => a.severity === 'high').length || "0"} icon={Heart} trend="1" trendType="down" />
@@ -78,7 +78,7 @@ const HospitalDashboard = () => {
       </div>
 
       {/* Main Board */}
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
         <div className="lg:col-span-2 space-y-6">
           <div className="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
             <div className="flex justify-between items-center mb-6">

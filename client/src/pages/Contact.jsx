@@ -19,7 +19,7 @@ const Contact = () => {
     <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300">
       <PublicNavbar />
       
-      <div className="pt-40 pb-20 px-6 max-w-[1400px] mx-auto">
+      <div className="pt-24 sm:pt-32 lg:pt-40 pb-16 sm:pb-20 px-4 sm:px-6 max-w-[1400px] mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -38,7 +38,7 @@ const Contact = () => {
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-12 items-start">
+        <div className="grid lg:grid-cols-3 gap-8 lg:gap-12 items-start">
           {/* Contact Info */}
           <div className="space-y-8 lg:col-span-1">
             <ContactInfoCard 

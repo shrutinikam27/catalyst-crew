@@ -174,9 +174,9 @@ const NearbyEmergencies = () => {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-[400px_1fr] gap-8">
+      <div className="grid lg:grid-cols-[400px_1fr] gap-6 lg:gap-8">
         {/* ── Alert List ── */}
-        <div className="space-y-4 max-h-[calc(100vh-250px)] overflow-y-auto pr-2 scrollbar-hide">
+        <div className="space-y-4 max-h-[50vh] lg:max-h-[calc(100vh-250px)] overflow-y-auto pr-2 scrollbar-hide">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-16 gap-4">
               <Loader2 size={36} className="text-indigo-500 animate-spin" />
@@ -299,7 +299,7 @@ const NearbyEmergencies = () => {
         </div>
 
         {/* ── Map + Action Panel ── */}
-        <div className="relative bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden min-h-[500px]">
+        <div className="relative bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden min-h-[350px] lg:min-h-[500px]">
           <SmartMap
             center={
               mapAlert?.location

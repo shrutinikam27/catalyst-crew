@@ -99,7 +99,7 @@ const PoliceDashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <StatCard 
           title="Active Incidents" 
           value={crimeAlerts.length || "0"} 
@@ -132,7 +132,7 @@ const PoliceDashboard = () => {
       </div>
 
       {/* Chart */}
-      <div className="grid lg:grid-cols-2 gap-8">
+      <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
         <ChartCard title="Incident Frequency vs Resolutions" subtitle="Monthly tracking of precinct performance">
           <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <BarChart data={chartData}>

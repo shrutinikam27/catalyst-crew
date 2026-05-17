@@ -87,10 +87,10 @@ const VolunteerDashboard = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Header with Stats */}
-      <div className="grid lg:grid-cols-[1fr_350px] gap-8 items-start">
-        <div className="space-y-8">
+      <div className="grid lg:grid-cols-[1fr_350px] gap-6 lg:gap-8 items-start">
+        <div className="space-y-6 sm:space-y-8">
           <div>
             <h1 className="text-3xl font-outfit font-extrabold text-slate-900 dark:text-white">
               Volunteer Dashboard
@@ -100,7 +100,7 @@ const VolunteerDashboard = () => {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
             <StatCard title="Response Score" value="0/100" icon={Star} trend="0%" />
             <StatCard title="Missions" value="0" icon={CheckCircle} trend="0" />
             <StatCard title="People Helped" value="0" icon={Heart} trend="0" />

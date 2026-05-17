@@ -60,6 +60,7 @@ const ReportIncident = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
+  const [status, setStatus] = useState(null);
 
   // Map State
   const { location: userLocation } = useLocationContext();
@@ -367,7 +368,6 @@ const ReportIncident = () => {
                     <button 
                       type="button"
                       key={lvl}
-                      type="button"
                       onClick={() => setForm(prev => ({ ...prev, severity: lvl }))}
                       className={cn(
                         "flex-1 py-3 rounded-xl text-[10px] font-extrabold uppercase tracking-widest border-2 transition-all",

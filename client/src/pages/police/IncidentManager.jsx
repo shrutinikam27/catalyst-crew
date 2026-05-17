@@ -32,7 +32,9 @@ const IncidentManager = () => {
         source: 'Firestore',
         type: 'CRIME',
         message: c.description || '',
-        isFirestore: true
+        isFirestore: true,
+        imageUrl: c.imageUrl || null,
+        images: c.images || null
       }));
       setFirestoreComplaints(processed);
       // Keep dispatch panel in sync when Firestore updates
@@ -321,6 +323,33 @@ const IncidentManager = () => {
                       'bg-slate-100 text-slate-500'
                     )}>{selectedIncident.status || 'pending'}</span>
                   </div>
+
+                  {/* Evidence Photos Gallery */}
+                  {((selectedIncident.images && selectedIncident.images.length > 0) || selectedIncident.imageUrl) && (
+                    <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-3">Evidence Photos</p>
+                      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                        {selectedIncident.imageUrl && (
+                          <a href={selectedIncident.imageUrl} target="_blank" rel="noopener noreferrer">
+                            <img 
+                              src={selectedIncident.imageUrl} 
+                              alt="evidence-main" 
+                              className="h-20 w-20 object-cover rounded-xl border border-slate-200 dark:border-slate-700 hover:scale-105 transition-transform cursor-pointer shadow-sm" 
+                            />
+                          </a>
+                        )}
+                        {selectedIncident.images && selectedIncident.images.map((imgUrl, idx) => (
+                          <a href={imgUrl} target="_blank" rel="noopener noreferrer" key={idx}>
+                            <img 
+                              src={imgUrl} 
+                              alt={`evidence-${idx}`} 
+                              className="h-20 w-20 object-cover rounded-xl border border-slate-200 dark:border-slate-700 hover:scale-105 transition-transform cursor-pointer shadow-sm" 
+                            />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="space-y-3">
                     {/* Dispatch Closest Unit */}

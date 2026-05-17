@@ -286,7 +286,9 @@ const AdminDashboard = () => {
       timestamp: c.createdAt,
       status: c.status === 'pending' ? 'Pending' : c.status === 'resolved' ? 'Resolved' : 'Active',
       severity: c.severity || 'moderate',
-      isComplaint: true
+      isComplaint: true,
+      imageUrl: c.imageUrl || null,
+      images: c.images || null
     }));
     
     return [...incidents, ...normalizedComplaints].sort((a, b) => {

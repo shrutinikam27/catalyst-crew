@@ -196,6 +196,33 @@ const FireDispatch = () => {
                 <p className="text-xs text-slate-500 mt-1 flex items-center gap-1"><MapPin size={10} /> {selectedEmergency.location}</p>
               </div>
 
+              {/* Evidence Photos Gallery */}
+              {((selectedEmergency.images && selectedEmergency.images.length > 0) || selectedEmergency.imageUrl) && (
+                <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-3">Evidence Photos</p>
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                    {selectedEmergency.imageUrl && (
+                      <a href={selectedEmergency.imageUrl} target="_blank" rel="noopener noreferrer">
+                        <img 
+                          src={selectedEmergency.imageUrl} 
+                          alt="evidence-main" 
+                          className="h-20 w-20 object-cover rounded-xl border border-slate-200 dark:border-slate-700 hover:scale-105 transition-transform cursor-pointer shadow-sm" 
+                        />
+                      </a>
+                    )}
+                    {selectedEmergency.images && selectedEmergency.images.map((imgUrl, idx) => (
+                      <a href={imgUrl} target="_blank" rel="noopener noreferrer" key={idx}>
+                        <img 
+                          src={imgUrl} 
+                          alt={`evidence-${idx}`} 
+                          className="h-20 w-20 object-cover rounded-xl border border-slate-200 dark:border-slate-700 hover:scale-105 transition-transform cursor-pointer shadow-sm" 
+                        />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Available Fire Engines */}
               <div>
                 <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Available Fire Engines</h4>

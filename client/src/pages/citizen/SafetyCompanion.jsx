@@ -1,13 +1,166 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  MapPin, Navigation, ShieldCheck, Zap, 
-  Search, Star, Eye, Moon, Sun, 
+import {
+  MapPin, Navigation, ShieldCheck, Zap,
+  Search, Star, Eye, Moon, Sun,
   ArrowRight, ChevronLeft, Info, AlertTriangle,
   Lightbulb, Users, Map as MapIcon
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../../utils/cn';
+
+// Leaflet imports
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix for Leaflet default icon issues in React
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIconRetina,
+  shadowUrl: markerShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
+
+const PUNE_LOCATIONS = {
+  'baner': [18.5590, 73.7787],
+  'wakad': [18.5985, 73.7660],
+  'kothrud': [18.5074, 73.8077],
+  'hadapsar': [18.5089, 73.9260],
+  'viman nagar': [18.5679, 73.9143],
+  'koregaon park': [18.5362, 73.8940],
+  'aundh': [18.5580, 73.8075],
+  'pimple saudagar': [18.5987, 73.7978],
+  'hinjewadi': [18.5913, 73.7389],
+  'katraj': [18.4529, 73.8546],
+  'shivaji nagar': [18.5312, 73.8445],
+  'yerwada': [18.5529, 73.8796],
+  'pune station': [18.5289, 73.8744],
+  'camp': [18.5167, 73.8789],
+  'warje': [18.4842, 73.8037],
+  'magarpatta': [18.5137, 73.9242],
+  'kondhwa': [18.4771, 73.8907],
+  'bibwewadi': [18.4735, 73.8654]
+};
+
+const geocode = async (query) => {
+  if (!query) return PUNE_LOCATIONS['shivaji nagar'];
+  const cleanQuery = query.trim().toLowerCase();
+
+  // 1. Check local dictionary first
+  for (const [key, coords] of Object.entries(PUNE_LOCATIONS)) {
+    if (cleanQuery.includes(key) || key.includes(cleanQuery)) {
+      return coords;
+    }
+  }
+
+  // 2. Query Nominatim API
+  try {
+    const searchQuery = cleanQuery.includes('pune') ? query : `${query}, Pune, Maharashtra, India`;
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery)}&format=json&limit=1`);
+    const data = await res.json();
+    if (data && data.length > 0) {
+      return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+    }
+  } catch (e) {
+    console.error("Geocoding failed", e);
+  }
+
+  // 3. Fallback to center
+  return PUNE_LOCATIONS['shivaji nagar'];
+};
+
+const getDistance = (coords1, coords2) => {
+  const [lat1, lon1] = coords1;
+  const [lat2, lon2] = coords2;
+  const R = 6371; // km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
+
+const fetchRoutes = async (start, end) => {
+  const [lat1, lng1] = start;
+  const [lat2, lng2] = end;
+
+  let fastestPoints = [];
+  let safestPoints = [];
+
+  // 1. Fetch Fastest Route
+  try {
+    const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${lng1},${lat1};${lng2},${lat2}?overview=full&geometries=geojson`);
+    const data = await res.json();
+    if (data.routes && data.routes[0]) {
+      fastestPoints = data.routes[0].geometry.coordinates.map(coord => [coord[1], coord[0]]);
+    }
+  } catch (e) {
+    console.error("Failed to fetch fastest OSRM route:", e);
+  }
+
+  // 2. Fetch Safest Route (via offset midpoint to simulate detour)
+  try {
+    const midLat = (lat1 + lat2) / 2;
+    const midLng = (lng1 + lng2) / 2;
+    const dy = lat2 - lat1;
+    const dx = lng2 - lng1;
+    const len = Math.sqrt(dx * dx + dy * dy);
+    const offsetX = len > 0 ? (-dy / len) * 0.015 : 0.01;
+    const offsetY = len > 0 ? (dx / len) * 0.015 : 0.01;
+
+    const safeMidLat = midLat + offsetY;
+    const safeMidLng = midLng + offsetX;
+
+    const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${lng1},${lat1};${safeMidLng},${safeMidLat};${lng2},${lat2}?overview=full&geometries=geojson`);
+    const data = await res.json();
+    if (data.routes && data.routes[0]) {
+      safestPoints = data.routes[0].geometry.coordinates.map(coord => [coord[1], coord[0]]);
+    }
+  } catch (e) {
+    console.error("Failed to fetch safest OSRM route:", e);
+  }
+
+  // Fallbacks in case OSRM is offline
+  if (fastestPoints.length === 0) {
+    fastestPoints = [start, end];
+  }
+  if (safestPoints.length === 0) {
+    const midLat = (lat1 + lat2) / 2;
+    const midLng = (lng1 + lng2) / 2;
+    const dy = lat2 - lat1;
+    const dx = lng2 - lng1;
+    const len = Math.sqrt(dx * dx + dy * dy);
+    const offsetX = len > 0 ? (-dy / len) * 0.008 : 0.005;
+    const offsetY = len > 0 ? (dx / len) * 0.008 : 0.005;
+    safestPoints = [
+      start,
+      [midLat + offsetY, midLng + offsetX],
+      end
+    ];
+  }
+
+  return { fastest: fastestPoints, safest: safestPoints };
+};
+
+const MapController = ({ start, end }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (start && end) {
+      const bounds = L.latLngBounds([start, end]);
+      map.fitBounds(bounds, { padding: [50, 50], animate: true, duration: 1.5 });
+    }
+  }, [start, end, map]);
+  return null;
+};
 
 const SafetyCompanion = () => {
   const navigate = useNavigate();
@@ -18,19 +171,62 @@ const SafetyCompanion = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
-  const handleSearch = () => {
+  const [mapCoords, setMapCoords] = useState({ start: null, end: null });
+  const [routes, setRoutes] = useState({ safest: [], fastest: [] });
+  const [metrics, setMetrics] = useState({
+    safest: { time: 12, visibility: 'High', lighting: '94%', crowd: 'Moderate' },
+    fastest: { time: 8, visibility: 'Lower', lighting: '68%', crowd: 'Low' }
+  });
+
+  const handleSearch = async () => {
+    if (!destination) return;
     setIsSearching(true);
-    setTimeout(() => {
+
+    try {
+      const startQuery = source === 'My Current Location' ? 'Shivaji Nagar' : source;
+      const endQuery = destination;
+
+      const startPos = await geocode(startQuery);
+      const endPos = await geocode(endQuery);
+
+      setMapCoords({ start: startPos, end: endPos });
+
+      const calculatedRoutes = await fetchRoutes(startPos, endPos);
+      setRoutes(calculatedRoutes);
+
+      const distance = getDistance(startPos, endPos);
+
+      const fastestTime = Math.max(3, Math.round((distance / 40) * 60));
+      const safestTime = Math.max(4, Math.round((distance / 30) * 60) + 2);
+
+      setMetrics({
+        safest: {
+          time: safestTime,
+          visibility: 'High',
+          lighting: '94%',
+          crowd: 'Moderate'
+        },
+        fastest: {
+          time: fastestTime,
+          visibility: 'Lower',
+          lighting: '68%',
+          crowd: 'Low'
+        }
+      });
+
+    } catch (e) {
+      console.error("Route search error:", e);
+    } finally {
       setIsSearching(false);
       setShowResults(true);
-    }, 1500);
+    }
   };
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 pb-20">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <button 
+        <button
           onClick={() => navigate('/user')}
           className="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-500"
         >
@@ -44,7 +240,7 @@ const SafetyCompanion = () => {
 
       {/* Tabs */}
       <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl">
-        <button 
+        <button
           onClick={() => setActiveTab('finder')}
           className={cn(
             "flex-1 py-2.5 text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2",
@@ -54,7 +250,7 @@ const SafetyCompanion = () => {
           <Navigation size={16} />
           Route Finder
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('ratings')}
           className={cn(
             "flex-1 py-2.5 text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2",
@@ -72,8 +268,8 @@ const SafetyCompanion = () => {
           <div className="p-6 rounded-[2rem] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm space-y-4">
             <div className="relative">
               <div className="absolute left-4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20"></div>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
                 placeholder="Start point"
@@ -82,8 +278,8 @@ const SafetyCompanion = () => {
             </div>
             <div className="relative">
               <div className="absolute left-4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-indigo-500 ring-4 ring-indigo-500/20"></div>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 placeholder="Where to?"
@@ -93,7 +289,7 @@ const SafetyCompanion = () => {
 
             {/* Route Preferences */}
             <div className="flex gap-4 pt-2">
-              <button 
+              <button
                 onClick={() => setRouteType('safest')}
                 className={cn(
                   "flex-1 p-3 rounded-xl border-2 transition-all text-left group",
@@ -107,7 +303,7 @@ const SafetyCompanion = () => {
                 <p className="text-[10px] text-slate-400 font-medium">Prioritizes lighting & low crime</p>
               </button>
 
-              <button 
+              <button
                 onClick={() => setRouteType('fastest')}
                 className={cn(
                   "flex-1 p-3 rounded-xl border-2 transition-all text-left",
@@ -122,7 +318,7 @@ const SafetyCompanion = () => {
               </button>
             </div>
 
-            <button 
+            <button
               onClick={handleSearch}
               disabled={!destination || isSearching}
               className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 dark:disabled:bg-slate-800 text-white font-bold rounded-2xl transition-all shadow-lg shadow-indigo-200 dark:shadow-none flex items-center justify-center gap-2"
@@ -140,64 +336,97 @@ const SafetyCompanion = () => {
 
           <AnimatePresence>
             {showResults && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-6"
               >
-                {/* Mock Map View */}
-                <div className="relative aspect-square rounded-[2.5rem] overflow-hidden bg-slate-100 dark:bg-slate-800 border-4 border-white dark:border-slate-900 shadow-2xl group">
-                  <img 
-                    src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&q=80&w=1000" 
-                    className="w-full h-full object-cover opacity-50 grayscale group-hover:grayscale-0 transition-all duration-700"
-                    alt="City Map"
-                  />
-                  {/* Mock Paths */}
-                  <svg className="absolute inset-0 w-full h-full p-12 pointer-events-none">
-                    <motion.path 
-                      d="M 50 300 Q 150 150 350 100" 
-                      fill="transparent" 
-                      stroke={routeType === 'safest' ? "#10b981" : "#94a3b8"} 
-                      strokeWidth="12" 
-                      strokeLinecap="round"
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: 1 }}
-                      transition={{ duration: 2, ease: "easeInOut" }}
-                    />
-                    <motion.path 
-                      d="M 50 300 L 200 280 L 350 100" 
-                      fill="transparent" 
-                      stroke={routeType === 'fastest' ? "#f59e0b" : "#94a3b8"} 
-                      strokeWidth="12" 
-                      strokeLinecap="round"
-                      strokeDasharray="20 10"
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: 1 }}
-                      transition={{ duration: 1.5, ease: "easeInOut" }}
-                    />
-                  </svg>
+                {/* Real Live Map View */}
+                <div className="relative aspect-square rounded-[2.5rem] overflow-hidden bg-slate-900 border-4 border-white dark:border-slate-900 shadow-2xl group z-0 h-[450px]">
+                  {mapCoords.start && mapCoords.end ? (
+                    <MapContainer
+                      center={mapCoords.start}
+                      zoom={13}
+                      scrollWheelZoom={true}
+                      style={{ height: '100%', width: '100%' }}
+                      className="h-full w-full"
+                    >
+                      <MapController start={mapCoords.start} end={mapCoords.end} />
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                      />
 
-                  {/* Indicators */}
-                  <div className="absolute top-12 right-12 w-4 h-4 bg-indigo-500 rounded-full ring-8 ring-indigo-500/20 animate-pulse"></div>
-                  <div className="absolute bottom-12 left-12 w-4 h-4 bg-emerald-500 rounded-full ring-8 ring-emerald-500/20"></div>
+                      {/* Routes */}
+                      <Polyline
+                        positions={routes.safest}
+                        color="#10b981"
+                        weight={routeType === 'safest' ? 6 : 3}
+                        opacity={routeType === 'safest' ? 1.0 : 0.4}
+                        lineCap="round"
+                        lineJoin="round"
+                      />
+
+                      <Polyline
+                        positions={routes.fastest}
+                        color="#f59e0b"
+                        weight={routeType === 'fastest' ? 6 : 3}
+                        opacity={routeType === 'fastest' ? 1.0 : 0.4}
+                        dashArray="10, 10"
+                        lineCap="round"
+                        lineJoin="round"
+                      />
+
+                      {/* Markers */}
+                      <Marker
+                        position={mapCoords.start}
+                        icon={L.divIcon({
+                          className: 'source-marker',
+                          html: `<div class="w-6 h-6 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center shadow-lg"><div class="w-2 h-2 bg-white rounded-full"></div></div>`,
+                          iconSize: [24, 24],
+                          iconAnchor: [12, 12]
+                        })}
+                      >
+                        <Popup>
+                          <div className="p-1 font-bold text-xs">Start: {source}</div>
+                        </Popup>
+                      </Marker>
+
+                      <Marker
+                        position={mapCoords.end}
+                        icon={L.divIcon({
+                          className: 'dest-marker',
+                          html: `<div class="w-6 h-6 bg-indigo-600 rounded-full border-2 border-white flex items-center justify-center shadow-lg"><div class="w-2 h-2 bg-white rounded-full"></div></div>`,
+                          iconSize: [24, 24],
+                          iconAnchor: [12, 12]
+                        })}
+                      >
+                        <Popup>
+                          <div className="p-1 font-bold text-xs">Destination: {destination}</div>
+                        </Popup>
+                      </Marker>
+                    </MapContainer>
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-slate-400">Loading Map...</div>
+                  )}
 
                   {/* Route Info Overlay */}
-                  <div className="absolute bottom-6 left-6 right-6 p-5 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-3xl border border-white/20 shadow-2xl">
+                  <div className="absolute bottom-6 left-6 right-6 p-5 bg-slate-900/90 dark:bg-slate-900/90 backdrop-blur-md rounded-3xl border border-white/10 shadow-2xl z-[1000]">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className={cn("p-2 rounded-xl text-white", routeType === 'safest' ? "bg-emerald-500" : "bg-amber-500")}>
                           {routeType === 'safest' ? <ShieldCheck size={20} /> : <Zap size={20} />}
                         </div>
                         <div>
-                          <p className="text-sm font-black text-slate-800 dark:text-white">
+                          <p className="text-sm font-black text-white">
                             {routeType === 'safest' ? 'Safest Path Found' : 'Quickest Path Found'}
                           </p>
-                          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                            {routeType === 'safest' ? '12 mins • High Visibility' : '8 mins • Lower Visibility'}
+                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                            {routeType === 'safest' ? `${metrics.safest.time} mins • ${metrics.safest.visibility} Visibility` : `${metrics.fastest.time} mins • ${metrics.fastest.visibility} Visibility`}
                           </p>
                         </div>
                       </div>
-                      <button className="bg-indigo-600 text-white p-2.5 rounded-xl shadow-lg">
+                      <button className="bg-indigo-600 text-white p-2.5 rounded-xl shadow-lg hover:bg-indigo-700 transition-colors">
                         <ArrowRight size={20} />
                       </button>
                     </div>
@@ -211,16 +440,24 @@ const SafetyCompanion = () => {
                       <Lightbulb size={16} />
                       <span className="text-[10px] font-bold uppercase tracking-wider">Lighting</span>
                     </div>
-                    <p className="text-lg font-black text-slate-800 dark:text-white">92%</p>
-                    <p className="text-[10px] text-slate-400">Excellent Coverage</p>
+                    <p className="text-lg font-black text-slate-800 dark:text-white">
+                      {routeType === 'safest' ? metrics.safest.lighting : metrics.fastest.lighting}
+                    </p>
+                    <p className="text-[10px] text-slate-400">
+                      {routeType === 'safest' ? 'Excellent Coverage' : 'Average Coverage'}
+                    </p>
                   </div>
                   <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
                     <div className="flex items-center gap-2 text-emerald-600 mb-2">
                       <Users size={16} />
                       <span className="text-[10px] font-bold uppercase tracking-wider">Crowd Density</span>
                     </div>
-                    <p className="text-lg font-black text-slate-800 dark:text-white">Moderate</p>
-                    <p className="text-[10px] text-slate-400">Low risk isolated spots</p>
+                    <p className="text-lg font-black text-slate-800 dark:text-white">
+                      {routeType === 'safest' ? metrics.safest.crowd : metrics.fastest.crowd}
+                    </p>
+                    <p className="text-[10px] text-slate-400">
+                      {routeType === 'safest' ? 'Low risk active streets' : 'Higher isolated spots'}
+                    </p>
                   </div>
                 </div>
               </motion.div>
@@ -264,8 +501,8 @@ const SafetyCompanion = () => {
                   {item.tags.map(tag => (
                     <span key={tag} className={cn(
                       "px-3 py-1 rounded-full text-[10px] font-bold",
-                      tag === 'Isolated' || tag === 'No Lights' 
-                        ? "bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400" 
+                      tag === 'Isolated' || tag === 'No Lights'
+                        ? "bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400"
                         : "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400"
                     )}>
                       {tag}
@@ -283,7 +520,7 @@ const SafetyCompanion = () => {
       <div className="p-6 rounded-2xl bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-800/30 flex items-start gap-3">
         <Info size={20} className="text-indigo-600 shrink-0" />
         <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed italic">
-          "Safety scores are generated by combining real-time lighting data, crime hotspots from Pune Police, 
+          "Safety scores are generated by combining real-time lighting data, crime hotspots from Pune Police,
           and recent crowdsourced reports from citizens like you."
         </p>
       </div>

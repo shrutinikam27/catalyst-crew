@@ -1,15 +1,16 @@
+const dotenv = require('dotenv');
+// Load environment variables FIRST
+dotenv.config();
+
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv');
 const colors = require('colors');
 const morgan = require('morgan');
 const dataFetcher = require('./services/dataFetcher');
-
-// Load environment variables
-dotenv.config();
+const notifyService = require('./services/notifyService');
 
 const app = express();
 const server = http.createServer(app);
@@ -95,6 +96,8 @@ const EMERGENCY_VOLUNTEER_MAP = {
   Crime:    ['crime'],
   Medical:  ['medical', 'crime'],
   Accident: ['firebrigade', 'medical', 'crime'],
+};
+
 // Socket Connection
 io.on('connection', (socket) => {
   console.log('A user connected'.cyan);
@@ -195,12 +198,41 @@ app.post('/api/sos', (req, res) => {
 
   console.log(`🆘 SOS Alert: ${emergencyType} from ${userName || 'Anonymous'} at ${location.latitude}, ${location.longitude}`.bgRed.white);
 
+  // ── Free Notifications: email volunteers & authorities + FCM push ──
+  notifyService.notifySOS(alert).catch(err => console.error('Notify SOS error:', err));
+
   res.status(201).json({ success: true, alertId: alert.id, alert });
 });
 
 // GET all pending SOS alerts (for volunteers who join late)
 app.get('/api/sos', (req, res) => {
   res.json(activeSosAlerts.filter(a => a.status === 'pending'));
+});
+
+// ─── Email/Push Notification endpoint (called by client after Firestore writes) ───
+// POST /api/notify/complaint
+// body: { type: 'filed'|'status', email, fcmToken, userName, complaintId, category?, status? }
+app.post('/api/notify/complaint', async (req, res) => {
+  const { type, email, fcmToken, userName, complaintId, category, status } = req.body;
+
+  if (!type || !complaintId) {
+    return res.status(400).json({ error: 'type and complaintId are required' });
+  }
+
+  try {
+    if (type === 'filed') {
+      await notifyService.notifyComplaintFiled({ email, fcmToken, userName, complaintId, category });
+    } else if (type === 'status') {
+      if (!status) return res.status(400).json({ error: 'status is required for type=status' });
+      await notifyService.notifyComplaintUpdate({ email, fcmToken, userName, complaintId, status });
+    } else {
+      return res.status(400).json({ error: 'type must be filed or status' });
+    }
+    res.json({ success: true, emailEnabled: notifyService.emailEnabled, fcmEnabled: notifyService.fcmEnabled });
+  } catch (err) {
+    console.error('Notify error:', err);
+    res.status(500).json({ error: 'Notification failed', detail: err.message });
+  }
 });
 
 // Port configuration

@@ -9,7 +9,7 @@ import ChartCard from '../../components/ui/ChartCard';
 import { cn } from '../../utils/cn';
 import { db } from '../../firebase/config';
 import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore';
-import { subscribeToEmergencies, subscribeToCollection, COLLECTIONS } from '../../services/firestoreService';
+import { subscribeToAllComplaints, subscribeToEmergencies, subscribeToCollection, COLLECTIONS } from '../../services/firestoreService';
 import { useSocket } from '../../context/SocketContext';
 
 const HospitalDashboard = () => {

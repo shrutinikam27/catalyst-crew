@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -23,6 +23,7 @@ import {
   subscribeToEmergencies,
   subscribeToAnalytics,
   subscribeToCollection,
+  updateComplaintStatus,
   COLLECTIONS
 } from '../../services/firestoreService';
 import { seedDatabase } from '../../services/seedDatabase';
@@ -152,6 +153,16 @@ const AdminDashboard = () => {
   };
 
   const handleUpdateStatus = async (id, newStatus) => {
+    const isComplaintItem = complaints.some(c => c.id === id);
+    if (isComplaintItem) {
+      try {
+        await updateComplaintStatus(id, newStatus.toLowerCase());
+      } catch (err) {
+        console.error("Error updating complaint status:", err);
+      }
+      return;
+    }
+
     if (String(id).startsWith('PUNE-') || String(id).startsWith('#SL-LOCAL-')) {
       // Simulate resolving a synthetic or local dataset item
       if (String(id).startsWith('PUNE-')) {
@@ -261,6 +272,31 @@ const AdminDashboard = () => {
       unsubscribeSupport();
     };
   }, []);
+
+  const displayedIncidents = useMemo(() => {
+    const normalizedComplaints = complaints.map(c => ({
+      id: c.id,
+      category: c.category || c.title || 'Incident',
+      title: c.title || c.category || 'Incident Report',
+      description: c.description || '',
+      location: {
+        address: c.location?.address || 'Pune Sector',
+        coords: c.location?.lat ? [c.location.lat, c.location.lng] : [18.5204, 73.8567]
+      },
+      timestamp: c.createdAt,
+      status: c.status === 'pending' ? 'Pending' : c.status === 'resolved' ? 'Resolved' : 'Active',
+      severity: c.severity || 'moderate',
+      isComplaint: true
+    }));
+    
+    return [...incidents, ...normalizedComplaints].sort((a, b) => {
+      const timeA = a.timestamp?.toDate ? a.timestamp.toDate().getTime() : 
+                    a.timestamp instanceof Date ? a.timestamp.getTime() : 0;
+      const timeB = b.timestamp?.toDate ? b.timestamp.toDate().getTime() : 
+                    b.timestamp instanceof Date ? b.timestamp.getTime() : 0;
+      return timeB - timeA;
+    });
+  }, [incidents, complaints]);
 
   // Compute live stats
   const totalComplaints = complaints.length;
@@ -490,12 +526,12 @@ const AdminDashboard = () => {
 
         <ChartCard title="Crime & Civic Issue Hotspots" subtitle="Real-time emergency & grievance mapping" className="lg:col-span-2">
           <div className="space-y-4 overflow-y-auto max-h-[250px] pr-2 scrollbar-hide">
-            {incidents.length === 0 ? (
+            {displayedIncidents.length === 0 ? (
               <div className="py-12 text-center text-slate-400 font-bold uppercase text-xs tracking-widest">
                 No active hotspots reported
               </div>
             ) : (
-              incidents.map((log) => (
+              displayedIncidents.map((log) => (
                 <div key={log.id} className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-transparent hover:border-indigo-500/20 transition-all group">
                   <div className={cn(
                     "w-1.5 h-10 rounded-full",
@@ -845,11 +881,20 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Evidence Photos Gallery */}
-                {selectedReport.images && selectedReport.images.length > 0 && (
+                {((selectedReport.images && selectedReport.images.length > 0) || selectedReport.imageUrl) && (
                   <div className="col-span-2 mt-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Evidence Photos</label>
                     <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                      {selectedReport.images.map((imgUrl, idx) => (
+                      {selectedReport.imageUrl && (
+                        <a href={selectedReport.imageUrl} target="_blank" rel="noopener noreferrer">
+                          <img 
+                            src={selectedReport.imageUrl} 
+                            alt="evidence-main" 
+                            className="h-24 w-24 object-cover rounded-xl border border-slate-200 dark:border-slate-700 hover:scale-105 transition-transform cursor-pointer" 
+                          />
+                        </a>
+                      )}
+                      {selectedReport.images && selectedReport.images.map((imgUrl, idx) => (
                         <a href={imgUrl} target="_blank" rel="noopener noreferrer" key={idx}>
                           <img 
                             src={imgUrl} 

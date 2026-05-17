@@ -14,6 +14,7 @@ import { cn } from '../../utils/cn';
 import { submitComplaint, updateComplaintImageUrl } from '../../services/firestoreService';
 import { uploadComplaintImage } from '../../services/storageService';
 import { useNavigate } from 'react-router-dom';
+import { sendComplaintFiledNotify } from '../../utils/notify';
 
 const CATEGORIES = [
   { value: 'crime', label: 'Crime / Theft' },
@@ -178,6 +179,7 @@ const ReportIncident = () => {
         userId: currentUser?.uid || 'anonymous',
         userName: currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Anonymous User',
         userEmail: currentUser?.email || '',
+        phone: currentUser?.phoneNumber || null, // stored so police/server can send SMS later
         status: 'pending',
         createdAt: new Date(),
         department: form.category === 'crime' || form.category === 'harassment' ? 'police' :
@@ -188,6 +190,15 @@ const ReportIncident = () => {
       // Save to Firestore
       const complaintId = await submitComplaint(complaintData);
       console.log("🚀 SUCCESS: Incident saved to database with ID:", complaintId);
+
+      // Notification confirmation to citizen
+      sendComplaintFiledNotify({
+        email:       currentUser?.email || null,
+        fcmToken:    null, // Optional: if you get FCM token, pass it here
+        userName:    complaintData.userName,
+        complaintId,
+        category:    complaintData.category,
+      });
 
       // Start background image upload
       if (imageFile && currentUser?.uid) {

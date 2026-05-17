@@ -37,7 +37,6 @@ const CitizenDashboard = () => {
   const [firestoreAlerts, setFirestoreAlerts] = useState([]);
   const [selectedAlert, setSelectedAlert] = useState(null);
   const [showAllAlerts, setShowAllAlerts] = useState(false);
-  const [selectedTip, setSelectedTip] = useState(null);
 
   useEffect(() => {
     if (!currentUser?.uid) return;
@@ -171,7 +170,7 @@ const CitizenDashboard = () => {
           value={sosContactsCount.toString().padStart(2, '0')}
           icon={Users}
           description="Verified emergency contacts"
-          onClick={() => navigate('/user/profile')}
+          onClick={() => navigate('/user/sos')}
         />
       </div>
 
@@ -274,8 +273,8 @@ const CitizenDashboard = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ y: -5 }}
-                  onClick={() => setSelectedTip(tip)}
-                  className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition-all cursor-pointer"
+                  onClick={() => navigate('/user/tips')}
+                  className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition-all cursor-pointer active:scale-[0.98]"
                 >
                   <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mb-4", tip.bg)}>
                     <tip.icon size={20} className={tip.color} />
@@ -364,14 +363,8 @@ const CitizenDashboard = () => {
                 "Keep your emergency contacts updated and always share your live location when traveling late at night."
               </p>
               <button 
-                onClick={() => setSelectedTip({
-                  title: "Safety Tip of the Day",
-                  desc: "Keep your emergency contacts updated and always share your live location when traveling late at night.",
-                  icon: Heart,
-                  color: "text-rose-500",
-                  bg: "bg-rose-50 dark:bg-rose-900/10"
-                })}
-                className="px-4 py-2 bg-white text-indigo-600 rounded-lg text-xs font-bold hover:bg-indigo-50 transition-colors"
+                onClick={() => navigate('/user/tips')}
+                className="px-4 py-2 bg-white text-indigo-600 rounded-lg text-xs font-bold hover:bg-indigo-50 transition-colors active:scale-95"
               >
                 Learn More
               </button>
@@ -642,96 +635,6 @@ const CitizenDashboard = () => {
                   className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:scale-[1.02] transition-all"
                 >
                   Close Feed
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Safety Tip Detail Modal */}
-      <AnimatePresence>
-        {selectedTip && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Backdrop */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedTip(null)}
-              className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
-            />
-            
-            {/* Modal Body */}
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden z-10"
-            >
-              {/* Colored top bar */}
-              <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-indigo-500 to-purple-600" />
-              
-              {/* Header */}
-              <div className="flex justify-between items-start mt-4 mb-6">
-                <div className="flex items-center gap-3">
-                  <div className={cn(
-                    "w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg bg-indigo-500 shadow-indigo-100 dark:shadow-none"
-                  )}>
-                    <selectedTip.icon size={24} />
-                  </div>
-                  <div>
-                    <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full tracking-wider border bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-950/20 dark:text-indigo-400 dark:border-indigo-900/30">
-                      Safety Advisor
-                    </span>
-                    <h3 className="text-xl font-bold font-outfit text-slate-900 dark:text-white mt-1">
-                      {selectedTip.title}
-                    </h3>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => setSelectedTip(null)}
-                  className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-
-              {/* Desc/Content */}
-              <div className="space-y-4 mb-6">
-                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 leading-relaxed bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100/50 dark:border-slate-800">
-                  {selectedTip.desc}
-                </p>
-
-                {/* Additional Guidance details */}
-                <div className="p-4 bg-emerald-50/30 dark:bg-emerald-950/10 rounded-2xl border border-emerald-100/30 dark:border-emerald-900/20">
-                  <h4 className="text-xs font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                    ✓ Recommended Actions
-                  </h4>
-                  <ul className="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 list-disc pl-4 font-medium">
-                    <li>Activate 'Safe Companion' mode on your mobile route planner.</li>
-                    <li>Verify local security patrol schedules near your sector.</li>
-                    <li>Always keep offline backup copies of essential emergency agency contacts.</li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex gap-3">
-                <button 
-                  onClick={() => {
-                    setSelectedTip(null);
-                    navigate('/user/safety');
-                  }}
-                  className="flex-1 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:scale-[1.02] transition-all"
-                >
-                  Configure Safe Companion
-                </button>
-                <button 
-                  onClick={() => setSelectedTip(null)}
-                  className="px-6 py-3 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-black uppercase tracking-widest rounded-xl transition-all"
-                >
-                  Dismiss
                 </button>
               </div>
             </motion.div>

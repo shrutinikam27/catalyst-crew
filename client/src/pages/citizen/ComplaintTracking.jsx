@@ -32,10 +32,15 @@ const ComplaintTracking = () => {
       clearTimeout(timeout);
       setComplaints(docs);
       setLoading(false);
-      // Auto-select first complaint for timeline
-      if (docs.length > 0 && !selectedComplaint) {
-        setSelectedComplaint(docs[0]);
-      }
+      // Auto-select first; keep selected complaint in sync with Firestore updates
+      setSelectedComplaint(prev => {
+        if (!prev && docs.length > 0) return docs[0];
+        if (prev) {
+          const updated = docs.find(d => d.id === prev.id);
+          return updated || prev;
+        }
+        return prev;
+      });
     });
 
     return () => {
@@ -57,7 +62,7 @@ const ComplaintTracking = () => {
   const stats = {
     total: complaints.length,
     resolved: complaints.filter(c => c.status === 'resolved').length,
-    inProgress: complaints.filter(c => c.status === 'assigned' || c.status === 'investigating').length,
+    inProgress: complaints.filter(c => ['dispatched','assigned','investigating'].includes(c.status)).length,
     pending: complaints.filter(c => c.status === 'pending').length,
   };
 
@@ -65,29 +70,46 @@ const ComplaintTracking = () => {
   const getTimeline = (complaint) => {
     if (!complaint) return [];
     const timeline = [];
-    
+
+    // Step 1: Registered
     if (complaint.createdAt) {
       const created = complaint.createdAt?.toDate ? complaint.createdAt.toDate() : new Date(complaint.createdAt);
-      timeline.push({ status: 'Complaint Registered', time: created.toLocaleString(), done: true });
-    }
-    
-    if (complaint.status === 'assigned' || complaint.status === 'investigating' || complaint.status === 'resolved') {
-      timeline.push({ status: `Assigned to ${complaint.department || 'Department'}`, time: complaint.updatedAt?.toDate ? complaint.updatedAt.toDate().toLocaleString() : 'Recently', done: true });
-    } else {
-      timeline.push({ status: 'Awaiting Assignment', time: 'Pending', done: false });
+      timeline.push({ status: 'Complaint Registered', time: created.toLocaleString(), done: true, color: 'bg-emerald-500' });
     }
 
-    if (complaint.status === 'investigating' || complaint.status === 'resolved') {
-      timeline.push({ status: 'Under Investigation', time: 'In Progress', done: true });
-    } else {
-      timeline.push({ status: 'Investigation', time: 'Pending', done: false });
-    }
+    // Step 2: Assigned
+    const isAssigned = ['dispatched','assigned','investigating','resolved'].includes(complaint.status);
+    timeline.push({
+      status: isAssigned ? `Assigned to ${complaint.department || 'Department'}` : 'Awaiting Assignment',
+      time: isAssigned ? (complaint.updatedAt?.toDate ? complaint.updatedAt.toDate().toLocaleString() : 'Recently') : 'Pending',
+      done: isAssigned,
+      color: isAssigned ? 'bg-emerald-500' : 'bg-slate-200'
+    });
 
+    // Step 3: Unit Dispatched
+    const isDispatched = ['dispatched','investigating','resolved'].includes(complaint.status);
+    timeline.push({
+      status: isDispatched ? 'Unit Dispatched to Location' : 'Unit Dispatch',
+      time: isDispatched ? 'En Route' : 'Pending',
+      done: isDispatched,
+      color: isDispatched ? 'bg-indigo-500' : 'bg-slate-200'
+    });
+
+    // Step 4: Investigation
+    const isInvestigating = ['investigating','resolved'].includes(complaint.status);
+    timeline.push({
+      status: isInvestigating ? 'Under Investigation' : 'Investigation',
+      time: isInvestigating ? 'In Progress' : 'Pending',
+      done: isInvestigating,
+      color: isInvestigating ? 'bg-amber-500' : 'bg-slate-200'
+    });
+
+    // Step 5: Resolved
     if (complaint.status === 'resolved') {
       const resolved = complaint.resolvedAt?.toDate ? complaint.resolvedAt.toDate() : new Date();
-      timeline.push({ status: 'Resolved', time: resolved.toLocaleString(), done: true });
+      timeline.push({ status: 'Case Resolved', time: resolved.toLocaleString(), done: true, color: 'bg-emerald-500' });
     } else {
-      timeline.push({ status: 'Resolution', time: 'Pending', done: false });
+      timeline.push({ status: 'Resolution', time: 'Pending', done: false, color: 'bg-slate-200' });
     }
 
     return timeline.reverse();

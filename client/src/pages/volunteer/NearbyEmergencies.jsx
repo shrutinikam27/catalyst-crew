@@ -17,6 +17,7 @@ import {
 } from '../../firebase/sosService';
 import { cn } from '../../utils/cn';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { useLocationContext } from '../../contexts/LocationContext';
 
 // Maps emergency type to a nice color + icon
 const TYPE_META = {

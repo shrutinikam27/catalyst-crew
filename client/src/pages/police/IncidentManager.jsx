@@ -10,6 +10,7 @@ import {
 import { useSocket } from '../../context/SocketContext';
 import { cn } from '../../utils/cn';
 import { subscribeToAllComplaints, updateComplaintStatus } from '../../services/firestoreService';
+import { sendComplaintStatusNotify } from '../../utils/notify';
 
 const IncidentManager = () => {
   const { notifications } = useSocket();
@@ -17,11 +18,10 @@ const IncidentManager = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIncident, setSelectedIncident] = useState(null);
   const [firestoreComplaints, setFirestoreComplaints] = useState([]);
-  const [dispatching, setDispatching] = useState(false);
+  const [actionLoading, setActionLoading] = useState(null); // 'dispatch' | 'investigate' | 'resolve'
 
-  // Subscribe to Firestore complaints (crime/harassment)
+  // Subscribe to Firestore complaints — keep selectedIncident in sync
   useEffect(() => {
-    // Only subscribe to 'police' department reports
     const unsub = subscribeToAllComplaints((complaints) => {
       const processed = complaints.map(c => ({
         ...c,
@@ -35,20 +35,33 @@ const IncidentManager = () => {
         isFirestore: true
       }));
       setFirestoreComplaints(processed);
+      // Keep dispatch panel in sync when Firestore updates
+      setSelectedIncident(prev => {
+        if (!prev) return prev;
+        const updated = processed.find(p => p.id === prev.id);
+        return updated || prev;
+      });
     }, 'police');
     return () => unsub();
   }, []);
 
-  // Handle dispatch action — update complaint status in Firestore
-  const handleDispatch = async (incident) => {
-    if (!incident.isFirestore) return;
-    setDispatching(true);
+  const handleAction = async (incident, newStatus) => {
+    if (!incident?.isFirestore) return;
+    setActionLoading(newStatus);
     try {
-      await updateComplaintStatus(incident.id, 'assigned', 'police');
+      await updateComplaintStatus(incident.id, newStatus, 'police');
+      // Fire-and-forget Notification to citizen
+      sendComplaintStatusNotify({
+        email:       incident.userEmail || incident.citizenEmail || null,
+        fcmToken:    incident.fcmToken || null,
+        userName:    incident.userName || incident.citizenName || 'Citizen',
+        complaintId: incident.id,
+        status:      newStatus,
+      });
     } catch (err) {
-      console.error('Dispatch error:', err);
+      console.error('Action error:', err);
     }
-    setDispatching(false);
+    setActionLoading(null);
   };
 
   // Merge Socket.IO + Firestore incidents with real-time sorting
@@ -297,12 +310,62 @@ const IncidentManager = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <button className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[1.5rem] font-bold text-xs uppercase tracking-widest shadow-xl shadow-indigo-200 dark:shadow-none transition-all flex items-center justify-center gap-2">
-                      <Navigation size={18} /> Dispatch Closest Unit
+                  {/* Current Status Badge */}
+                  <div className="flex items-center gap-2 px-1">
+                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Status:</span>
+                    <span className={cn(
+                      'px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest',
+                      selectedIncident.status === 'resolved' ? 'bg-emerald-100 text-emerald-600' :
+                      selectedIncident.status === 'investigating' ? 'bg-amber-100 text-amber-600' :
+                      selectedIncident.status === 'dispatched' ? 'bg-indigo-100 text-indigo-600' :
+                      'bg-slate-100 text-slate-500'
+                    )}>{selectedIncident.status || 'pending'}</span>
+                  </div>
+
+                  <div className="space-y-3">
+                    {/* Dispatch Closest Unit */}
+                    <button
+                      disabled={!!actionLoading || selectedIncident.status === 'dispatched' || selectedIncident.status === 'investigating' || selectedIncident.status === 'resolved' || !selectedIncident.isFirestore}
+                      onClick={() => handleAction(selectedIncident, 'dispatched')}
+                      className={cn(
+                        'w-full py-4 rounded-[1.5rem] font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2',
+                        selectedIncident.status === 'dispatched' || selectedIncident.status === 'investigating' || selectedIncident.status === 'resolved'
+                          ? 'bg-indigo-100 text-indigo-400 cursor-not-allowed'
+                          : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-200 dark:shadow-none'
+                      )}
+                    >
+                      {actionLoading === 'dispatched' ? <Loader2 size={18} className="animate-spin" /> : <Navigation size={18} />}
+                      {selectedIncident.status === 'dispatched' ? 'Unit Dispatched ✓' : 'Dispatch Closest Unit'}
                     </button>
-                    <button className="w-full py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-[1.5rem] font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
-                      <User size={18} /> Assign Investigator
+
+                    {/* Assign Investigator */}
+                    <button
+                      disabled={!!actionLoading || selectedIncident.status === 'investigating' || selectedIncident.status === 'resolved' || !selectedIncident.isFirestore}
+                      onClick={() => handleAction(selectedIncident, 'investigating')}
+                      className={cn(
+                        'w-full py-4 rounded-[1.5rem] font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 border',
+                        selectedIncident.status === 'investigating' || selectedIncident.status === 'resolved'
+                          ? 'bg-amber-50 border-amber-200 text-amber-400 cursor-not-allowed'
+                          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-600'
+                      )}
+                    >
+                      {actionLoading === 'investigating' ? <Loader2 size={18} className="animate-spin" /> : <User size={18} />}
+                      {selectedIncident.status === 'investigating' ? 'Under Investigation ✓' : 'Assign Investigator'}
+                    </button>
+
+                    {/* Mark Resolved */}
+                    <button
+                      disabled={!!actionLoading || selectedIncident.status === 'resolved' || !selectedIncident.isFirestore}
+                      onClick={() => handleAction(selectedIncident, 'resolved')}
+                      className={cn(
+                        'w-full py-4 rounded-[1.5rem] font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 border',
+                        selectedIncident.status === 'resolved'
+                          ? 'bg-emerald-50 border-emerald-200 text-emerald-400 cursor-not-allowed'
+                          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-600'
+                      )}
+                    >
+                      {actionLoading === 'resolved' ? <Loader2 size={18} className="animate-spin" /> : <CheckCircle size={18} />}
+                      {selectedIncident.status === 'resolved' ? 'Case Resolved ✓' : 'Mark as Resolved'}
                     </button>
                   </div>
 

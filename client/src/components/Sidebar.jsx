@@ -15,7 +15,6 @@ const roleMenus = {
     { name: 'Safety Companion', icon: Navigation, path: '/user/safety' },
     { name: 'Report Incident', icon: AlertTriangle, path: '/user/report' },
     { name: 'Track Complaints', icon: FileText, path: '/user/tracking' },
-    { name: 'Emergency SOS', icon: Zap, path: '/user/sos' },
     { name: 'Safety Tips', icon: Heart, path: '/user/tips' },
     { name: 'Profile Settings', icon: User, path: '/user/profile' },
   ],

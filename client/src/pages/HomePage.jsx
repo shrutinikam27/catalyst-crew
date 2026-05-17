@@ -193,7 +193,7 @@ function HomePage() {
                 className="w-20 h-20 lg:w-24 lg:h-24 bg-red-600 rounded-full flex items-center justify-center text-white font-black text-xl lg:text-2xl shadow-[0_0_50px_rgba(220,38,38,0.5)] border-4 border-white dark:border-slate-900 animate-pulse-sos hover:scale-110 transition-transform active:scale-95 group relative overflow-hidden"
               >
                 <span className="relative z-10">SOS</span>
-                {sosClicks > 0 && <span className="absolute top-1 right-1 text-[10px] z-20 bg-white text-red-600 rounded-full w-4.5 h-4.5 flex items-center justify-center font-bold shadow-lg">{sosClicks}</span>}
+                {sosClicks > 0 && <span className="absolute top-0 right-0 text-xs z-20 bg-white text-red-600 rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-lg border-2 border-red-200">{sosClicks}</span>}
                 <div className="absolute inset-0 bg-red-400 animate-ping opacity-20"></div>
               </button>
               <div className="mt-3 lg:mt-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl lg:rounded-2xl border border-white/50 dark:border-slate-700 shadow-xl">

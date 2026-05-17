@@ -131,8 +131,8 @@ const Sidebar = ({ role = 'citizen', isOpen, onClose, onLogout, isVolunteer }) =
             <span>Logout</span>
           </button>
         </div>
-      </aside>
-    </>
+      </div>
+    </aside>
   );
 };
 

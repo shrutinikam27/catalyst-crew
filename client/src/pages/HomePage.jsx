@@ -157,7 +157,7 @@ function HomePage() {
             </div>
           </div>
 
-          <div className="relative animate-float hidden lg:block">
+          <div className="relative animate-float mt-20 lg:mt-0 px-4 lg:px-0">
             <img
               src={heroIllustration}
               alt="City Safety Illustration"
@@ -165,42 +165,42 @@ function HomePage() {
             />
 
             {/* Restored: Predictive Safety Score Card */}
-            <div className="absolute -top-40 -right-16 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-6 rounded-[2rem] shadow-2xl border border-white dark:border-slate-700 animate-float-delayed z-30">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 dark:shadow-none">
-                  <Activity size={24} />
+            <div className="absolute -top-16 right-2 lg:-top-40 lg:-right-16 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-4 lg:p-6 rounded-2xl lg:rounded-[2rem] shadow-2xl border border-white dark:border-slate-700 animate-float-delayed z-30 scale-90 lg:scale-100">
+              <div className="flex items-center gap-3 lg:gap-4 mb-2 lg:mb-4">
+                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-indigo-600 rounded-xl lg:rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 dark:shadow-none">
+                  <Activity size={20} className="lg:w-6 lg:h-6" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest block">Pune Safety Score</span>
+                  <span className="text-[9px] lg:text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest block">Pune Safety Score</span>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-black text-slate-800 dark:text-white">84</span>
-                    <span className="text-sm font-bold text-slate-400">/100</span>
+                    <span className="text-2xl lg:text-3xl font-black text-slate-800 dark:text-white">84</span>
+                    <span className="text-xs lg:text-sm font-bold text-slate-400">/100</span>
                   </div>
                 </div>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-2 lg:space-y-3">
                 <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                   <div className="h-full w-[84%] bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full"></div>
                 </div>
-                <p className="text-[10px] text-slate-500 font-medium">Predicted Risk: <span className="text-green-600 font-bold">LOW</span> for next 24h</p>
+                <p className="text-[9px] lg:text-[10px] text-slate-500 font-medium">Predicted Risk: <span className="text-green-600 font-bold">LOW</span> for next 24h</p>
               </div>
             </div>
 
             {/* Floating SOS Button - Triple Click Trigger */}
-            <div className="absolute top-0 -left-16 z-20 flex flex-col items-center">
+            <div className="absolute top-0 left-2 lg:-left-16 z-20 flex flex-col items-center scale-90 lg:scale-100">
               <button
                 onClick={handleSosClick}
-                className="w-24 h-24 bg-red-600 rounded-full flex items-center justify-center text-white font-black text-2xl shadow-[0_0_50px_rgba(220,38,38,0.5)] border-4 border-white dark:border-slate-900 animate-pulse-sos hover:scale-110 transition-transform active:scale-95 group relative overflow-hidden"
+                className="w-20 h-20 lg:w-24 lg:h-24 bg-red-600 rounded-full flex items-center justify-center text-white font-black text-xl lg:text-2xl shadow-[0_0_50px_rgba(220,38,38,0.5)] border-4 border-white dark:border-slate-900 animate-pulse-sos hover:scale-110 transition-transform active:scale-95 group relative overflow-hidden"
               >
                 <span className="relative z-10">SOS</span>
-                {sosClicks > 0 && <span className="absolute top-2 right-2 text-xs z-20 bg-white text-red-600 rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-lg">{sosClicks}</span>}
+                {sosClicks > 0 && <span className="absolute top-1 right-1 text-[10px] z-20 bg-white text-red-600 rounded-full w-4.5 h-4.5 flex items-center justify-center font-bold shadow-lg">{sosClicks}</span>}
                 <div className="absolute inset-0 bg-red-400 animate-ping opacity-20"></div>
               </button>
-              <div className="mt-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-2xl border border-white/50 dark:border-slate-700 shadow-xl">
-                <p className="text-[10px] font-black text-red-600 uppercase tracking-tighter text-center leading-tight">
+              <div className="mt-3 lg:mt-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl lg:rounded-2xl border border-white/50 dark:border-slate-700 shadow-xl">
+                <p className="text-[8px] lg:text-[10px] font-black text-red-600 uppercase tracking-tighter text-center leading-tight">
                   Triple Click <br /> for Emergency <br /> Options
                 </p>
-                <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/90 dark:bg-slate-800/90 border-t border-l border-white/50 dark:border-slate-700 rotate-45"></div>
+                <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 lg:w-4 h-3 lg:h-4 bg-white/90 dark:bg-slate-800/90 border-t border-l border-white/50 dark:border-slate-700 rotate-45"></div>
               </div>
             </div>
           </div>

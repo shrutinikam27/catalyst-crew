@@ -25,10 +25,8 @@ export function usePwaInstall() {
       setIsInstallable(true);
     };
 
-    // Force show banner on localhost for testing UI
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      setTimeout(() => setIsInstallable(true), 1500);
-    }
+    // Always show banner after 1.5s as fallback if event doesn't fire
+    const timer = setTimeout(() => setIsInstallable(true), 1500);
 
     window.addEventListener('beforeinstallprompt', handler);
     window.addEventListener('appinstalled', () => {
@@ -37,16 +35,26 @@ export function usePwaInstall() {
       setDeferredPrompt(null);
     });
 
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('beforeinstallprompt', handler);
+    };
   }, []);
 
   const promptInstall = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setIsInstalled(true);
-      setIsInstallable(false);
+    if (!deferredPrompt) {
+      alert("To install the app, please tap your browser menu (⋮ or ↗) and select 'Install App' or 'Add to Home screen'.");
+      return;
+    }
+    try {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setIsInstalled(true);
+        setIsInstallable(false);
+      }
+    } catch (error) {
+      console.error("Install prompt error:", error);
     }
     setDeferredPrompt(null);
   };

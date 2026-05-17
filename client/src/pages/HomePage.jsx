@@ -109,7 +109,7 @@ function HomePage() {
       {/* PWA Install Banner */}
       {isInstallable && !isInstalled && !installBannerDismissed && (
         <PwaInstallBanner
-          onInstall={() => { promptInstall(); setInstallBannerDismissed(true); }}
+          onInstall={() => { promptInstall(); }}
           onDismiss={() => setInstallBannerDismissed(true)}
         />
       )}

@@ -533,59 +533,71 @@ const AdminDashboard = () => {
               </div>
             ) : (
               displayedIncidents.map((log) => (
-                <div key={log.id} className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-transparent hover:border-indigo-500/20 transition-all group">
-                  <div className={cn(
-                    "w-1.5 h-10 rounded-full",
-                    log.severity === 'high' ? "bg-rose-500" : 
-                    log.severity === 'moderate' ? "bg-amber-500" : "bg-indigo-500"
-                  )}></div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">{log.category}</h4>
-                      <span className="text-[10px] font-bold text-slate-400">
-                        {log.timestamp?.toDate ? log.timestamp.toDate().toLocaleTimeString() : 'Just Now'}
-                      </span>
+                <div key={log.id} className="flex flex-col gap-3 p-5 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 hover:shadow-lg transition-all group">
+                  
+                  {/* Header: Category & Status */}
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <div className={cn(
+                        "w-2.5 h-2.5 rounded-full shadow-sm",
+                        log.severity === 'high' ? "bg-rose-500 animate-pulse shadow-rose-200 dark:shadow-none" : 
+                        log.severity === 'moderate' ? "bg-amber-500 shadow-amber-200 dark:shadow-none" : "bg-indigo-500 shadow-indigo-200 dark:shadow-none"
+                      )}></div>
+                      <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">{log.category}</h4>
                     </div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <MapPin size={10} className="text-slate-400" />
-                      <span className="text-[11px] font-medium text-slate-500 truncate max-w-[200px]">
+                    <span className={cn(
+                      "text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md border",
+                      log.status === 'Pending' ? "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:border-amber-900/30 dark:text-amber-400" : "bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-900/30 dark:text-emerald-400"
+                    )}>{log.status}</span>
+                  </div>
+                  
+                  {/* Body: Location & Time */}
+                  <div className="flex flex-col gap-2 pl-4 border-l-2 border-slate-100 dark:border-slate-700 ml-1 mt-1">
+                    <div className="flex items-start gap-2 text-slate-600 dark:text-slate-300">
+                      <MapPin size={14} className="text-indigo-500 shrink-0 mt-0.5" />
+                      <span className="text-xs font-bold leading-relaxed line-clamp-2">
                         {typeof log.location === 'object' ? log.location.address : log.location}
                       </span>
-                      <span className="text-indigo-500 text-xs mx-1">•</span>
-                      <span className={cn(
-                        "text-[11px] font-bold",
-                        log.status === 'Pending' ? "text-amber-500" : "text-emerald-500"
-                      )}>{log.status}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500">
+                      <Clock size={12} className="shrink-0" />
+                      <span className="text-[10px] font-bold tracking-widest uppercase">
+                        {log.timestamp?.toDate ? log.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just Now'}
+                      </span>
                     </div>
                   </div>
-                  {log.status === 'Pending' ? (
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => setSelectedReport(log)}
-                        className="px-3 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-black rounded-lg uppercase tracking-widest transition-all shadow-sm"
-                      >
-                        View
-                      </button>
-                      <button 
-                        onClick={() => handleUpdateStatus(log.id, 'Resolved')}
-                        className="px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-black rounded-lg uppercase tracking-widest transition-all shadow-sm"
-                      >
-                        Resolve
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => setSelectedReport(log)}
-                        className="px-3 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-black rounded-lg uppercase tracking-widest transition-all shadow-sm"
-                      >
-                        View
-                      </button>
-                      <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 rounded-lg">
-                        <CheckCircle size={16} />
-                      </div>
-                    </div>
-                  )}
+                  
+                  {/* Footer Actions */}
+                  <div className="flex gap-2 pl-4 ml-1 mt-2">
+                    {log.status === 'Pending' ? (
+                      <>
+                        <button 
+                          onClick={() => setSelectedReport(log)}
+                          className="flex-1 py-2 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-black rounded-lg uppercase tracking-widest transition-all"
+                        >
+                          View Details
+                        </button>
+                        <button 
+                          onClick={() => handleUpdateStatus(log.id, 'Resolved')}
+                          className="flex-1 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-black rounded-lg uppercase tracking-widest transition-all shadow-md shadow-emerald-200 dark:shadow-none"
+                        >
+                          Resolve Now
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button 
+                          onClick={() => setSelectedReport(log)}
+                          className="flex-1 py-2 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-black rounded-lg uppercase tracking-widest transition-all"
+                        >
+                          View Details
+                        </button>
+                        <div className="flex-1 py-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30 rounded-lg flex items-center justify-center gap-1.5 text-[10px] font-black uppercase tracking-widest cursor-default">
+                          Resolved <CheckCircle size={12} />
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               ))
             )}

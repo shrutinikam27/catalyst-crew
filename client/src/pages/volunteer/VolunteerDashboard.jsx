@@ -89,7 +89,7 @@ const VolunteerDashboard = () => {
   return (
     <div className="space-y-8">
       {/* Header with Stats */}
-      <div className="grid lg:grid-cols-[1fr_350px] gap-8 items-start">
+      <div className="flex flex-col-reverse lg:grid lg:grid-cols-[1fr_350px] gap-8 items-start">
         <div className="space-y-8">
           <div>
             <h1 className="text-3xl font-outfit font-extrabold text-slate-900 dark:text-white">

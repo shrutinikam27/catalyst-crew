@@ -805,10 +805,10 @@ const AdminDashboard = () => {
 
       {/* Volunteer Verification Hub */}
       <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h3 className="text-xl font-bold font-outfit text-slate-900 dark:text-white">Volunteer Verification Hub</h3>
-            <p className="text-sm text-slate-500 font-medium">Review government IDs and expertise of applicants.</p>
+            <p className="text-sm text-slate-500 font-medium mt-1">Review government IDs and expertise of applicants.</p>
           </div>
           <div className="px-4 py-2 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-rose-100 dark:border-rose-900/30">
             {volunteers.length} Pending Requests
@@ -827,10 +827,10 @@ const AdminDashboard = () => {
             <table className="w-full text-left">
               <thead className="bg-slate-50 dark:bg-slate-800/50">
                 <tr>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Applicant</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Expertise</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Verification Proof</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Applicant</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Expertise</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Verification Proof</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
@@ -868,7 +868,7 @@ const AdminDashboard = () => {
                         <span className="text-slate-300 text-[10px] font-bold uppercase italic">No Proof Uploaded</span>
                       )}
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-8 py-6 whitespace-nowrap">
                       <div className="flex gap-2">
                         <button 
                           onClick={() => handleVolunteerAction(vol, 'approved')}

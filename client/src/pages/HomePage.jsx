@@ -120,11 +120,11 @@ function HomePage() {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-full text-xs font-bold ring-1 ring-indigo-100 dark:ring-indigo-800">
               <span className="animate-pulse">🛰️</span> Smart Urban Risk Mapping & Citizen Safety
             </div>
-            <h1 className="text-6xl font-outfit font-extrabold text-[#1E293B] dark:text-white leading-[1.1]">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-outfit font-extrabold text-[#1E293B] dark:text-white leading-[1.1]">
               Predictive Intelligence <br />
               for <span className="text-indigo-600 dark:text-indigo-400">Urban Safety</span>
             </h1>
-            <p className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed max-w-lg">
+            <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 leading-relaxed max-w-lg">
               SafeLinks empowers the citizens and authorities of Pune with real-time risk mapping, civic grievance tracking, and AI-driven emergency response prioritization.
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
@@ -157,7 +157,7 @@ function HomePage() {
             </div>
           </div>
 
-          <div className="relative animate-float lg:block">
+          <div className="relative animate-float hidden lg:block">
             <img
               src={heroIllustration}
               alt="City Safety Illustration"
@@ -214,9 +214,9 @@ function HomePage() {
 
       {/* Analytics & Grievance Section */}
       <section className="px-6 max-w-[1400px] mx-auto mb-24">
-        <div className="bg-indigo-600 rounded-[3rem] p-12 lg:p-20 text-white relative overflow-hidden">
+        <div className="bg-indigo-600 rounded-3xl sm:rounded-[3rem] p-6 sm:p-12 lg:p-20 text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-1/2 h-full bg-white/5 skew-x-12 translate-x-1/4"></div>
-          <div className="relative z-10 grid lg:grid-cols-2 gap-16 items-center">
+          <div className="relative z-10 grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             <div>
               <h2 className="text-4xl lg:text-5xl font-outfit font-black mb-6 leading-tight">
                 Empowering Governance <br /> with Data
@@ -241,22 +241,22 @@ function HomePage() {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20">
-                <div className="text-4xl font-black mb-2">452</div>
-                <p className="text-indigo-100 text-xs font-bold uppercase tracking-widest">Active Grievances</p>
+            <div className="grid grid-cols-2 gap-4 sm:gap-6">
+              <div className="bg-white/10 backdrop-blur-md p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-white/20">
+                <div className="text-2xl sm:text-4xl font-black mb-2">452</div>
+                <p className="text-indigo-100 text-[10px] sm:text-xs font-bold uppercase tracking-widest">Active Grievances</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20">
-                <div className="text-4xl font-black mb-2">92%</div>
-                <p className="text-indigo-100 text-xs font-bold uppercase tracking-widest">Resolution Rate</p>
+              <div className="bg-white/10 backdrop-blur-md p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-white/20">
+                <div className="text-2xl sm:text-4xl font-black mb-2">92%</div>
+                <p className="text-indigo-100 text-[10px] sm:text-xs font-bold uppercase tracking-widest">Resolution Rate</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20">
-                <div className="text-4xl font-black mb-2">12m</div>
-                <p className="text-indigo-100 text-xs font-bold uppercase tracking-widest">Avg Response Time</p>
+              <div className="bg-white/10 backdrop-blur-md p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-white/20">
+                <div className="text-2xl sm:text-4xl font-black mb-2">12m</div>
+                <p className="text-indigo-100 text-[10px] sm:text-xs font-bold uppercase tracking-widest">Avg Response Time</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20">
-                <div className="text-4xl font-black mb-2">6.4k</div>
-                <p className="text-indigo-100 text-xs font-bold uppercase tracking-widest">Monthly Reports</p>
+              <div className="bg-white/10 backdrop-blur-md p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-white/20">
+                <div className="text-2xl sm:text-4xl font-black mb-2">6.4k</div>
+                <p className="text-indigo-100 text-[10px] sm:text-xs font-bold uppercase tracking-widest">Monthly Reports</p>
               </div>
             </div>
           </div>

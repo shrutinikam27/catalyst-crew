@@ -37,13 +37,13 @@ const AlertCard = ({ title, type, location, time, severity = 'moderate', onClick
           </span>
         </div>
         <p className="text-xs font-medium opacity-80 mb-2 truncate">{type}</p>
-        <div className="flex items-center gap-3 opacity-70">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 opacity-70">
           <div className="flex items-center gap-1 text-[10px] font-bold">
-            <MapPin size={10} />
-            {location}
+            <MapPin size={10} className="shrink-0" />
+            <span className="truncate">{location}</span>
           </div>
-          <div className="flex items-center gap-1 text-[10px] font-bold">
-            <Clock size={10} />
+          <div className="flex items-center gap-1 text-[10px] font-bold shrink-0">
+            <Clock size={10} className="shrink-0" />
             {time}
           </div>
         </div>

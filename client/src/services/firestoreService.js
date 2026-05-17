@@ -46,7 +46,8 @@ const COLLECTIONS = {
   NOTIFICATIONS: 'notifications',
   RESPONSE_TEAMS: 'response_teams',
   CITIZEN_REPORTS: 'citizen_reports',
-  RISK_ZONES: 'risk_zones'
+  RISK_ZONES: 'risk_zones',
+  VOLUNTEERS: 'volunteerRequests'
 };
 
 // ─── Generic CRUD ─────────────────────────────────────────────────────

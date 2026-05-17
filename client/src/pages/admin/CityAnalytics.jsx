@@ -7,7 +7,7 @@ import {
 } from 'recharts';
 import { 
   TrendingUp, Users, AlertTriangle, Shield, 
-  Map as MapIcon, Calendar, Filter, Download, X, Mail, FileText
+  Map as MapIcon, Calendar, Filter, Download, X, Mail, FileText, ChevronRight
 } from 'lucide-react';
 import { db } from '../../firebase/config';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
@@ -15,7 +15,7 @@ import { cn } from '../../utils/cn';
 
 // PDF Generation
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#f43f5e', '#8b5cf6'];
 
@@ -38,10 +38,10 @@ const CityAnalytics = () => {
     ];
 
     const tableRows = reportData.map(inc => [
-      inc.id.substring(0, 8),
-      inc.category,
-      inc.title,
-      inc.status,
+      inc.id ? String(inc.id).substring(0, 8) : "N/A",
+      inc.category || "General",
+      inc.title || "Civic Incident",
+      inc.status || "Pending",
       inc.timestamp?.toDate ? inc.timestamp.toDate().toLocaleString() : "Recently"
     ]);
 
@@ -55,7 +55,7 @@ const CityAnalytics = () => {
     doc.text(`SafeLink Platform - City Command Hub`, 14, 35);
     doc.text(`Report Status: ${incidents.length > 0 ? 'LIVE DATABASE' : 'DEMONSTRATION DATA'}`, 14, 40);
 
-    doc.autoTable({ 
+    autoTable(doc, { 
       head: [tableColumn], 
       body: tableRows, 
       startY: 48,
@@ -64,7 +64,8 @@ const CityAnalytics = () => {
       styles: { fontSize: 8 }
     });
 
-    doc.save(`SafeLink_City_Report_${Date.now()}.pdf`);
+    const pdfUrl = doc.output('bloburl');
+    window.open(pdfUrl, '_blank');
   };
 
   const handleExport = async (method) => {
@@ -145,16 +146,10 @@ const CityAnalytics = () => {
             <Calendar size={14} /> Last 7 Days
           </button>
           <button 
-            onClick={() => handleExport('pdf')}
-            disabled={isExporting}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50"
+            onClick={() => setIsExportOpen(true)}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
           >
-            {isExporting ? (
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            ) : (
-              <Download size={14} />
-            )}
-            {isExporting ? "Generating PDF..." : "Export Data (PDF)"}
+            <Download size={14} /> Export Report
           </button>
         </div>
       </div>

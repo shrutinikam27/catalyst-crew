@@ -122,29 +122,29 @@ const ComplaintTracking = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-3xl font-outfit font-extrabold text-slate-900 dark:text-white">Track Complaints</h1>
+          <h1 className="text-2xl sm:text-3xl font-outfit font-extrabold text-slate-900 dark:text-white">Track Complaints</h1>
           <p className="text-slate-500 dark:text-slate-400 font-medium">
             Monitor the status of your reported issues in real-time.
             {complaints.length > 0 && <span className="text-indigo-600 font-bold"> ({complaints.length} filed)</span>}
           </p>
         </div>
-        <div className="flex gap-2">
-          <div className="relative group">
+        <div className="flex flex-col sm:flex-row gap-2">
+          <div className="relative group flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-indigo-600 transition-colors" size={16} />
             <input 
               type="text" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search complaints..." 
-              className="pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 w-48 transition-all dark:text-white"
+              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 transition-all dark:text-white"
             />
           </div>
           <select 
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-xs dark:text-white"
+            className="w-full sm:w-auto px-3 py-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-xs dark:text-white"
           >
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
@@ -155,7 +155,7 @@ const ComplaintTracking = () => {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-[1fr_350px] gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-8">
         <div className="space-y-6">
           {/* Stats Bar */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

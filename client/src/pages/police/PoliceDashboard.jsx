@@ -137,7 +137,7 @@ const PoliceDashboard = () => {
       </div>
 
       {/* Chart */}
-      <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
         <ChartCard title="Incident Frequency vs Resolutions" subtitle="Monthly tracking of precinct performance">
           {isMounted && (
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
@@ -240,56 +240,98 @@ const PoliceDashboard = () => {
             <p className="text-sm font-bold uppercase tracking-widest">No {tab} requests</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-slate-50 dark:bg-slate-800/50">
-                <tr>
-                  <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Name</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Email</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Phone</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Expertise</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">ID Proof</th>
-                  {tab === 'pending' && <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Actions</th>}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {filtered.map(row => (
-                  <tr key={row.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                    <td className="px-6 py-4 text-xs font-semibold text-slate-700 dark:text-slate-300">{row.name}</td>
-                    <td className="px-6 py-4 text-xs font-medium text-slate-500">{row.email}</td>
-                    <td className="px-6 py-4 text-xs font-medium text-slate-500">{row.phone || '—'}</td>
-                    <td className="px-6 py-4">
-                      {(row.expertise || []).map(e => (
-                        <span key={e} className="mr-1 px-2 py-1 rounded text-[10px] font-extrabold uppercase bg-indigo-100 text-indigo-600">{e}</span>
-                      ))}
-                    </td>
-                    <td className="px-6 py-4 text-xs font-medium text-slate-500">{row.idFileName || '—'}</td>
+          <div>
+            {/* Mobile card view */}
+            <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+              {filtered.map(row => (
+                <div key={row.id} className="p-5 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-bold text-sm text-slate-800 dark:text-slate-200">{row.name}</p>
+                      <p className="text-xs text-slate-500 break-all">{row.email}</p>
+                    </div>
                     {tab === 'pending' && (
-                      <td className="px-6 py-4">
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleAction(row.id, 'approved')}
-                            disabled={!!actionLoading}
-                            className="flex items-center gap-1 px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-bold rounded uppercase transition-colors disabled:opacity-60"
-                          >
-                            {actionLoading === row.id + 'approved' ? <Loader2 size={12} className="animate-spin" /> : <UserCheck size={12} />}
-                            Verify
-                          </button>
-                          <button
-                            onClick={() => handleAction(row.id, 'rejected')}
-                            disabled={!!actionLoading}
-                            className="flex items-center gap-1 px-3 py-1 bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-bold rounded uppercase transition-colors disabled:opacity-60"
-                          >
-                            {actionLoading === row.id + 'rejected' ? <Loader2 size={12} className="animate-spin" /> : <UserX size={12} />}
-                            Reject
-                          </button>
-                        </div>
-                      </td>
+                      <div className="flex gap-2 shrink-0">
+                        <button
+                          onClick={() => handleAction(row.id, 'approved')}
+                          disabled={!!actionLoading}
+                          className="flex items-center gap-1 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-bold rounded-lg uppercase transition-colors disabled:opacity-60"
+                        >
+                          {actionLoading === row.id + 'approved' ? <Loader2 size={12} className="animate-spin" /> : <UserCheck size={12} />}
+                          Verify
+                        </button>
+                        <button
+                          onClick={() => handleAction(row.id, 'rejected')}
+                          disabled={!!actionLoading}
+                          className="flex items-center gap-1 px-3 py-1.5 bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-bold rounded-lg uppercase transition-colors disabled:opacity-60"
+                        >
+                          {actionLoading === row.id + 'rejected' ? <Loader2 size={12} className="animate-spin" /> : <UserX size={12} />}
+                          Reject
+                        </button>
+                      </div>
                     )}
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs">
+                    {row.phone && <span className="text-slate-500">{row.phone}</span>}
+                    {(row.expertise || []).map(e => (
+                      <span key={e} className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-indigo-100 text-indigo-600">{e}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Desktop table view */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="bg-slate-50 dark:bg-slate-800/50">
+                  <tr>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Name</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Email</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Phone</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Expertise</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">ID Proof</th>
+                    {tab === 'pending' && <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Actions</th>}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  {filtered.map(row => (
+                    <tr key={row.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                      <td className="px-6 py-4 text-xs font-semibold text-slate-700 dark:text-slate-300">{row.name}</td>
+                      <td className="px-6 py-4 text-xs font-medium text-slate-500">{row.email}</td>
+                      <td className="px-6 py-4 text-xs font-medium text-slate-500">{row.phone || '—'}</td>
+                      <td className="px-6 py-4">
+                        {(row.expertise || []).map(e => (
+                          <span key={e} className="mr-1 px-2 py-1 rounded text-[10px] font-extrabold uppercase bg-indigo-100 text-indigo-600">{e}</span>
+                        ))}
+                      </td>
+                      <td className="px-6 py-4 text-xs font-medium text-slate-500">{row.idFileName || '—'}</td>
+                      {tab === 'pending' && (
+                        <td className="px-6 py-4">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleAction(row.id, 'approved')}
+                              disabled={!!actionLoading}
+                              className="flex items-center gap-1 px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-bold rounded uppercase transition-colors disabled:opacity-60"
+                            >
+                              {actionLoading === row.id + 'approved' ? <Loader2 size={12} className="animate-spin" /> : <UserCheck size={12} />}
+                              Verify
+                            </button>
+                            <button
+                              onClick={() => handleAction(row.id, 'rejected')}
+                              disabled={!!actionLoading}
+                              className="flex items-center gap-1 px-3 py-1 bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-bold rounded uppercase transition-colors disabled:opacity-60"
+                            >
+                              {actionLoading === row.id + 'rejected' ? <Loader2 size={12} className="animate-spin" /> : <UserX size={12} />}
+                              Reject
+                            </button>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

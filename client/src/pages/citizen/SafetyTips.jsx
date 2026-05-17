@@ -219,7 +219,7 @@ const SafetyTips = () => {
       />
 
       {/* Header section */}
-      <div className="relative p-10 rounded-[2.5rem] bg-indigo-600 overflow-hidden text-white shadow-2xl">
+      <div className="relative p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] bg-indigo-600 overflow-hidden text-white shadow-2xl">
         <div className="relative z-10 max-w-2xl">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -235,7 +235,7 @@ const SafetyTips = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl md:text-5xl font-outfit font-black mb-4 leading-tight"
+            className="text-3xl sm:text-4xl md:text-5xl font-outfit font-black mb-4 leading-tight"
           >
             Urban Safety <br /> Handbook
           </motion.h1>
@@ -347,7 +347,7 @@ const SafetyTips = () => {
 
       {/* Citizen Safety Charter */}
       <div className="mt-12 p-10 rounded-[2.5rem] bg-slate-900 dark:bg-indigo-900/10 border border-slate-800 dark:border-indigo-500/20 text-white relative overflow-hidden">
-        <div className="relative z-10 grid md:grid-cols-[1fr_300px] gap-10 items-center">
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-[1fr_300px] gap-8 md:gap-10 items-center">
           <div className="space-y-6">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">

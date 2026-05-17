@@ -269,28 +269,18 @@ const ReportIncident = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
-      {/* Notifications */}
+      {/* Error Banner */}
       <AnimatePresence>
-        {status && (
+        {error && (
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className={cn(
-              "fixed top-24 left-1/2 -translate-x-1/2 z-[60] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 min-w-[320px]",
-              status === 'success' ? "bg-emerald-600 text-white" : "bg-rose-600 text-white"
-            )}
+            className="fixed top-24 left-1/2 -translate-x-1/2 z-[60] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 min-w-[320px] max-w-[90vw] bg-rose-600 text-white"
           >
-            {status === 'success' ? <CheckCircle2 size={24} /> : <AlertTriangle size={24} />}
-            <div>
-              <p className="font-bold text-sm">
-                {status === 'success' ? "Report Submitted Successfully!" : "Submission Failed"}
-              </p>
-              <p className="text-[10px] opacity-80 font-medium">
-                {status === 'success' ? "Authorities have been notified and will respond shortly." : "There was an error connecting to Firestore."}
-              </p>
-            </div>
-            <button onClick={() => setStatus(null)} className="ml-auto opacity-70 hover:opacity-100">
+            <AlertTriangle size={24} className="shrink-0" />
+            <p className="font-bold text-sm flex-1">{error}</p>
+            <button onClick={() => setError(null)} className="ml-auto opacity-70 hover:opacity-100 shrink-0">
               <X size={18} />
             </button>
           </motion.div>
@@ -299,14 +289,14 @@ const ReportIncident = () => {
 
       {/* Header */}
       <div className="text-center space-y-2">
-        <div className="w-16 h-16 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
-          <ShieldAlert size={32} />
+        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+          <ShieldAlert size={28} />
         </div>
-        <h1 className="text-3xl font-outfit font-extrabold text-slate-900 dark:text-white">Report an Incident</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-medium">Your reports help authorities respond faster and keep the city safe.</p>
+        <h1 className="text-2xl sm:text-3xl font-outfit font-extrabold text-slate-900 dark:text-white">Report an Incident</h1>
+        <p className="text-slate-500 dark:text-slate-400 font-medium text-sm sm:text-base">Your reports help authorities respond faster and keep the city safe.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="grid md:grid-cols-[1fr_300px] gap-8">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-8">
         {/* Form */}
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-100 dark:border-slate-800 shadow-sm space-y-6">
           {error && (
@@ -354,7 +344,6 @@ const ReportIncident = () => {
                 <div className="flex gap-2">
                   {['low', 'moderate', 'high'].map((lvl) => (
                     <button 
-                      type="button"
                       key={lvl}
                       type="button"
                       onClick={() => setForm(prev => ({ ...prev, severity: lvl }))}

@@ -69,20 +69,20 @@ const Sidebar = ({ role = 'citizen', isOpen, onClose, onLogout, isVolunteer }) =
     )}>
       <div className="flex flex-col h-full">
         {/* Brand */}
-        <div className="p-6">
+        <div className="relative p-6">
           <Link to="/" className="flex items-center gap-3 group" onClick={onClose}>
-            <div className="p-2 bg-indigo-600 rounded-lg text-white shadow-lg shadow-indigo-200 lg:shadow-none group-hover:scale-110 transition-transform">
+            <div className="p-2 bg-indigo-600 rounded-lg text-white shadow-lg shadow-indigo-200 lg:shadow-none group-hover:scale-110 transition-transform shrink-0">
               <Shield size={20} />
             </div>
-            <div>
-              <h2 className="text-xl font-outfit font-bold text-white lg:text-slate-900 lg:dark:text-white leading-tight">SafeLink</h2>
+            <div className="min-w-0">
+              <h2 className="text-xl font-outfit font-bold text-white lg:text-slate-900 lg:dark:text-white leading-tight truncate">SafeLink</h2>
               <p className="text-[10px] text-indigo-300 lg:text-slate-500 font-bold uppercase tracking-widest">{role} Portal</p>
             </div>
           </Link>
-          {/* Close button — mobile only */}
+          {/* Close button — mobile only, absolutely positioned */}
           <button
             onClick={onClose}
-            className="lg:hidden p-1.5 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="lg:hidden absolute top-4 right-4 p-1.5 rounded-xl text-indigo-300 hover:bg-indigo-900/40 transition-colors"
             aria-label="Close sidebar"
           >
             <X size={18} />

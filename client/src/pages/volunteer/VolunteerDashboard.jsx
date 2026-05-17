@@ -15,7 +15,7 @@ import {
   acceptSosAlert,
   buildGoogleMapsUrl,
 } from '../../firebase/sosService';
-import { collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { collection, query, where, getDocs, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 
 // Inline type meta so we don't need a separate import

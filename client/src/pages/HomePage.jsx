@@ -130,15 +130,15 @@ function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <button
-                onClick={() => navigate('/report', { state: { category: 'civic' } })}
-                className="px-6 sm:px-8 py-4 bg-indigo-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 dark:shadow-none group"
+                onClick={() => navigate(currentUser ? '/report' : '/login', { state: { category: 'civic' } })}
+                className="px-6 sm:px-8 py-4 bg-indigo-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 dark:shadow-none group w-full sm:w-auto"
               >
                 <svg className="w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                 Report Civic Issue
               </button>
               <button
                 onClick={() => navigate('/user/map')}
-                className="px-6 sm:px-8 py-4 bg-white dark:bg-slate-800 border-2 border-indigo-100 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-50 dark:hover:bg-slate-700 transition-all"
+                className="px-6 sm:px-8 py-4 bg-white dark:bg-slate-800 border-2 border-indigo-100 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-50 dark:hover:bg-slate-700 transition-all w-full sm:w-auto"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
                 Explore Live Map
@@ -159,43 +159,49 @@ function HomePage() {
           </div>
 
           {/* Hero illustration — hidden on mobile, shown on lg+ */}
-          <div className="relative animate-float hidden lg:block">
+          <div className="relative animate-float hidden lg:block px-4 lg:px-0">
             <img
               src={heroIllustration}
               alt="City Safety Illustration"
               className="w-full h-auto drop-shadow-2xl dark:opacity-80 lg:translate-x-12 rounded-[2rem]"
             />
-            {/* Safety Score overlay card */}
-            <div className="absolute -top-36 -right-8 xl:-top-40 xl:-right-16 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-5 rounded-[2rem] shadow-2xl border border-white dark:border-slate-700 animate-float-delayed z-30">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 dark:shadow-none">
-                  <Activity size={24} />
+            {/* Predictive Safety Score Card */}
+            <div className="absolute -top-16 right-2 lg:-top-40 lg:-right-16 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-4 lg:p-6 rounded-2xl lg:rounded-[2rem] shadow-2xl border border-white dark:border-slate-700 animate-float-delayed z-30 scale-90 lg:scale-100">
+              <div className="flex items-center gap-3 lg:gap-4 mb-2 lg:mb-4">
+                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-indigo-600 rounded-xl lg:rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 dark:shadow-none">
+                  <Activity size={20} className="lg:w-6 lg:h-6" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest block">Pune Safety Score</span>
+                  <span className="text-[9px] lg:text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest block">Pune Safety Score</span>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-black text-slate-800 dark:text-white">84</span>
-                    <span className="text-sm font-bold text-slate-400">/100</span>
+                    <span className="text-2xl lg:text-3xl font-black text-slate-800 dark:text-white">84</span>
+                    <span className="text-xs lg:text-sm font-bold text-slate-400">/100</span>
                   </div>
                 </div>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-2 lg:space-y-3">
                 <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                   <div className="h-full w-[84%] bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full"></div>
                 </div>
-                <p className="text-[10px] text-slate-500 font-medium">Predicted Risk: <span className="text-green-600 font-bold">LOW</span> for next 24h</p>
+                <p className="text-[9px] lg:text-[10px] text-slate-500 font-medium">Predicted Risk: <span className="text-green-600 font-bold">LOW</span> for next 24h</p>
               </div>
             </div>
-            {/* SOS button overlay */}
-            <div className="absolute top-4 -left-12 z-20 flex flex-col items-center">
+            {/* Floating SOS Button - Triple Click Trigger */}
+            <div className="absolute top-0 left-2 lg:-left-16 z-20 flex flex-col items-center scale-90 lg:scale-100">
               <button
                 onClick={handleSosClick}
-                className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center text-white font-black text-xl shadow-[0_0_50px_rgba(220,38,38,0.5)] border-4 border-white dark:border-slate-900 animate-pulse-sos hover:scale-110 transition-transform active:scale-95 group relative overflow-hidden"
+                className="w-20 h-20 lg:w-24 lg:h-24 bg-red-600 rounded-full flex items-center justify-center text-white font-black text-xl lg:text-2xl shadow-[0_0_50px_rgba(220,38,38,0.5)] border-4 border-white dark:border-slate-900 animate-pulse-sos hover:scale-110 transition-transform active:scale-95 group relative overflow-hidden"
               >
                 <span className="relative z-10">SOS</span>
-                {sosClicks > 0 && <span className="absolute top-1.5 right-1.5 text-xs z-20 bg-white text-red-600 rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-lg">{sosClicks}</span>}
+                {sosClicks > 0 && <span className="absolute top-1 right-1 text-[10px] z-20 bg-white text-red-600 rounded-full w-4.5 h-4.5 flex items-center justify-center font-bold shadow-lg">{sosClicks}</span>}
                 <div className="absolute inset-0 bg-red-400 animate-ping opacity-20"></div>
               </button>
+              <div className="mt-3 lg:mt-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl lg:rounded-2xl border border-white/50 dark:border-slate-700 shadow-xl">
+                <p className="text-[8px] lg:text-[10px] font-black text-red-600 uppercase tracking-tighter text-center leading-tight">
+                  Triple Click <br /> for Emergency <br /> Options
+                </p>
+                <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 lg:w-4 h-3 lg:h-4 bg-white/90 dark:bg-slate-800/90 border-t border-l border-white/50 dark:border-slate-700 rotate-45"></div>
+              </div>
             </div>
           </div>
 

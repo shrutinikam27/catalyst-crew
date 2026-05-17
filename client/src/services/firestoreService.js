@@ -330,19 +330,25 @@ export const createAlert = async (alertData) => {
 export const subscribeToAlerts = (callback, targetRole = null) => {
   const filters = [{ field: 'isActive', operator: '==', value: true }];
   
-  // Fetch active alerts and filter by targetRole in-memory to prevent index errors
+  // Fetch active alerts and filter/sort in-memory to prevent index errors
   return subscribeToCollection(COLLECTIONS.ALERTS, (alerts) => {
+    const sorted = [...alerts].sort((a, b) => {
+      const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+      const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+      return timeB - timeA;
+    });
+
     if (!targetRole) {
-      callback(alerts);
+      callback(sorted);
       return;
     }
-    const filtered = alerts.filter(alert => 
+    const filtered = sorted.filter(alert => 
       !alert.targetRoles || 
       alert.targetRoles.length === 0 || 
       alert.targetRoles.includes(targetRole)
     );
     callback(filtered);
-  }, filters);
+  }, filters, null);
 };
 
 // ─── Hotspot Services ────────────────────────────────────────────────

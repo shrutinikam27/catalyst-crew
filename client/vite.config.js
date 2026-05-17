@@ -11,6 +11,9 @@ export default defineConfig({
       devOptions: {
         enabled: true // Forces PWA to work in npm run dev!
       },
+      workbox: {
+        maximumFileSizeToCacheInBytes: 5242880 // 5MB limit
+      },
       manifest: {
         name: "SafeLink - Smart City Safety",
         short_name: "SafeLink",

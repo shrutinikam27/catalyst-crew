@@ -489,7 +489,7 @@ const AdminDashboard = () => {
           </div>
         </ChartCard>
 
-        <ChartCard title="Crime & Civic Issue Hotspots" subtitle="Real-time emergency & grievance mapping" className="lg:col-span-2">
+        <ChartCard title="Crime & Civic Issue Hotspots" subtitle="Real-time emergency & grievance mapping">
           <div className="space-y-4 overflow-y-auto max-h-[250px] pr-2 scrollbar-hide">
             {incidents.length === 0 ? (
               <div className="py-12 text-center text-slate-400 font-bold uppercase text-xs tracking-widest">
@@ -615,7 +615,6 @@ const AdminDashboard = () => {
            </div>
         </div>
       </div>
-
       {/* Settings Modal */}
       {isSettingsOpen && (
         <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4">
@@ -712,62 +711,6 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* Reply Modal */}
-      {selectedInquiry && (
-        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-            onClick={() => setSelectedInquiry(null)}
-          />
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl relative z-10 border border-slate-100 dark:border-slate-800"
-          >
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h3 className="text-xl font-outfit font-black text-slate-900 dark:text-white">Reply to Citizen</h3>
-                <p className="text-xs text-slate-500 font-medium mt-1">Inquiry from {selectedInquiry.name}</p>
-              </div>
-              <button 
-                onClick={() => setSelectedInquiry(null)}
-                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl mb-6 italic text-sm text-slate-600 dark:text-slate-400">
-              "{selectedInquiry.message}"
-            </div>
-
-            <div className="space-y-4">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Your Response</label>
-              <textarea 
-                className="w-full h-32 bg-slate-50 dark:bg-slate-800 border-none ring-1 ring-slate-100 dark:ring-slate-700 rounded-2xl p-4 text-sm focus:ring-2 focus:ring-indigo-600 transition-all dark:text-white"
-                placeholder="Type your reply here..."
-                value={replyMessage}
-                onChange={(e) => setReplyMessage(e.target.value)}
-              />
-              <button 
-                onClick={handleSendReply}
-                disabled={isSending || !replyMessage.trim()}
-                className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50 disabled:shadow-none"
-              >
-                {isSending ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                ) : (
-                  <>
-                    <Mail size={18} /> Send Official Reply
-                  </>
-                )}
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
 
       {/* View Report Modal */}
       {selectedReport && (
@@ -922,10 +865,10 @@ const AdminDashboard = () => {
 
       {/* Volunteer Verification Hub */}
       <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h3 className="text-xl font-bold font-outfit text-slate-900 dark:text-white">Volunteer Verification Hub</h3>
-            <p className="text-sm text-slate-500 font-medium">Review government IDs and expertise of applicants.</p>
+            <p className="text-sm text-slate-500 font-medium mt-1">Review government IDs and expertise of applicants.</p>
           </div>
           <div className="px-4 py-2 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-rose-100 dark:border-rose-900/30">
             {volunteers.length} Pending Requests
@@ -944,10 +887,10 @@ const AdminDashboard = () => {
             <table className="w-full text-left">
               <thead className="bg-slate-50 dark:bg-slate-800/50">
                 <tr>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Applicant</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Expertise</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Verification Proof</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Applicant</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Expertise</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Verification Proof</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
@@ -985,7 +928,7 @@ const AdminDashboard = () => {
                         <span className="text-slate-300 text-[10px] font-bold uppercase italic">No Proof Uploaded</span>
                       )}
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-8 py-6 whitespace-nowrap">
                       <div className="flex gap-2">
                         <button 
                           onClick={() => handleVolunteerAction(vol, 'approved')}

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../firebase/AuthContext';
 import { db } from '../firebase/config';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Shield, Mail, Lock, Eye, EyeOff, 
   ArrowRight, Phone, AlertTriangle,
@@ -24,6 +24,7 @@ function LoginPage() {
   const [loginMethod, setLoginMethod] = useState('email'); // email, phone
   const { login, loginWithGoogle, logout, setupRecaptcha, loginWithPhone, resetPassword } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
@@ -86,7 +87,8 @@ function LoginPage() {
           await logout();
           return setError('Your application was rejected. Please contact the admin.');
         }
-        navigate('/volunteer');
+        const from = location.state?.from || '/volunteer';
+        navigate(from, { state: { category: location.state?.category } });
         return;
       }
 
@@ -135,7 +137,10 @@ function LoginPage() {
     else if (email.includes('volunteer')) navigate('/volunteer');
     else if (email.includes('hospital')) navigate('/hospital');
     else if (email.includes('fire')) navigate('/fire');
-    else navigate('/user');
+    else {
+      const from = location.state?.from || '/user';
+      navigate(from, { state: { category: location.state?.category } });
+    }
   };
 
   return (

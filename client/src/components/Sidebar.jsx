@@ -63,19 +63,20 @@ const Sidebar = ({ role = 'citizen', isOpen, onClose, onLogout, isVolunteer }) =
 
   return (
     <aside className={cn(
-      "fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 transition-transform duration-300 lg:translate-x-0",
+      "fixed inset-y-0 left-0 z-50 w-64 transition-transform duration-300 lg:translate-x-0",
+      "bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950/95 border-r border-indigo-950 lg:bg-none lg:bg-white lg:dark:bg-slate-900 lg:border-r lg:border-slate-100 lg:dark:border-slate-800",
       isOpen ? "translate-x-0" : "-translate-x-full"
     )}>
       <div className="flex flex-col h-full">
         {/* Brand */}
         <div className="p-6">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="p-2 bg-indigo-600 rounded-lg text-white shadow-lg shadow-indigo-200 dark:shadow-none group-hover:scale-110 transition-transform">
+            <div className="p-2 bg-indigo-600 rounded-lg text-white shadow-lg shadow-indigo-200 lg:shadow-none group-hover:scale-110 transition-transform">
               <Shield size={20} />
             </div>
             <div>
-              <h2 className="text-xl font-outfit font-bold text-slate-900 dark:text-white leading-tight">SafeLink</h2>
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{role} Portal</p>
+              <h2 className="text-xl font-outfit font-bold text-white lg:text-slate-900 lg:dark:text-white leading-tight">SafeLink</h2>
+              <p className="text-[10px] text-indigo-300 lg:text-slate-500 font-bold uppercase tracking-widest">{role} Portal</p>
             </div>
           </Link>
         </div>
@@ -91,11 +92,11 @@ const Sidebar = ({ role = 'citizen', isOpen, onClose, onLogout, isVolunteer }) =
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all group",
                   isActive 
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-100 dark:shadow-none" 
-                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    ? "bg-indigo-600 text-white shadow-lg lg:shadow-indigo-100 lg:dark:shadow-none" 
+                    : "text-indigo-200/70 hover:bg-indigo-900/30 hover:text-white lg:text-slate-500 lg:dark:text-slate-400 lg:hover:bg-slate-50 lg:dark:hover:bg-slate-800 lg:hover:text-indigo-600 lg:dark:hover:text-indigo-400"
                 )}
               >
-                <item.icon size={18} className={cn("transition-colors", isActive ? "text-white" : "group-hover:text-indigo-600")} />
+                <item.icon size={18} className={cn("transition-colors", isActive ? "text-white" : "text-indigo-300/50 group-hover:text-white lg:text-inherit lg:group-hover:text-indigo-600")} />
                 <span>{item.name}</span>
                 {isActive && <ChevronRight size={14} className="ml-auto" />}
               </Link>
@@ -104,17 +105,17 @@ const Sidebar = ({ role = 'citizen', isOpen, onClose, onLogout, isVolunteer }) =
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
+        <div className="p-4 border-t border-indigo-950 lg:border-slate-100 lg:dark:border-slate-800 space-y-2">
           <Link 
             to="/contact"
-            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all group"
+            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-semibold text-indigo-200/70 hover:bg-indigo-900/30 hover:text-white lg:text-slate-500 lg:dark:text-slate-400 lg:hover:bg-slate-50 lg:dark:hover:bg-slate-800 lg:hover:text-indigo-600 lg:dark:hover:text-indigo-400 transition-all group"
           >
             <Mail size={18} className="group-hover:scale-110 transition-transform" />
             <span>Contact Support</span>
           </Link>
           <button 
             onClick={onLogout}
-            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all group"
+            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-semibold text-rose-400 hover:bg-rose-950/20 lg:text-rose-600 lg:hover:bg-rose-50 lg:dark:hover:bg-rose-900/20 transition-all group"
           >
             <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
             <span>Logout</span>

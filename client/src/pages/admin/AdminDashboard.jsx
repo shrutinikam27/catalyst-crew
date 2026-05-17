@@ -464,9 +464,8 @@ const AdminDashboard = () => {
         <StatCard title="Live Incidents" value={notifications.length.toString()} icon={Shield} trend="Socket.IO" trendType="up" description="Real-time city pulse" />
       </div>
 
-      {/* Middle Row */}
-      <div className="grid lg:grid-cols-3 gap-8">
-        <ChartCard title="Incident Analytics" subtitle="Crime vs Civic Grievances" className="lg:col-span-1">
+      <div className="space-y-8">
+        <ChartCard title="Incident Analytics" subtitle="Crime vs Civic Grievances">
           <div className="h-[250px] w-full flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -488,7 +487,7 @@ const AdminDashboard = () => {
           </div>
         </ChartCard>
 
-        <ChartCard title="Crime & Civic Issue Hotspots" subtitle="Real-time emergency & grievance mapping" className="lg:col-span-2">
+        <ChartCard title="Crime & Civic Issue Hotspots" subtitle="Real-time emergency & grievance mapping">
           <div className="space-y-4 overflow-y-auto max-h-[250px] pr-2 scrollbar-hide">
             {incidents.length === 0 ? (
               <div className="py-12 text-center text-slate-400 font-bold uppercase text-xs tracking-widest">
@@ -554,65 +553,6 @@ const AdminDashboard = () => {
             )}
           </div>
         </ChartCard>
-      </div>
-
-      {/* Support Inquiries Section */}
-      <div className="grid lg:grid-cols-3 gap-8">
-        <ChartCard title="Citizen Grievance Analysis" subtitle="Real-time civic complaint processing" className="lg:col-span-2">
-          <div className="space-y-4 overflow-y-auto max-h-[400px] pr-2">
-            {supportRequests.length === 0 ? (
-              <div className="py-12 text-center">
-                <Mail className="mx-auto text-slate-300 mb-4" size={40} />
-                <p className="text-slate-400 font-medium uppercase tracking-widest text-xs">No active grievances</p>
-              </div>
-            ) : (
-              supportRequests.map((req) => (
-                <div key={req.id} className="p-5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-transparent hover:border-indigo-500/20 transition-all group">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white text-xs font-bold uppercase">
-                        {req.name?.charAt(0)}
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white">{req.name}</h4>
-                        <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">{req.email}</span>
-                      </div>
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
-                      <Clock size={10} />
-                      {req.createdAt?.toDate ? req.createdAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now'}
-                    </span>
-                  </div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium leading-relaxed italic">
-                    "{req.message}"
-                  </p>
-                  <div className="mt-4 flex justify-end">
-                    <button 
-                      onClick={() => setSelectedInquiry(req)}
-                      className="text-[10px] font-black text-indigo-600 uppercase tracking-widest flex items-center gap-1 hover:gap-2 transition-all"
-                    >
-                      Reply to Citizen <ChevronRight size={12} />
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </ChartCard>
-
-        <div className="lg:col-span-1 space-y-6">
-           <div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-4 text-indigo-500/10 group-hover:text-indigo-500/20 transition-colors">
-                <MessageSquare size={80} />
-              </div>
-              <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Inquiry Stats</h4>
-              <div className="text-4xl font-outfit font-black text-slate-900 dark:text-white mb-1">{supportRequests.length}</div>
-              <p className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-6">New Messages</p>
-              <button className="w-full py-4 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-black rounded-2xl uppercase tracking-widest text-[10px] hover:bg-indigo-600 hover:text-white transition-all">
-                Manage All Messages
-              </button>
-           </div>
-        </div>
       </div>
 
       {/* Settings Modal */}
@@ -711,62 +651,6 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* Reply Modal */}
-      {selectedInquiry && (
-        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-            onClick={() => setSelectedInquiry(null)}
-          />
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl relative z-10 border border-slate-100 dark:border-slate-800"
-          >
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h3 className="text-xl font-outfit font-black text-slate-900 dark:text-white">Reply to Citizen</h3>
-                <p className="text-xs text-slate-500 font-medium mt-1">Inquiry from {selectedInquiry.name}</p>
-              </div>
-              <button 
-                onClick={() => setSelectedInquiry(null)}
-                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl mb-6 italic text-sm text-slate-600 dark:text-slate-400">
-              "{selectedInquiry.message}"
-            </div>
-
-            <div className="space-y-4">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Your Response</label>
-              <textarea 
-                className="w-full h-32 bg-slate-50 dark:bg-slate-800 border-none ring-1 ring-slate-100 dark:ring-slate-700 rounded-2xl p-4 text-sm focus:ring-2 focus:ring-indigo-600 transition-all dark:text-white"
-                placeholder="Type your reply here..."
-                value={replyMessage}
-                onChange={(e) => setReplyMessage(e.target.value)}
-              />
-              <button 
-                onClick={handleSendReply}
-                disabled={isSending || !replyMessage.trim()}
-                className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50 disabled:shadow-none"
-              >
-                {isSending ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                ) : (
-                  <>
-                    <Mail size={18} /> Send Official Reply
-                  </>
-                )}
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
 
       {/* View Report Modal */}
       {selectedReport && (

@@ -88,7 +88,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/report" element={<ReportIssue />} />
+          <Route path="/report" element={<ProtectedRoute><ReportIssue /></ProtectedRoute>} />
           <Route path="/sos" element={<SosDirectPage />} />
           <Route path="/about" element={<div className="p-20 text-center font-outfit font-black text-4xl dark:text-white uppercase">About SafeLink Platform</div>} />
           <Route path="/help" element={<div className="p-20 text-center font-outfit font-black text-4xl dark:text-white uppercase">SafeLink Help Center</div>} />

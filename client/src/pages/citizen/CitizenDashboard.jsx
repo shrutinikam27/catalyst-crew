@@ -119,10 +119,10 @@ const CitizenDashboard = () => {
 
       {/* Live Crime Ticker */}
       {crimeNotifications.length > 0 && (
-        <div className="bg-rose-50 dark:bg-rose-900/10 border-y border-rose-100 dark:border-rose-900/30 py-2 -mx-6 px-6 overflow-hidden flex items-center gap-4">
+        <div className="bg-rose-50 dark:bg-rose-900/10 border-y border-rose-100 dark:border-rose-900/30 py-2 overflow-hidden flex items-center gap-4">
           <span className="flex-shrink-0 flex items-center gap-2 text-[10px] font-black text-rose-600 uppercase tracking-tighter bg-rose-100 px-2 py-0.5 rounded">
             <Zap size={12} className="fill-rose-600" />
-            Live Ticker
+            Live
           </span>
           <div className="flex-1 overflow-hidden whitespace-nowrap">
             <motion.div
@@ -180,7 +180,7 @@ const CitizenDashboard = () => {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid lg:grid-cols-[1fr_400px] gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6 lg:gap-8">
         <div className="space-y-8">
           {/* Chart Section */}
           <ChartCard title="Weekly Safety Trends" subtitle="Crime vs Accident frequency in your city">

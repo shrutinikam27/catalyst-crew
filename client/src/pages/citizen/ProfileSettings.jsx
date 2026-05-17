@@ -98,15 +98,15 @@ const ProfileSettings = () => {
         <p className="text-slate-500 dark:text-slate-400 font-medium">Manage your personal information and security preferences.</p>
       </div>
 
-      <div className="grid lg:grid-cols-4 gap-8">
-        {/* Navigation Sidebar */}
-        <div className="space-y-2">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
+        {/* Navigation Tabs - horizontal scroll on mobile, vertical on desktop */}
+        <div className="flex lg:flex-col gap-2 overflow-x-auto pb-1 lg:overflow-x-visible lg:pb-0 scrollbar-hide">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "w-full flex items-center gap-3 px-6 py-4 rounded-2xl text-sm font-bold transition-all",
+                "flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-4 rounded-2xl text-sm font-bold transition-all whitespace-nowrap shrink-0 lg:w-full",
                 activeTab === tab.id
                   ? "bg-indigo-600 text-white shadow-lg shadow-indigo-100 dark:shadow-none"
                   : "text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:shadow-sm"
@@ -114,7 +114,7 @@ const ProfileSettings = () => {
             >
               <tab.icon size={18} />
               {tab.name}
-              {activeTab === tab.id && <ChevronRight size={14} className="ml-auto" />}
+              {activeTab === tab.id && <ChevronRight size={14} className="ml-auto hidden lg:block" />}
             </button>
           ))}
         </div>

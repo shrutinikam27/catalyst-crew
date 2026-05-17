@@ -10,7 +10,7 @@ import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { cn } from '../../utils/cn';
 import { db } from '../../firebase/config';
 import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore';
-import { subscribeToEmergencies, subscribeToCollection, COLLECTIONS } from '../../services/firestoreService';
+import { subscribeToEmergencies, subscribeToCollection, COLLECTIONS, subscribeToAllComplaints } from '../../services/firestoreService';
 import { useSocket } from '../../context/SocketContext';
 
 const fireData = [
@@ -28,10 +28,15 @@ const FireDashboard = () => {
   const [loadingVols, setLoadingVols] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
   const [tab, setTab] = useState('pending');
+  const [isMounted, setIsMounted] = useState(false);
 
   const fireAlerts = notifications.filter(n => n.type === 'FIRE');
 
   const [complaints, setComplaints] = useState([]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     const unsub = subscribeToAllComplaints(setComplaints, 'fire');
@@ -76,14 +81,16 @@ const FireDashboard = () => {
 
       <div className="grid lg:grid-cols-2 gap-8">
         <ChartCard title="Fire Incidents vs Resolutions" subtitle="Monthly tracking">
-          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-            <BarChart data={fireData}>
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
-              <Tooltip cursor={{fill: 'rgba(234,88,12,0.05)'}} contentStyle={{ borderRadius: '12px', border: 'none' }} />
-              <Bar dataKey="reports" fill="#ea580c" radius={[6,6,0,0]} />
-              <Bar dataKey="resolved" fill="#10b981" radius={[6,6,0,0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          {isMounted && (
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <BarChart data={fireData}>
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
+                <Tooltip cursor={{fill: 'rgba(234,88,12,0.05)'}} contentStyle={{ borderRadius: '12px', border: 'none' }} />
+                <Bar dataKey="reports" fill="#ea580c" radius={[6,6,0,0]} />
+                <Bar dataKey="resolved" fill="#10b981" radius={[6,6,0,0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </ChartCard>
 
         <ChartCard title="Fire Hazard Heatmap" subtitle="High-risk industrial zones">

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../firebase/AuthContext';
 import { db } from '../firebase/config';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Shield, Mail, Lock, Eye, EyeOff, 
   ArrowRight, Phone, AlertTriangle,
@@ -22,8 +22,9 @@ function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [loginMethod, setLoginMethod] = useState('email'); // email, phone
-  const { login, loginWithGoogle, logout, setupRecaptcha, loginWithPhone } = useAuth();
+  const { login, loginWithGoogle, logout, setupRecaptcha, loginWithPhone, resetPassword } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
@@ -86,7 +87,8 @@ function LoginPage() {
           await logout();
           return setError('Your application was rejected. Please contact the admin.');
         }
-        navigate('/volunteer');
+        const from = location.state?.from || '/volunteer';
+        navigate(from, { state: { category: location.state?.category } });
         return;
       }
 
@@ -94,6 +96,23 @@ function LoginPage() {
       redirectUser(userEmail || 'user');
     } catch (err) {
       setError(loginMethod === 'phone' ? 'Invalid OTP code.' : 'Invalid credentials. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleForgotPassword(e) {
+    e.preventDefault();
+    if (!email) {
+      return setError('Please enter your email address first to reset password.');
+    }
+    try {
+      setError('');
+      setLoading(true);
+      await resetPassword(email);
+      alert('Password reset email sent! Check your inbox.');
+    } catch (err) {
+      setError('Failed to reset password. Ensure the email is correct.');
     } finally {
       setLoading(false);
     }
@@ -118,7 +137,10 @@ function LoginPage() {
     else if (email.includes('volunteer')) navigate('/volunteer');
     else if (email.includes('hospital')) navigate('/hospital');
     else if (email.includes('fire')) navigate('/fire');
-    else navigate('/user');
+    else {
+      const from = location.state?.from || '/user';
+      navigate(from, { state: { category: location.state?.category } });
+    }
   };
 
   return (
@@ -239,7 +261,7 @@ function LoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between px-1">
                 <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Password</label>
-                <a href="#" className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Forgot?</a>
+                <button type="button" onClick={handleForgotPassword} className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Forgot?</button>
               </div>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={20} />

@@ -54,6 +54,11 @@ const CitizenDashboard = () => {
 
   // Local state for live chart data to make it feel alive
   const [chartData, setChartData] = useState(data);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Update chart data when a new pulse arrives
   useEffect(() => {
@@ -137,7 +142,7 @@ const CitizenDashboard = () => {
       )}
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <StatCard
           title="Safe Routes"
           value={`${safeRoutesCount} Available`}
@@ -175,31 +180,35 @@ const CitizenDashboard = () => {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid lg:grid-cols-[1fr_400px] gap-8">
+      <div className="grid lg:grid-cols-[1fr_400px] gap-6 lg:gap-8">
         <div className="space-y-8">
           {/* Chart Section */}
           <ChartCard title="Weekly Safety Trends" subtitle="Crime vs Accident frequency in your city">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <AreaChart data={chartData}>
-                <defs>
-                  <linearGradient id="colorAccidents" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1} />
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="colorCrime" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.1} />
-                    <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                <Tooltip
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', background: '#1e293b', color: '#fff' }}
-                  itemStyle={{ color: '#fff' }}
-                />
-                <Area type="monotone" dataKey="accidents" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorAccidents)" />
-                <Area type="monotone" dataKey="crime" stroke="#f43f5e" strokeWidth={3} fillOpacity={1} fill="url(#colorCrime)" />
-              </AreaChart>
-            </ResponsiveContainer>
+            <div className="h-[250px] w-full">
+              {isMounted && (
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                  <AreaChart data={chartData}>
+                    <defs>
+                      <linearGradient id="colorAccidents" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1} />
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorCrime" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.1} />
+                      <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                  <Tooltip
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', background: '#1e293b', color: '#fff' }}
+                    itemStyle={{ color: '#fff' }}
+                  />
+                    <Area type="monotone" dataKey="accidents" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorAccidents)" />
+                    <Area type="monotone" dataKey="crime" stroke="#f43f5e" strokeWidth={3} fillOpacity={1} fill="url(#colorCrime)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
+            </div>
           </ChartCard>
 
           {/* Quick Actions */}
@@ -227,11 +236,11 @@ const CitizenDashboard = () => {
 
           {/* Safety Tips Section */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <h3 className="text-xl font-bold font-outfit text-slate-900 dark:text-white">Personal Safety Guide</h3>
               <button
                 onClick={() => navigate('/user/tips')}
-                className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:underline transition-all"
+                className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:underline transition-all shrink-0"
               >
                 View Handbook
               </button>

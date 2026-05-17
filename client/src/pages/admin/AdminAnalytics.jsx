@@ -215,7 +215,7 @@ const AdminAnalytics = () => {
 
           <div className="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest mb-4">Hotspot Zones</h3>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid sm:grid-cols-3 gap-3">
               {hotspotData.map((h, i) => (
                 <div key={h.name} className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
                   <p className="text-2xl font-black text-slate-900 dark:text-white">{h.count}</p>

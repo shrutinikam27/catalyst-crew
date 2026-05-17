@@ -180,7 +180,7 @@ const ComplaintTracking = () => {
       <div className="grid lg:grid-cols-[1fr_350px] gap-8">
         <div className="space-y-6">
           {/* Stats Bar */}
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { label: 'Total Filed', value: stats.total, color: 'text-indigo-600' },
               { label: 'Resolved', value: stats.resolved, color: 'text-emerald-500' },

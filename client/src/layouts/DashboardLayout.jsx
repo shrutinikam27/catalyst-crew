@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
+import BottomNav from '../components/BottomNav';
 import { useAuth } from '../firebase/AuthContext';
 import { db } from '../firebase/config';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -92,7 +93,7 @@ const DashboardLayout = () => {
         onLogout={handleLogout}
       />
       
-      {/* Mobile Backdrop */}
+      {/* Mobile Backdrop - hidden since we use BottomNav, but kept for desktop responsive sidebar if ever needed */}
       {isSidebarOpen && (
         <div 
           className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden"
@@ -100,7 +101,7 @@ const DashboardLayout = () => {
         />
       )}
 
-      <div className="lg:ml-64 flex flex-col min-h-screen">
+      <div className="lg:ml-64 flex flex-col min-h-screen pb-20 lg:pb-0">
         <Topbar 
           onMenuClick={() => setSidebarOpen(true)} 
           isDark={isDark} 
@@ -119,6 +120,9 @@ const DashboardLayout = () => {
           </p>
         </footer>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <BottomNav role={role} isVolunteer={isVolunteer} />
     </div>
   );
 };

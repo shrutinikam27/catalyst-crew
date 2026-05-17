@@ -137,6 +137,16 @@ export function AuthProvider({ children }) {
     }
   }
 
+  function resetPassword(email) {
+    if (USE_MOCK_AUTH) {
+      console.log('Mock Password Reset:', email);
+      return Promise.resolve();
+    }
+    return import('firebase/auth').then(({ sendPasswordResetEmail }) => {
+      return sendPasswordResetEmail(auth, email);
+    });
+  }
+
   // Sync Firestore profile when auth user changes
   useEffect(() => {
     let unsubProfile = null;
@@ -191,6 +201,7 @@ export function AuthProvider({ children }) {
     signup,
     login,
     logout,
+    resetPassword,
     loginWithGoogle,
     loginAnonymously,
     setupRecaptcha,

@@ -31,8 +31,13 @@ const PoliceDashboard = () => {
   const [actionLoading, setActionLoading] = useState(null);
   const [tab, setTab] = useState('pending'); // pending | approved | rejected
   const [chartData, setChartData] = useState(initialCrimeData);
+  const [isMounted, setIsMounted] = useState(false);
 
   const crimeAlerts = notifications.filter(n => n.type === 'CRIME');
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Real-time chart update
   useEffect(() => {
@@ -99,7 +104,7 @@ const PoliceDashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <StatCard 
           title="Active Incidents" 
           value={crimeAlerts.length || "0"} 
@@ -132,16 +137,18 @@ const PoliceDashboard = () => {
       </div>
 
       {/* Chart */}
-      <div className="grid lg:grid-cols-2 gap-8">
+      <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
         <ChartCard title="Incident Frequency vs Resolutions" subtitle="Monthly tracking of precinct performance">
-          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-            <BarChart data={chartData}>
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
-              <Tooltip cursor={{fill: 'rgba(99, 102, 241, 0.05)'}} contentStyle={{ borderRadius: '12px', border: 'none' }} />
-              <Bar dataKey="reports" fill="#6366f1" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="resolved" fill="#10b981" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          {isMounted && (
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <BarChart data={chartData}>
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
+                <Tooltip cursor={{fill: 'rgba(99, 102, 241, 0.05)'}} contentStyle={{ borderRadius: '12px', border: 'none' }} />
+                <Bar dataKey="reports" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="resolved" fill="#10b981" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </ChartCard>
 
         <ChartCard title="Crime Density Heatmap" subtitle="High-risk zones identified by AI">

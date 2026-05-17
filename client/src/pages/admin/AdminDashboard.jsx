@@ -335,21 +335,21 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* City Status Banner */}
-      <div className="bg-indigo-600 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl shadow-indigo-200 dark:shadow-none">
-        <div className="relative z-10 grid md:grid-cols-[1fr_auto] gap-8 items-center">
-          <div className="space-y-4">
+      <div className="bg-indigo-600 rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white relative overflow-hidden shadow-2xl shadow-indigo-200 dark:shadow-none">
+        <div className="relative z-10 space-y-4 sm:space-y-6">
+          <div className="space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-extrabold uppercase tracking-widest">
               <Globe size={12} /> Pune D7: PS-1 Operational
             </div>
-            <h1 className="text-4xl font-outfit font-extrabold">Smart Urban Risk Mapping <br /> & Citizen Safety Platform</h1>
-            <p className="text-indigo-100 font-medium max-w-xl">
+            <h1 className="text-xl sm:text-2xl lg:text-4xl font-outfit font-extrabold">Smart Urban Risk Mapping &amp; Citizen Safety Platform</h1>
+            <p className="text-indigo-100 font-medium max-w-xl text-sm">
               Integrating crime statistics, civic grievance reports, and demographic datasets to identify high-risk zones and prioritize emergency response planning across Pune.
             </p>
           </div>
-          <div className="flex gap-4">
-            <button 
+          <div className="flex flex-wrap gap-2 sm:gap-4">
+            <button
               onClick={async () => {
                 setSeeding(true);
                 try {
@@ -368,10 +368,10 @@ const AdminDashboard = () => {
               {seeding ? (
                 <>
                   <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
-                  Seeding Infrastructure...
+                  Seeding...
                 </>
               ) : seedDone ? (
-                "✅ Infrastructure Seeded!"
+                "✅ Seeded!"
               ) : (
                 <>
                   <Download size={14} />
@@ -379,28 +379,29 @@ const AdminDashboard = () => {
                 </>
               )}
             </button>
-            <button 
+            <button
               onClick={() => setIsSettingsOpen(true)}
               className={cn(
-                "p-4 rounded-2xl border transition-all group",
-                isEmergencyMode 
-                  ? "bg-rose-500 text-white border-rose-400 animate-pulse" 
+                "p-3 sm:p-4 rounded-2xl border transition-all group",
+                isEmergencyMode
+                  ? "bg-rose-500 text-white border-rose-400 animate-pulse"
                   : "bg-white/10 backdrop-blur-md hover:bg-white/20 border-white/20 text-white"
               )}
             >
-              <Settings size={24} className="group-hover:rotate-90 transition-transform" />
+              <Settings size={20} className="group-hover:rotate-90 transition-transform" />
             </button>
-            <button 
+            <button
               onClick={() => navigate('/admin/analytics')}
-              className="px-6 py-4 bg-white text-indigo-600 font-bold rounded-2xl flex items-center gap-2 hover:bg-indigo-50 transition-all shadow-lg shadow-white/10"
+              className="px-4 sm:px-6 py-3 sm:py-4 bg-white text-indigo-600 font-bold rounded-2xl flex items-center gap-2 hover:bg-indigo-50 transition-all shadow-lg shadow-white/10 text-sm"
             >
-              <BarChart size={20} />
-              View Predictive Analytics
+              <BarChart size={18} />
+              <span className="hidden sm:inline">View Predictive Analytics</span>
+              <span className="sm:hidden">Analytics</span>
             </button>
           </div>
           {seedDone && (
-            <div className="absolute top-4 right-4 px-4 py-2 bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg animate-bounce">
-              ✅ Database seeded with Pune data!
+            <div className="absolute top-3 right-3 px-3 py-1.5 bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg animate-bounce">
+              ✅ Database seeded!
             </div>
           )}
         </div>
@@ -408,8 +409,8 @@ const AdminDashboard = () => {
       </div>
 
       {/* Live Command Map */}
-      <div className="bg-white dark:bg-slate-900 p-2 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-xl relative overflow-hidden">
-        <div className="h-[500px] w-full rounded-[2rem] overflow-hidden z-0 border border-slate-100 dark:border-slate-800 relative">
+      <div className="bg-white dark:bg-slate-900 p-2 rounded-[2rem] sm:rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-xl relative overflow-hidden">
+        <div className="h-64 sm:h-80 lg:h-[500px] w-full rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden z-0 border border-slate-100 dark:border-slate-800 relative">
           <MapContainer 
             center={[18.5204, 73.8567]} 
             zoom={12} 
@@ -493,7 +494,7 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <StatCard title="Total Complaints" value={totalComplaints.toString()} icon={AlertTriangle} trend={`${resolvedComplaints} resolved`} trendType="down" description="From Firestore real-time" />
         <StatCard title="Active Emergencies" value={activeEmergencies.toString()} icon={Activity} trend="Live" trendType={activeEmergencies > 3 ? "up" : "down"} description="SOS & dispatch requests" />
         <StatCard title="Resolution Rate" value={`${resolutionRate}%`} icon={CheckCircle} trend="2.1%" trendType="up" description="Across all departments" />
@@ -501,7 +502,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Middle Row */}
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-3 gap-5 sm:gap-8">
         <ChartCard title="Incident Analytics" subtitle="Crime vs Civic Grievances" className="lg:col-span-1">
           <div className="h-[250px] w-full flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
@@ -524,7 +525,7 @@ const AdminDashboard = () => {
           </div>
         </ChartCard>
 
-        <ChartCard title="Crime & Civic Issue Hotspots" subtitle="Real-time emergency & grievance mapping" className="lg:col-span-2">
+        <ChartCard title="Crime & Civic Issue Hotspots" subtitle="Real-time emergency & grievance mapping">
           <div className="space-y-4 overflow-y-auto max-h-[250px] pr-2 scrollbar-hide">
             {displayedIncidents.length === 0 ? (
               <div className="py-12 text-center text-slate-400 font-bold uppercase text-xs tracking-widest">
@@ -593,7 +594,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Support Inquiries Section */}
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-3 gap-5 sm:gap-8">
         <ChartCard title="Citizen Grievance Analysis" subtitle="Real-time civic complaint processing" className="lg:col-span-2">
           <div className="space-y-4 overflow-y-auto max-h-[400px] pr-2">
             {supportRequests.length === 0 ? (
@@ -650,7 +651,6 @@ const AdminDashboard = () => {
            </div>
         </div>
       </div>
-
       {/* Settings Modal */}
       {isSettingsOpen && (
         <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4">
@@ -747,62 +747,6 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* Reply Modal */}
-      {selectedInquiry && (
-        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-            onClick={() => setSelectedInquiry(null)}
-          />
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl relative z-10 border border-slate-100 dark:border-slate-800"
-          >
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h3 className="text-xl font-outfit font-black text-slate-900 dark:text-white">Reply to Citizen</h3>
-                <p className="text-xs text-slate-500 font-medium mt-1">Inquiry from {selectedInquiry.name}</p>
-              </div>
-              <button 
-                onClick={() => setSelectedInquiry(null)}
-                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl mb-6 italic text-sm text-slate-600 dark:text-slate-400">
-              "{selectedInquiry.message}"
-            </div>
-
-            <div className="space-y-4">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Your Response</label>
-              <textarea 
-                className="w-full h-32 bg-slate-50 dark:bg-slate-800 border-none ring-1 ring-slate-100 dark:ring-slate-700 rounded-2xl p-4 text-sm focus:ring-2 focus:ring-indigo-600 transition-all dark:text-white"
-                placeholder="Type your reply here..."
-                value={replyMessage}
-                onChange={(e) => setReplyMessage(e.target.value)}
-              />
-              <button 
-                onClick={handleSendReply}
-                disabled={isSending || !replyMessage.trim()}
-                className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50 disabled:shadow-none"
-              >
-                {isSending ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                ) : (
-                  <>
-                    <Mail size={18} /> Send Official Reply
-                  </>
-                )}
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
 
       {/* View Report Modal */}
       {selectedReport && (
@@ -966,10 +910,10 @@ const AdminDashboard = () => {
 
       {/* Volunteer Verification Hub */}
       <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h3 className="text-xl font-bold font-outfit text-slate-900 dark:text-white">Volunteer Verification Hub</h3>
-            <p className="text-sm text-slate-500 font-medium">Review government IDs and expertise of applicants.</p>
+            <p className="text-sm text-slate-500 font-medium mt-1">Review government IDs and expertise of applicants.</p>
           </div>
           <div className="px-4 py-2 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-rose-100 dark:border-rose-900/30">
             {volunteers.length} Pending Requests
@@ -977,7 +921,7 @@ const AdminDashboard = () => {
         </div>
 
         {volunteers.length === 0 ? (
-          <div className="p-20 text-center space-y-4">
+          <div className="p-10 sm:p-20 text-center space-y-4">
             <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto text-slate-300">
               <BadgeCheck size={32} />
             </div>
@@ -988,10 +932,10 @@ const AdminDashboard = () => {
             <table className="w-full text-left">
               <thead className="bg-slate-50 dark:bg-slate-800/50">
                 <tr>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Applicant</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Expertise</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Verification Proof</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Applicant</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Expertise</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Verification Proof</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
@@ -1029,7 +973,7 @@ const AdminDashboard = () => {
                         <span className="text-slate-300 text-[10px] font-bold uppercase italic">No Proof Uploaded</span>
                       )}
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-8 py-6 whitespace-nowrap">
                       <div className="flex gap-2">
                         <button 
                           onClick={() => handleVolunteerAction(vol, 'approved')}

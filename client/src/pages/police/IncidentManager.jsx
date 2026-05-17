@@ -124,7 +124,7 @@ const IncidentManager = () => {
               placeholder="Search incidents..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-xs w-64 focus:ring-2 focus:ring-indigo-500"
+              className="pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-xs w-full sm:w-64 focus:ring-2 focus:ring-indigo-500"
             />
           </div>
           <button className="p-2.5 bg-indigo-600 text-white rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
@@ -134,7 +134,7 @@ const IncidentManager = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         {[
           { label: 'Total Incidents', value: filteredIncidents.length, icon: Shield, color: 'text-indigo-600', bg: 'bg-indigo-50' },
           { label: 'Critical Cases', value: filteredIncidents.filter(n => n.severity === 'high').length, icon: AlertTriangle, color: 'text-rose-600', bg: 'bg-rose-50' },
@@ -160,7 +160,7 @@ const IncidentManager = () => {
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Incident List */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between mb-2">

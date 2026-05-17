@@ -69,7 +69,8 @@ const DispatchBoard = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    const socket = io('http://localhost:8080');
+    const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+    const socket = io(SOCKET_URL);
 
     socket.on('city_pulse', (pulse) => {
       if (pulse.type === 'MEDICAL') {

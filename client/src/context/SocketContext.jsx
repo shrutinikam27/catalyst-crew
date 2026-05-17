@@ -12,7 +12,8 @@ export const SocketProvider = ({ children }) => {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:8080', {
+    const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+    const newSocket = io(SOCKET_URL, {
       // Graceful reconnection — stop spamming console on failed connections
       reconnectionAttempts: 5,
       reconnectionDelay: 5000,

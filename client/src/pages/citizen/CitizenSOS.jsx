@@ -17,6 +17,7 @@ const CitizenSOS = () => {
   const [status, setStatus] = useState('idle'); // idle, counting, active, responding, resolved
   const [userLocation, setUserLocation] = useState(null);
   const [emergencyId, setEmergencyId] = useState(null);
+  const [selectedType, setSelectedType] = useState('Medical');
 
   useEffect(() => {
     let timer;
@@ -43,16 +44,40 @@ const CitizenSOS = () => {
   const triggerSOS = async () => {
     try {
       const loc = userLocation || { lat: 18.5204, lng: 73.8567 };
-      const id = await createEmergencyRequest({
-        type: 'crime',
-        description: 'SOS Emergency triggered by citizen',
-        location: { ...loc, address: `${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}` },
-        userId: currentUser?.uid || 'anonymous',
-        userName: currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Anonymous',
-        priority: 'critical'
+      const userName = currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Anonymous';
+      
+      console.log(`🚨 Triggering SOS (${selectedType}) directly to backend server...`);
+
+      // 1. Call the Node.js backend to trigger Emails / Push Notifications IMMEDIATELY
+      const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+      await fetch(`${API_BASE}/api/sos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          emergencyType: selectedType,
+          location: { latitude: loc.lat, longitude: loc.lng },
+          userId: currentUser?.uid || 'anonymous',
+          userName: userName
+        })
       });
-      setEmergencyId(id);
-      console.log('🚨 SOS Emergency created:', id);
+      console.log('📧 SUCCESS: SOS Notification triggered to backend.');
+
+      // 2. Create emergency request in Firestore (non-blocking)
+      try {
+        const id = await createEmergencyRequest({
+          type: selectedType,
+          description: `SOS Emergency (${selectedType}) triggered by citizen`,
+          location: { ...loc, address: `${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}` },
+          userId: currentUser?.uid || 'anonymous',
+          userName: userName,
+          priority: 'critical'
+        });
+        setEmergencyId(id);
+        console.log('🚨 Firestore Emergency created:', id);
+      } catch (dbErr) {
+        console.warn('Firestore write skipped (permissions or offline):', dbErr.message);
+      }
+
     } catch (err) {
       console.error('SOS submission error:', err);
     }
@@ -94,6 +119,31 @@ const CitizenSOS = () => {
                   exit={{ opacity: 0, scale: 0.9 }}
                   className="text-center space-y-8"
                 >
+                  <div className="space-y-4">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">1. Select Emergency Type</p>
+                    <div className="flex flex-wrap items-center justify-center gap-2 pb-4">
+                      {[
+                        { id: 'Medical', label: '🚑 Medical', activeBg: 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' },
+                        { id: 'Fire', label: '🚒 Fire', activeBg: 'bg-amber-500 text-white shadow-lg shadow-amber-500/30' },
+                        { id: 'Crime', label: '🚨 Crime', activeBg: 'bg-rose-500 text-white shadow-lg shadow-rose-500/30' },
+                        { id: 'Accident', label: '⚠️ Accident', activeBg: 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30' },
+                      ].map(t => (
+                        <button
+                          key={t.id}
+                          onClick={() => setSelectedType(t.id)}
+                          className={cn(
+                            "px-5 py-2.5 rounded-2xl font-extrabold text-xs transition-all border",
+                            selectedType === t.id 
+                              ? t.activeBg + " border-transparent scale-105" 
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700"
+                          )}
+                        >
+                          {t.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <div className="relative">
                     <motion.div 
                       animate={{ scale: [1, 1.2, 1] }} 
@@ -102,14 +152,16 @@ const CitizenSOS = () => {
                     />
                     <button 
                       onClick={handleSosTrigger}
-                      className="relative w-48 h-48 bg-rose-500 hover:bg-rose-600 rounded-full shadow-2xl shadow-rose-200 dark:shadow-none flex items-center justify-center group transition-all active:scale-95"
+                      className="relative w-48 h-48 bg-rose-500 hover:bg-rose-600 rounded-full shadow-2xl shadow-rose-200 dark:shadow-none flex items-center justify-center group transition-all active:scale-95 mx-auto"
                     >
                       <Zap size={64} className="text-white group-hover:scale-110 transition-transform" />
                     </button>
                   </div>
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white uppercase tracking-tighter">Press to Trigger SOS</h2>
-                    <p className="text-slate-500 dark:text-slate-400 font-medium">Click once to start the countdown. Authorities will be notified.</p>
+                    <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white uppercase tracking-tighter">
+                      Press to Trigger {selectedType} SOS
+                    </h2>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium">Click once to start the countdown. Authorities & volunteers will be notified.</p>
                   </div>
                 </motion.div>
               )}

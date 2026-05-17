@@ -2,15 +2,17 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '../../utils/cn';
 
-const StatCard = ({ title, value, icon: Icon, trend, trendType = 'up', description, isLive, className }) => {
+const StatCard = ({ title, value, icon: Icon, trend, trendType = 'up', description, isLive, className, onClick }) => {
   return (
     <motion.div
+      onClick={onClick}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -5 }}
       className={cn(
         "p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm transition-colors relative overflow-hidden",
         "hover:shadow-lg hover:shadow-indigo-500/10 dark:hover:shadow-indigo-500/20",
+        onClick && "cursor-pointer active:scale-[0.98]",
         className
       )}
     >

@@ -333,8 +333,10 @@ export const subscribeToAlerts = (callback, targetRole = null) => {
   // Fetch active alerts and filter/sort in-memory to prevent index errors
   return subscribeToCollection(COLLECTIONS.ALERTS, (alerts) => {
     const sorted = [...alerts].sort((a, b) => {
-      const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
-      const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+      const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 
+                    a.createdAt instanceof Date ? a.createdAt.getTime() : 0;
+      const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 
+                    b.createdAt instanceof Date ? b.createdAt.getTime() : 0;
       return timeB - timeA;
     });
 

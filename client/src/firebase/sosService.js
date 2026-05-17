@@ -46,6 +46,22 @@ export async function createSosAlert({ emergencyType, location, userId = null, u
     return 'mock-alert-' + Date.now();
   }
 
+  // 1. Immediately call Node.js backend to dispatch emails to authorities & volunteers
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+  fetch(`${API_BASE}/api/sos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      emergencyType,
+      location: { latitude: location.latitude, longitude: location.longitude },
+      userId: userId || 'anonymous',
+      userName: userName || 'Anonymous'
+    })
+  }).then(res => res.json())
+    .then(data => console.log('✅ Backend SOS email trigger success:', data))
+    .catch(err => console.error('❌ Backend SOS email trigger failed:', err));
+
+  // 2. Add to Firestore
   const docRef = await addDoc(collection(db, 'sosAlerts'), {
     emergencyType,
     location: {

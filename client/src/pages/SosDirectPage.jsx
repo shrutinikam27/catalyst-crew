@@ -65,28 +65,7 @@ export default function SosDirectPage() {
       : { latitude: 18.5204, longitude: 73.8567 };
 
     try {
-      // 1. Immediately call Node.js backend to dispatch emails
-      const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      console.log(`🚀 Dispatching SOS to backend: ${API_BASE}/api/sos`);
-      
-      try {
-        const response = await fetch(`${API_BASE}/api/sos`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            emergencyType: type,
-            location,
-            userId: null,
-            userName: 'Anonymous (App Shortcut)',
-          })
-        });
-        const data = await response.json();
-        console.log('✅ Backend email trigger success:', data);
-      } catch (fetchErr) {
-        console.error('❌ Backend email trigger failed (Network/CORS):', fetchErr);
-      }
-
-      // 2. Write to Firestore
+      // Write to Firestore (which now automatically triggers backend email dispatch)
       await createSosAlert({
         emergencyType: type,
         location,
